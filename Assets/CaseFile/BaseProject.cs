@@ -224,8 +224,6 @@ namespace Assets.CaseFile
         Dictionary<string, Vector3> FemurLandMarks { get; set; }
         public List<KeyLandMarkers> LMReplacedCoord { get; protected set; }
         public List<LandmarkList> LMList { get; protected set; }
-        public List<DKSResultsHolder> DKSResults { get; protected set; }
-        public List<TimeStep> SimualtionTimeSteps { get; protected set; }
         protected int _selectedhistoryversion = -1;
 
         /// <summary>

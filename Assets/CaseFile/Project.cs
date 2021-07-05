@@ -1,6 +1,4 @@
-using Assets.CaseFile.DataConnector;
 using Assets.CaseFile.Enums;
-using Assets.CaseFile.Models;
 using System;
 using System.Collections.Generic;
 using System.Xml;
@@ -20,13 +18,9 @@ namespace Assets.CaseFile
         public Dictionary<string, string> FemoralComponentParameters { get; set; }
         public Dictionary<string, string> PatellaButtonParameter { get; set; }
         public List<AnatomicalMeasurements> FunctionalValues { get; set; }
-        public List<CustomImageModel> CustomImageModels { get; set; }
         public Dictionary<string, List<string>> PostOpREFTransform { get; set; }
         public Dictionary<string, AlignmentPresets> AlignmentPresets { get; set; }
-        public Dictionary<string, List<SensitivityResults>> SensitivityResults { get; private set; }
-        public List<TimeStep> SimualtionTimeSteps { get; protected set; }
         public Dictionary<string, string> TempVersion { get; set; }
-        public List<DKSResultsHolder> DKSResults { get; protected set; }
         public Dictionary<string, Mesh> ExtraStls { get; set; }
         public List<KeyValuePair<string, Tuple<string, Mesh>>> ExtraStlDetails { get; set; }
 
@@ -44,10 +38,8 @@ namespace Assets.CaseFile
             FemoralComponentParameters = new Dictionary<string, string>();
             PatellaButtonParameter = new Dictionary<string, string>();
             FunctionalValues = new List<AnatomicalMeasurements>();
-            CustomImageModels = new List<CustomImageModel>();
             PostOpREFTransform = new Dictionary<string, List<string>>();
             AlignmentPresets = new Dictionary<string, AlignmentPresets>();
-            SensitivityResults = new Dictionary<string, List<SensitivityResults>>();
             TempVersion = new Dictionary<string, string>();
             ExtraStls = new Dictionary<string, Mesh>();
             ExtraStlDetails = new List<KeyValuePair<string, Tuple<string, Mesh>>>();
@@ -356,47 +348,6 @@ namespace Assets.CaseFile
                             if (!x.Read() || x.MoveToContent() == XmlNodeType.EndElement && x.Name == "FunctionalValues") break;
                         }
                     }
-                    else if (x.MoveToContent() == XmlNodeType.Element && x.Name == "CustomPanels")
-                    {
-                        string title = "";
-                        string description = "";
-                        string image = "";
-                        string displayMode = "";
-
-                        while (!x.EOF)
-                        {
-                            if (x.MoveToContent() == XmlNodeType.Element && x.Name == "CustomPanel")
-                            {
-                                title = x.GetAttribute("Title");
-                                description = x.GetAttribute("Description");
-                                image = x.GetAttribute("Image");
-                                var index = x.GetAttribute("CaseHistoryIndex");
-                                displayMode = x.GetAttribute("DisplayMode");
-                                if (!x.Read()) break;
-
-                                CustomImageModel model = new CustomImageModel();
-                                model.Name = title;
-                                model.Description = description;
-                                byte[] imageArray = Convert.FromBase64String(image);
-                                model.ReferenceImage = imageArray;
-                                if (!string.IsNullOrEmpty(index))
-                                {
-                                    model.AttachedAlignment = int.Parse(index);
-                                }
-                                else
-                                {
-                                    model.AttachedAlignment = -1;
-                                }
-
-                                Enum.TryParse(displayMode, out DisplayModes displayModes);
-                                model.DisplayMode = displayModes;
-
-                                CustomImageModels.Add(model);
-                            }
-                            if (x.IsEmptyElement) break;
-                            if (!x.Read() || x.MoveToContent() == XmlNodeType.EndElement && x.Name == "CustomPanels") break;
-                        }
-                    }
                     else if (x.MoveToContent() == XmlNodeType.Element && (x.Name == "FemurPostOpREFTransform"
                         || x.Name == "TibiaPostOpREFTransform" || x.Name == "PatellaPostOpREFTransform"))
                     {
@@ -437,45 +388,6 @@ namespace Assets.CaseFile
                         var constitutionalVv = new AlignmentPresets();
                         constitutionalVv.ReadXml(x);
                         AlignmentPresets.Add(x.Name, constitutionalVv);
-                    }
-                    else if (x.MoveToContent() == XmlNodeType.Element && (x.Name == "CongruentPCLRetainedResurfaced"
-                             || x.Name == "CongruentPCLRemovedResurfaced" || x.Name == "UltraPCLRetainedResurfaced"
-                             || x.Name == "UltraPCLRemovedResurfaced" || x.Name == "CongruentPCLRetainedNative"
-                             || x.Name == "CongruentPCLRemovedNative" || x.Name == "UltraPCLRetainedNative"
-                             || x.Name == "UltraPCLRemovedNative"))
-                    {
-                        int count = 0;
-                        string name = x.Name;
-                        List<SensitivityResults> results = new List<SensitivityResults>();
-                        while (!x.EOF)
-                        {
-                            SensitivityResults sr = new SensitivityResults();
-                            if (x.MoveToContent() == XmlNodeType.Element && x.Name == "DKS")
-                            {
-                                sr.ReadXml(x);
-                                results.Add(sr);
-                                count++;
-                            }
-                            if (!x.Read() || x.MoveToContent() == XmlNodeType.EndElement && x.Name == "CongruentPCLRetainedResurfaced") break;
-                        }
-                        SensitivityResults.Add(name, results);
-                    }
-                    else if (x.MoveToContent() == XmlNodeType.Element && x.Name == "SimlationTimeSteps")
-                    {
-                        int count = 0;
-                        SimualtionTimeSteps = new List<TimeStep>();
-
-                        while (!x.EOF)
-                        {
-                            TimeStep sr = new TimeStep();
-                            if (x.MoveToContent() == XmlNodeType.Element && x.Name == "TimeStep")
-                            {
-                                sr.ReadXml(x);
-                                SimualtionTimeSteps.Add(sr);
-                                count++;
-                            }
-                            if (!x.Read() || x.MoveToContent() == XmlNodeType.EndElement && x.Name == "SimlationTimeSteps") break;
-                        }
                     }
                     else if (x.MoveToContent() == XmlNodeType.Element && x.Name == "TempVersion")
                     {
@@ -545,22 +457,6 @@ namespace Assets.CaseFile
 
                             if (!x.Read() || x.MoveToContent() == XmlNodeType.EndElement && x.Name == "TempVersion") break;
                         }
-                    }
-                    else if (x.MoveToContent() == XmlNodeType.Element && x.Name == "DKSResults")
-                    {
-                        List<DKSResultsHolder> ch = new List<DKSResultsHolder>();
-                        while (!x.EOF)
-                        {
-                            if (x.MoveToContent() == XmlNodeType.Element && x.Name == "StartDKSRecord")
-                            {
-                                DKSResultsHolder Temp = new DKSResultsHolder();
-                                Temp.RawResultsFromDB = new DatabaseDKS(x);
-                                ch.Add(Temp);
-                            }
-
-                            if (!x.Read() || x.MoveToContent() == XmlNodeType.EndElement && x.Name == "DKSResults") break;
-                        }
-                        if (ch != null && ch.Count > 0) DKSResults = ch;
                     }
                     else if (x.MoveToContent() == XmlNodeType.Element && x.Name == "ExtraStls")
                     {
