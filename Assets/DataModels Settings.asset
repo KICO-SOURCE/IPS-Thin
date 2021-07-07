@@ -15,6 +15,6 @@ MonoBehaviour:
   configuration:
     className: DataModels
     documentKey: 1fpBGo7hQpEnZXkKum5zoSxR9pTVJC0vlve2er2ygtNI
-    documentTitle: 
+    documentTitle: BaseDataModels
     doAddReloadCode: 0
     proxyURL: 

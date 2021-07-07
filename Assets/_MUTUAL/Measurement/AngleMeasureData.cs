@@ -75,6 +75,16 @@ namespace Assets._MUTUAL.Measurement
             }
         }
 
+        /// <summary>
+        /// Calculate the measurment using the measurement data by calling corresponding calculate function in measurement manager.
+        /// </summary>
+        /// <returns>Returs the calculation result.</returns>
+        public override float CalculateMeasure()
+        {
+            var result = MeasurementManager.CalculateAngle(Line1, Line2);
+            return result;
+        }
+
         #endregion
     }
 }

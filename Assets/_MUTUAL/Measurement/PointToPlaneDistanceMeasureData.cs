@@ -10,7 +10,7 @@ namespace Assets._MUTUAL.Measurement
     /// <summary>
     /// Distance to plane measurement data class
     /// </summary>
-    public class PointToPlanceDistanceMeasureData : MeasureData
+    public class PointToPlaneDistanceMeasureData : MeasureData
     {
         #region Public Fields
 
@@ -37,9 +37,9 @@ namespace Assets._MUTUAL.Measurement
         #region Constructors
 
         /// <summary>
-        /// Creates new instance of PointToPlanceDistanceMeasureData.
+        /// Creates new instance of PointToPlaneDistanceMeasureData.
         /// </summary>
-        public PointToPlanceDistanceMeasureData()
+        public PointToPlaneDistanceMeasureData()
         {
             // Expect the patient landmarks collection through dependency injection once the classes are implemented.
         }
@@ -74,6 +74,16 @@ namespace Assets._MUTUAL.Measurement
                     // Create Plane using first 3 points.
                 }
             }
+        }
+
+        /// <summary>
+        /// Calculate the measurment using the measurement data by calling corresponding calculate function in measurement manager.
+        /// </summary>
+        /// <returns>Returs the calculation result.</returns>
+        public override float CalculateMeasure()
+        {
+            var result = MeasurementManager.CalculateDistanceToPlane(Plane, Point);
+            return result;
         }
 
         #endregion

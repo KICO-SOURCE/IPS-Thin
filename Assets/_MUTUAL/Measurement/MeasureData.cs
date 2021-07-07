@@ -51,6 +51,16 @@
             ValidateData(measurement);
         }
 
+        /// <summary>
+        /// Calculate the measurment using the measurement data by calling corresponding calculate function in measurement manager.
+        /// </summary>
+        /// <returns>Returs the calculation result.</returns>
+        public virtual float CalculateMeasure()
+        {
+            // Child class implement their specific calculation logic.
+            return 0;
+        }
+
         #endregion
 
         #region  Protected Methods

@@ -25,6 +25,12 @@
         /// <param name="measurement">Measurement data model</param>
         void PrepareData(DataModelsTypes.Measurements measurement);
 
+        /// <summary>
+        /// Calculate the measurement using the measurement data model.
+        /// </summary>
+        /// <returns>Returs the calculation result.</returns>
+        float CalculateMeasure();
+
         #endregion
     }
 }
