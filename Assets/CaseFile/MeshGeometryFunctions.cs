@@ -5,9 +5,7 @@ using System.Xml;
 using UnityEngine;
 using UnityEngine.Rendering;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Text.RegularExpressions;
-using System.Linq;
 
 namespace Assets.CaseFile
 {

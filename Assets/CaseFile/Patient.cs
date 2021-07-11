@@ -1,225 +1,47 @@
-using Assets.CaseFile.Enums;
 using System;
-using System.ComponentModel;
 
 namespace Assets.CaseFile
 {
-    public class Patient : INotifyPropertyChanged
+    public class Patient
     {
-        public event PropertyChangedEventHandler PropertyChanged;
+        public int PatientId { get; set; }
 
-        private int _patientId;
-        private int _surgeryId;
-        private string _patientName;
-        private string patientFirstName;
-        private string patientLastName;
-        private string caseNumber;
-        private Leftright _leftright;
-        private string surgeonName;
-        private string dob;
-        private DateTime creationDate;
-        private DateTime surgeryDate;
-        private DateTime dateOfScan;
-        private string mrn;
-        private int gender;
-        private int hospital;
-        private string segmentationPath;
-        private DateTime postOpDateOfScan;
-        private string postOpCaseCode;
+        public int SurgeryId { get; set; }
 
-        public int PatientId
-        {
-            get
-            {
-                return _patientId;
-            }
-            set
-            {
-                _patientId = value;
-                OnPropertyChanged(nameof(PatientId));
-            }
-        }
+        public string PatientName { get; set; }
 
-        public int SurgeryId
-        {
-            get
-            {
-                return _surgeryId;
-            }
-            set
-            {
-                _surgeryId = value;
-                OnPropertyChanged(nameof(SurgeryId));
-            }
-        }
+        public string PatientFirstName { get; set; }
 
-        public string PatientName
-        {
-            get => _patientName;
-            set
-            {
-                _patientName = value;
-                OnPropertyChanged(nameof(PatientName));
-            }
-        }
+        public string PatientLastName { get; set; }
 
-        public string PatientFirstName
-        {
-            get => patientFirstName;
-            set
-            {
-                patientFirstName = value;
-                OnPropertyChanged(nameof(PatientFirstName));
-            }
-        }
+        public string CaseNumber { get; set; }
 
-        public string PatientLastName
-        {
-            get => patientLastName;
-            set
-            {
-                patientLastName = value;
-                OnPropertyChanged(nameof(PatientLastName));
-            }
-        }
+        public string Leftright { get; set; }
 
-        public string CaseNumber
-        {
-            get => caseNumber;
-            set
-            {
-                caseNumber = value;
-                OnPropertyChanged(nameof(CaseNumber));
-            }
-        }
+        public string SurgeonName { get; set; }
 
-        public Leftright Leftright
-        {
-            get => _leftright;
-            set
-            {
-                _leftright = value;
-                OnPropertyChanged(nameof(Leftright));
-            }
-        }
+        public string Dob { get; set; }
 
-        public string SurgeonName
-        {
-            get => surgeonName;
-            set
-            {
-                surgeonName = value;
-                OnPropertyChanged(nameof(SurgeonName));
-            }
-        }
+        public DateTime CreationDate { get; set; }
 
-        public string Dob
-        {
-            get => dob;
-            set
-            {
-                dob = value;
-                OnPropertyChanged(nameof(Dob));
-            }
-        }
+        public DateTime SurgeryDate { get; set; }
 
-        public DateTime CreationDate
-        {
-            get => creationDate;
-            set
-            {
-                creationDate = value;
-                OnPropertyChanged(nameof(CreationDate));
-            }
-        }
+        public DateTime DateOfScan { get; set; }
 
-        public DateTime SurgeryDate
-        {
-            get => surgeryDate;
-            set
-            {
-                surgeryDate = value;
-                OnPropertyChanged(nameof(SurgeryDate));
-            }
-        }
+        public string Mrn { get; set; }
 
-        public DateTime DateOfScan
-        {
-            get => dateOfScan;
-            set
-            {
-                dateOfScan = value;
-                OnPropertyChanged(nameof(DateOfScan));
-            }
-        }
+        public int Gender { get; set; }
 
-        public string Mrn
-        {
-            get => mrn;
-            set
-            {
-                mrn = value;
-                OnPropertyChanged(nameof(Mrn));
-            }
-        }
+        public int Hospital { get; set; }
 
-        public int Gender
-        {
-            get => gender;
-            set
-            {
-                gender = value;
-                OnPropertyChanged(nameof(Gender));
-            }
-        }
+        public string SegmentationPath { get; set; }
 
-        public int Hospital
-        {
-            get => hospital;
-            set
-            {
-                hospital = value;
-                OnPropertyChanged(nameof(Hospital));
-            }
-        }
+        public DateTime PostOpDateOfScan { get; set; }
 
-        public string SegmentationPath
-        {
-            get => segmentationPath;
-            set
-            {
-                segmentationPath = value;
-                OnPropertyChanged(nameof(SegmentationPath));
-            }
-        }
-
-        public DateTime PostOpDateOfScan
-        {
-            get => postOpDateOfScan;
-            set
-            {
-                postOpDateOfScan = value;
-                OnPropertyChanged(nameof(PostOpDateOfScan));
-            }
-        }
-
-        public string PostOpCaseCode
-        {
-            get => postOpCaseCode;
-            set
-            {
-                postOpCaseCode = value;
-                OnPropertyChanged(nameof(PostOpCaseCode));
-            }
-        }
+        public string PostOpCaseCode { get; set; }
 
         public Patient()
         {
-        }
-
-        private void OnPropertyChanged(string propName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
         }
     }
 }

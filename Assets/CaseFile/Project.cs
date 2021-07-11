@@ -1,28 +1,20 @@
-using Assets.CaseFile.Enums;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Xml;
 using UnityEngine;
 
 namespace Assets.CaseFile
 {
-    internal class Project : BaseProject
+    internal class Project
     {
         #region Fields
 
-        public Patient PatientData;
+        public Patient PatientData { get; set; }
         public Dictionary<string, Mesh> MeshGeoms { get; set; }
-        public Dictionary<string, Vector3> LandMarks { get; set; }
+        public List<Landmark> LandMarks { get; set; }
         public Dictionary<string, string> PlanValues { get; set; }
-        public Dictionary<string, string> TibiaTrayParameters { get; set; }
-        public Dictionary<string, string> FemoralComponentParameters { get; set; }
-        public Dictionary<string, string> PatellaButtonParameter { get; set; }
         public List<AnatomicalMeasurements> FunctionalValues { get; set; }
-        public Dictionary<string, List<string>> PostOpREFTransform { get; set; }
-        public Dictionary<string, AlignmentPresets> AlignmentPresets { get; set; }
-        public Dictionary<string, string> TempVersion { get; set; }
-        public Dictionary<string, Mesh> ExtraStls { get; set; }
-        public List<KeyValuePair<string, Tuple<string, Mesh>>> ExtraStlDetails { get; set; }
 
         #endregion
 
@@ -32,27 +24,80 @@ namespace Assets.CaseFile
         {
             PatientData = new Patient();
             MeshGeoms = new Dictionary<string, Mesh>();
-            LandMarks = new Dictionary<string, Vector3>();
+            LandMarks = new List<Landmark>();
             PlanValues = new Dictionary<string, string>();
-            TibiaTrayParameters = new Dictionary<string, string>();
-            FemoralComponentParameters = new Dictionary<string, string>();
-            PatellaButtonParameter = new Dictionary<string, string>();
-            FunctionalValues = new List<AnatomicalMeasurements>();
-            PostOpREFTransform = new Dictionary<string, List<string>>();
-            AlignmentPresets = new Dictionary<string, AlignmentPresets>();
-            TempVersion = new Dictionary<string, string>();
-            ExtraStls = new Dictionary<string, Mesh>();
-            ExtraStlDetails = new List<KeyValuePair<string, Tuple<string, Mesh>>>();
         }
 
         private void LoadLandmarks(XmlTextReader x)
         {
+            string bone = x.GetAttribute("Bone");
             string type = x.GetAttribute("ID");
             var x1 = float.Parse(x.GetAttribute("X"));
             var y = float.Parse(x.GetAttribute("Y"));
             var z = float.Parse(x.GetAttribute("Z"));
 
-            LandMarks.Add(type, new Vector3(x1, y, z));
+            LandMarks.Add(new Landmark()
+            {
+                Bone = bone,
+                Type = type,
+                 Position = new Vector3(x1, y, z)
+            });
+        }
+
+        private DateTime ParseDate(string dateString)
+        {
+            DateTime date = DateTime.Now;
+            if (string.IsNullOrEmpty(dateString)) return date;
+            string[] formats = { "dd/MM/yyyy h:m:s tt","MM/dd/yyyy h:m:s tt",
+                                 "d/M/yyyy h:m:s tt", "M/d/yyyy h:m:s tt",
+                                 "dd-MM-yyyy h:m:s tt", "MM-dd-yyyy h:m:s tt",
+                                 "d-M-yyyy h:m:s tt", "M-d-yyyy h:m:s tt",
+                                 "dd-MM-yyyy", "MM-dd-yyyy", "dd-MMM-yyyy",
+                                 "dd/MM/yyyy", "MM/dd/yyyy", "dd/MMM/yyyy" };
+
+            for (int i = 0; i < formats.Length; i++)
+            {
+                try
+                {
+                    date = DateTime.ParseExact(dateString, formats[i], CultureInfo.InvariantCulture);
+                    break;
+                }
+                catch
+                {
+                    if (formats.Length - 1 != i) continue;
+                    try
+                    {
+                        date = DateTime.Parse(dateString);
+                    }
+                    catch
+                    {
+                        return date;
+                    }
+                }
+            }
+            return date;
+        }
+
+        private string ModifyFormat(string dateString)
+        {
+            try
+            {
+
+                DateTime date = DateTime.ParseExact(dateString, "dd-MM-yyyy", CultureInfo.InvariantCulture);
+                return dateString;
+            }
+            catch
+            {
+                try
+                {
+                    DateTime date = ParseDate(dateString);
+                    return date.ToString("dd-MM-yyyy");
+                }
+                catch
+                {
+                    return dateString;
+                }
+            }
         }
 
         #endregion
@@ -89,7 +134,7 @@ namespace Assets.CaseFile
 
                 while (!x.EOF)
                 {
-                    if (x.MoveToContent() == XmlNodeType.Element && x.Name == "KICOCASE")
+                    if (x.MoveToContent() == XmlNodeType.Element && x.Name == "CaseFile")
                     {
                         try
                         {
@@ -120,7 +165,7 @@ namespace Assets.CaseFile
                             PatientData.PatientLastName = PatientData.PatientName.Substring(PatientData.PatientFirstName.Length, PatientData.PatientName.Length - PatientData.PatientFirstName.Length).TrimStart();
                         }
                         PatientData.CaseNumber = x.GetAttribute("CaseNumber");
-                        PatientData.Leftright = (Leftright)Enum.Parse(typeof(Leftright), x.GetAttribute("Leg"));
+                        PatientData.Leftright = x.GetAttribute("Leg");
                         PatientData.SurgeonName = x.GetAttribute("Surgeon");
 
                         PatientData.Dob = ModifyFormat(x.GetAttribute("DateOfBith"));
@@ -171,21 +216,29 @@ namespace Assets.CaseFile
 
                         if (!x.Read()) break;
                     }
-                    else if (x.MoveToContent() == XmlNodeType.Element && (x.Name == "MeshDistalFemur" || x.Name == "MeshProximalFemur"
-                             || x.Name == "MeshDistalTibia" || x.Name == "MeshProximalTibia" || x.Name == "MeshPatella" || x.Name == "GeomFemurLeft"
-                             || x.Name == "GeomFemurRight" || x.Name == "GeomTibiaLeft" || x.Name == "GeomTibiaRight" || x.Name == "GeomPelvis"
-                             || x.Name == "GeomFemurCorticalLeft" || x.Name == "GeomFemurCorticalRight" || x.Name == "GeomFemurDecimatedLeft"
-                             || x.Name == "GeomFemurDecimatedRight" || x.Name == "GeomPelvisDecimated" || x.Name == "TibiaCancellous"
-                             || x.Name == "FemoralGuideRefModel" || x.Name == "TibiaGuideRefModel" || x.Name == "FemurTagFaces"
-                             || x.Name == "FemurScanData" || x.Name == "FemurMeshDecimated" || x.Name == "TibiaScanData"
-                             || x.Name == "FemurConfidenceMesh" || x.Name == "FemurNonConfidenceMesh" || x.Name == "FemurTrochMesh"))
+                    else if (x.MoveToContent() == XmlNodeType.Element && (x.Name == "Meshes"))
                     {
-                        MeshGeoms.Add(x.Name, MeshGeometryFunctions.GetXmlMeshGeometry3D(x));
+                        while (!x.EOF)
+                        {
+                            string bone = string.Empty;
+                            if (x.MoveToContent() == XmlNodeType.Element && x.Name == "MeshData")
+                            {
+                                if (x.MoveToContent() == XmlNodeType.Element && x.Name == "Bone")
+                                {
+                                    bone = x.Value;
+                                }
+                                x.MoveToContent();
+                                if (x.MoveToContent() == XmlNodeType.Element && x.Name == "Mesh")
+                                {
+                                    MeshGeoms.Add(bone, MeshGeometryFunctions.GetXmlMeshGeometry3D(x));
+                                }
+                                x.MoveToContent();
+                            }
+
+                            if (!x.Read() || x.MoveToContent() == XmlNodeType.EndElement && x.Name == "Meshes") break;
+                        }
                     }
-                    else if (x.MoveToContent() == XmlNodeType.Element && (x.Name == "FemurLandMarks" ||
-                             x.Name == "FemurLandMarks" || x.Name == "PatellaLandMarks" || x.Name == "FemurLeftLandmarks" ||
-                             x.Name == "FemurRightLandMarks" || x.Name == "TibiaLeftLandMarks" || x.Name == "TibiaRightLandMarks" ||
-                             x.Name == "PelvisLandmarks"))
+                    else if (x.MoveToContent() == XmlNodeType.Element && (x.Name == "LandMarks"))
                     {
                         while (!x.EOF)
                         {
@@ -194,10 +247,10 @@ namespace Assets.CaseFile
                                 LoadLandmarks(x);
                             }
 
-                            if (!x.Read() || x.MoveToContent() == XmlNodeType.EndElement && x.Name == "FemurLandMarks") break;
+                            if (!x.Read() || x.MoveToContent() == XmlNodeType.EndElement && x.Name == "LandMarks") break;
                         }
                     }
-                    else if (x.MoveToContent() == XmlNodeType.Element && x.Name == "KicoCASEfiles")
+                    else if (x.MoveToContent() == XmlNodeType.Element && x.Name == "Cases")
                     {
                         while (!x.EOF)
                         {
@@ -290,46 +343,8 @@ namespace Assets.CaseFile
                                 }
                             }
 
-                            if (!x.Read() || x.MoveToContent() == XmlNodeType.EndElement && x.Name == "KicoCASEfiles") break;
+                            if (!x.Read() || x.MoveToContent() == XmlNodeType.EndElement && x.Name == "Cases") break;
                         }
-                    }
-                    else if (x.MoveToContent() == XmlNodeType.Element && x.Name == "TibiaTrayParameters")
-                    {
-                        TibiaTrayParameters.Add("TibiaSlope", x.GetAttribute("TibiaSlope"));
-                        TibiaTrayParameters.Add("TibiaInternalRotatio", x.GetAttribute("TibiaInternalRotation"));
-                        TibiaTrayParameters.Add("TibiaVarusValgus", x.GetAttribute("TibiaVarusValgus"));
-                        TibiaTrayParameters.Add("TibiaAnteriorPosterior", x.GetAttribute("TibiaAnteriorPosterior"));
-                        TibiaTrayParameters.Add("TibiaProximalResection", x.GetAttribute("TibiaProximalResection"));
-                        TibiaTrayParameters.Add("TibiaMedialLateral", x.GetAttribute("TibiaMedialLateral"));
-
-                        TibiaTrayParameters.Add("InitialTibiaVariant", x.GetAttribute("TibiaComponentVariant"));
-                        TibiaTrayParameters.Add("InitialTibiaSize", x.GetAttribute("TibiaComponentSize"));
-                        TibiaTrayParameters.Add("InitialTibiaInsertVariant", x.GetAttribute("TibiaInsertVariant"));
-                        TibiaTrayParameters.Add("InitialTibiaInsertSize", x.GetAttribute("TibiaInsertSize"));
-                    }
-                    else if (x.MoveToContent() == XmlNodeType.Element && x.Name == "FemoralComponentParameters")
-                    {
-                        FemoralComponentParameters.Add("FemurVarusValgusAdjustment", x.GetAttribute("FemurVarusValgusAdjustment"));
-                        FemoralComponentParameters.Add("FemurInternalRotationAdjustment", x.GetAttribute("FemurInternalRotationAdjustment"));
-                        FemoralComponentParameters.Add("FemurFlexionExtensionAdjustment", x.GetAttribute("FemurFlexionExtensionAdjustment"));
-                        FemoralComponentParameters.Add("FemurPosteriorResectionAdjustment", x.GetAttribute("FemurPosteriorResectionAdjustment"));
-                        FemoralComponentParameters.Add("FemurDistalResectionAdjustment", x.GetAttribute("FemurDistalResectionAdjustment"));
-                        FemoralComponentParameters.Add("FemurMedialLateralAdjustment", x.GetAttribute("FemurMedialLateralAdjustment"));
-
-                        FemoralComponentParameters.Add("InitialFemurVariant", x.GetAttribute("FemoralComponentVariant"));
-                        FemoralComponentParameters.Add("InitialFemurSize", x.GetAttribute("FemoralComponentSize"));
-                    }
-                    else if (x.MoveToContent() == XmlNodeType.Element && x.Name == "PatellaButtonParameter")
-                    {
-                        PatellaButtonParameter.Add("PatellaFlexionExtension", x.GetAttribute("PatellaFlexionExtension"));
-                        PatellaButtonParameter.Add("PatellaInternalRotation", x.GetAttribute("PatellaInternalRotation"));
-                        PatellaButtonParameter.Add("PatellaSuperiorInferior", x.GetAttribute("PatellaSuperiorInferior"));
-                        PatellaButtonParameter.Add("PatellaAnteriorPosterior", x.GetAttribute("PatellaAnteriorPosterior"));
-                        PatellaButtonParameter.Add("PatellaMedialLateral", x.GetAttribute("PatellaMedialLateral"));
-                        PatellaButtonParameter.Add("PatellaInternalExternal", x.GetAttribute("PatellaInternalExternal"));
-
-                        PatellaButtonParameter.Add("InitialPatellaVariant", x.GetAttribute("PatellaComponentVariant"));
-                        PatellaButtonParameter.Add("InitialPatellaSize", x.GetAttribute("PatellaComponentSize"));
                     }
                     else if (x.MoveToContent() == XmlNodeType.Element && x.Name == "FunctionalValues")
                     {
@@ -348,156 +363,21 @@ namespace Assets.CaseFile
                             if (!x.Read() || x.MoveToContent() == XmlNodeType.EndElement && x.Name == "FunctionalValues") break;
                         }
                     }
-                    else if (x.MoveToContent() == XmlNodeType.Element && (x.Name == "FemurPostOpREFTransform"
-                        || x.Name == "TibiaPostOpREFTransform" || x.Name == "PatellaPostOpREFTransform"))
-                    {
-                        var postOpREFTransString = new List<string>();
-                        postOpREFTransString.Add(x.GetAttribute("TransName"));
-                        postOpREFTransString.Add(x.GetAttribute("Tx"));
-                        postOpREFTransString.Add(x.GetAttribute("Ty"));
-                        postOpREFTransString.Add(x.GetAttribute("Tz"));
-                        postOpREFTransString.Add(x.GetAttribute("Ry"));
-                        postOpREFTransString.Add(x.GetAttribute("Rx"));
-                        postOpREFTransString.Add(x.GetAttribute("Rz"));
-                        postOpREFTransString.Add(x.GetAttribute("Order"));
-                        PostOpREFTransform.Add(x.Name, postOpREFTransString);
-                    }
-                    else if (x.MoveToContent() == XmlNodeType.Element && x.Name == "PostOpInfo")
-                    {
-                        PatientData.PostOpCaseCode = x.GetAttribute("PostOpCaseCode");
-                        var date = x.GetAttribute("PostOpDateOfScan");
-                        if (date != null)
-                        {
-                            PatientData.PostOpDateOfScan = ParseDate(date);
-                        }
-                    }
-                    else if (x.MoveToContent() == XmlNodeType.Element && x.Name == "AlignmentMechanicalAxis")
-                    {
-                        var straightMa = new AlignmentPresets();
-                        straightMa.ReadXml(x);
-                        AlignmentPresets.Add(x.Name, straightMa);
-                    }
-                    else if (x.MoveToContent() == XmlNodeType.Element && x.Name == "AlignmentNatural")
-                    {
-                        var naturalAlignmnet = new AlignmentPresets();
-                        naturalAlignmnet.ReadXml(x);
-                        AlignmentPresets.Add(x.Name, naturalAlignmnet);
-                    }
-                    else if (x.MoveToContent() == XmlNodeType.Element && x.Name == "AlignmentConstitutionVV")
-                    {
-                        var constitutionalVv = new AlignmentPresets();
-                        constitutionalVv.ReadXml(x);
-                        AlignmentPresets.Add(x.Name, constitutionalVv);
-                    }
-                    else if (x.MoveToContent() == XmlNodeType.Element && x.Name == "TempVersion")
-                    {
-                        while (!x.EOF)
-                        {
-                            if (x.MoveToContent() == XmlNodeType.Element && x.Name == "Case")
-                            {
-                                string implantTypeStr = x.GetAttribute("ImplantType");                               
-                                TempVersion.Add("FemurSizeString", x.GetAttribute("FemurImplant"));
-                                TempVersion.Add("FemurVarientString", x.GetAttribute("FemurImplantVarient"));
-                                TempVersion.Add("FemVv", x.GetAttribute("FemurVV"));
-                                TempVersion.Add("FemFlex", x.GetAttribute("FemurFE"));
-                                TempVersion.Add("FemIe", x.GetAttribute("FemurIE"));
-                                TempVersion.Add("FemMl", x.GetAttribute("FemurML"));
-                                TempVersion.Add("FemAp", x.GetAttribute("FemurAP"));
-                                TempVersion.Add("FemSi", x.GetAttribute("FemurSI"));
-                                TempVersion.Add("TibiaInsertSizeString", x.GetAttribute("TibiaInsert"));
-                                TempVersion.Add("TibiaInsertVarientString", x.GetAttribute("TibiaInsertVarient"));
-                                TempVersion.Add("TibiaVarientString", x.GetAttribute("TibiaImplant"));
-                                TempVersion.Add("TibiaSizeString", x.GetAttribute("TibiaImplantSize"));
-                                TempVersion.Add("TibVv", x.GetAttribute("TibiaVV"));
-                                TempVersion.Add("TibFlex", x.GetAttribute("TibiaFE"));
-                                TempVersion.Add("TibIe", x.GetAttribute("TibiaIE"));
-                                TempVersion.Add("TibMl", x.GetAttribute("TibiaML"));
-                                TempVersion.Add("TibAp", x.GetAttribute("TibiaAP"));
-                                TempVersion.Add("TibSi", x.GetAttribute("TibiaSI"));
-                                TempVersion.Add("PatellaSizeString", x.GetAttribute("PatellaImplant"));
-                                TempVersion.Add("PatellaVarientString", x.GetAttribute("PatellaImplantVariant"));
-                                TempVersion.Add("PatellaFE", x.GetAttribute("PatellaFE"));
-                                TempVersion.Add("PatellaIE", x.GetAttribute("PatellaIE"));
-                                string patellaSpin = x.GetAttribute("PatellaSpin");
-                                TempVersion.Add("PatellaSpin", string.IsNullOrEmpty(patellaSpin) ? "0" : patellaSpin);
-                                TempVersion.Add("PatellaML", x.GetAttribute("PatellaML"));
-                                TempVersion.Add("PatellaAP", x.GetAttribute("PatellaAP"));
-                                TempVersion.Add("PatellaSI", x.GetAttribute("PatellaSI"));
-                                TempVersion.Add("Notes", x.GetAttribute("CaseNotes"));
-                                TempVersion.Add("SurgeonsNotes", x.GetAttribute("SurgeonsNotes"));
-                                TempVersion.Add("AlignmentLabel", x.GetAttribute("AlignmentLabel"));
-
-                                try
-                                {
-                                    TempVersion.Add("KicoCaseId", x.GetAttribute("KicoCaseID"));
-                                    TempVersion.Add("CaseHistoryId", x.GetAttribute("CaseHistoryID"));
-                                    TempVersion.Add("AlignmentType", x.GetAttribute("AlignmentType"));
-                                    TempVersion.Add("EngineerID", x.GetAttribute("Engineer"));
-
-                                    TempVersion.Add("Approve", x.GetAttribute("Approve"));
-                                    TempVersion.Add("ChangeRequest", x.GetAttribute("ChangeRequest"));
-                                    TempVersion.Add("SurgeonAlignmentID ", x.GetAttribute("SurgeonAlignmentID"));
-                                    TempVersion.Add("AnalysisType", x.GetAttribute("AnalysisType"));
-                                    if (!string.IsNullOrEmpty(x.GetAttribute("LightBenderAlignment")))
-                                    {
-                                        var lightBenderAlignment = bool.Parse(x.GetAttribute("LightBenderAlignment"));
-                                        if (lightBenderAlignment)
-                                        {
-                                            TempVersion.Add("FemurEuler",  x.GetAttribute("FemurEuler"));
-                                            TempVersion.Add("TibiaEuler", x.GetAttribute("TibiaEuler"));
-                                            TempVersion.Add("PatellaEuler", x.GetAttribute("PatellaEuler"));
-                                        }
-                                    }
-                                }
-                                catch
-                                {
-                                    // Log the error details.
-                                }
-                            }
-
-                            if (!x.Read() || x.MoveToContent() == XmlNodeType.EndElement && x.Name == "TempVersion") break;
-                        }
-                    }
-                    else if (x.MoveToContent() == XmlNodeType.Element && x.Name == "ExtraStls")
-                    {
-                        string stlType = "";
-                        string bone = "";
-                        Mesh mesh = null;
-
-                        if (!x.Read()) break;
-
-                        while (!x.EOF && x.MoveToContent() == XmlNodeType.Element && x.Name == "ExtraStlsImport")
-                        {
-                            if (x.MoveToContent() == XmlNodeType.Element && x.Name == "ExtraStlsImport")
-                            {
-                                bone = x.GetAttribute("Bone");
-                                stlType = x.GetAttribute("StlType");
-
-                                if (!x.Read()) break;
-
-                                if (x.MoveToContent() == XmlNodeType.Element && x.Name == "Mesh")
-                                {
-                                    mesh = MeshGeometryFunctions.GetXmlMeshGeometry3D(x);
-                                }
-
-                                if (bone == "Femur" && stlType == "Other")
-                                {
-                                    ExtraStls.Add(bone, mesh);
-                                }
-                                ExtraStlDetails.Add(new KeyValuePair<string, Tuple<string, Mesh>>(stlType,
-                                                        new Tuple<string, Mesh>(bone, mesh)));
-                                if (!x.Read()) break;
-                                if (!x.Read()) break;
-                            }
-                        }
-                    }
-
                     if (!x.Read()) break;
                 }
                 x.Close();
             }
             System.IO.File.Delete(fp);
             return true;
+        }
+
+        internal bool DecryptTheProject(byte[] source, out string filePathOut)
+        {
+            filePathOut = System.IO.Path.GetTempFileName();
+            DataEncryption encryptionFile = new DataEncryption();
+            bool chk = encryptionFile.DecryptEncryptFile(source, filePathOut);
+
+            return chk;
         }
 
         #endregion
