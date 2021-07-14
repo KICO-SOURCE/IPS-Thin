@@ -1,5 +1,7 @@
 ﻿#region Usings
 
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 #endregion
@@ -45,11 +47,41 @@ namespace Assets._MUTUAL.Measurement
         }
 
         /// <summary>
+        /// Invokes the line rendering.
+        /// </summary>
+        public void RenderLines()
+        {
+            // Iterate through the lines list and prepare line data for rendering the line.
+        }
+
+        /// <summary>
+        /// Draw the line with line render data.
+        /// </summary>
+        /// <param name="lineData">line data model</param>
+        public void DrawLine(LineRenderData lineData, GameObject Parent)
+        {
+            Material lineRenderMaterial = Resources.Load<Material>("Materials/LineRenderer");
+            LineRenderer lineRenderer;
+
+            Parent.TryGetComponent(out lineRenderer);
+            if (lineRenderer == null)
+            {
+                Parent.AddComponent<LineRenderer>();
+                Parent.TryGetComponent(out lineRenderer);
+            }
+
+            lineRenderer.widthMultiplier = lineData.Thickness;
+            lineRenderer.SetPositions(lineData.Points.ToArray());
+            lineRenderer.material = lineRenderMaterial;
+            lineRenderer.material.color = lineData.LineColor;
+        }
+
+        /// <summary>
         /// Calculate distance between two points
         /// </summary>
         /// <param name="point1">First point</param>
         /// <param name="point2">>Second point</param>
-        /// <returns></returns>
+        /// <returns>Distance measurement</returns>
         public static float CalculateDistance(Vector3 point1, Vector3 point2)
         {
             return Vector3.Distance(point1, point2);
@@ -60,7 +92,7 @@ namespace Assets._MUTUAL.Measurement
         /// </summary>
         /// <param name="plane">Plane data.</param>
         /// <param name="point">Point data.</param>
-        /// <returns></returns>
+        /// <returns>Distance measurement</returns>
         public static float CalculateDistanceToPlane(Plane plane, Vector3 point)
         {
             var distance = plane.GetDistanceToPoint(point);
@@ -72,11 +104,54 @@ namespace Assets._MUTUAL.Measurement
         /// </summary>
         /// <param name="line1">First leg of the angle.</param>
         /// <param name="line2">Second leg of the angle.</param>
-        /// <returns></returns>
+        /// <returns>Angle measurement</returns>
         public static float CalculateAngle(Vector3 line1, Vector3 line2)
         {
             var angle = Vector3.Angle(line1, line2);
             return angle;
+        }
+
+        /// <summary>
+        /// Calculate angle between two vectors projected on a plane.
+        /// </summary>
+        /// <param name="line1">First line vector.</param>
+        /// <param name="line2">Second line vector.</param>
+        /// <returns></returns>
+        /// <param name="projectionPlane">Projection plane</param>
+        /// <returns>Angle measurement</returns>
+        public static float CalculateProjectedAngle(Vector3 line1, Vector3 line2, Plane projectionPlane)
+        {
+            line1 = Vector3.ProjectOnPlane(line1, projectionPlane.normal);
+            line2 = Vector3.ProjectOnPlane(line2, projectionPlane.normal);
+            var angle = Vector3.Angle(line1, line2);
+            return angle;
+        }
+
+        /// <summary>
+        /// Generate Line of best fit from list of points.
+        /// </summary>
+        /// <param name="points">Source points collection</param>
+        /// <returns>Returns best fit line points</returns>
+        public static List<Vector3> GenerateLinearBestFit(List<Vector3> points)
+        {
+            // TODO :
+            int numPoints = points.Count;
+
+            //Calculate the mean of the x -values and the mean of the y -values.
+            double meanX = points.Average(point => point.x);
+            double meanY = points.Average(point => point.y);
+            double meanZ = points.Average(point => point.z);
+
+            //slope a of the line of best fit:
+            double sumXSquared = points.Sum(point => point.x * point.x);
+            double sumXY = points.Sum(point => point.x * point.y);
+            double a = (sumXY / numPoints - meanX * meanY) / (sumXSquared / numPoints - meanX * meanX);
+
+            //Compute the y -intercept of the line by using the formula:
+            double b = (meanY - a * meanX);
+
+            // Use the slope a and the y -intercept b to form the equation of the line y=a * point.x - b
+            return points.Select(point => new Vector3(point.x, (float)(a * point.x - b), point.z)).ToList();
         }
 
         #endregion
