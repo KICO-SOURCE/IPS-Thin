@@ -14,7 +14,7 @@ namespace Assets.CaseFile
         public Dictionary<string, Mesh> MeshGeoms { get; set; }
         public List<Landmark> LandMarks { get; set; }
         public Dictionary<string, string> PlanValues { get; set; }
-        public List<AnatomicalMeasurements> FunctionalValues { get; set; }
+        public List<Measurement> FunctionalValues { get; set; }
 
         #endregion
 
@@ -352,12 +352,20 @@ namespace Assets.CaseFile
 
                         while (!x.EOF)
                         {
-                            AnatomicalMeasurements measurement = new AnatomicalMeasurements();
+                            Measurement measurement = new Measurement();
 
                             if (x.MoveToContent() == XmlNodeType.Element && x.Name == "Measurement")
                             {
-                                measurement.ReadXml(x);
-                                FunctionalValues.Add(measurement);
+                                var id = int.Parse(x.GetAttribute("ID"));
+                                var measure = x.GetAttribute("Measure");
+                                var measureVal = float.Parse(x.GetAttribute("MeasureValue"));
+
+                                FunctionalValues.Add(new Measurement()
+                                {
+                                    IdFunctionalValues = id,
+                                    Measure = measure,
+                                    MeasureValue = measureVal
+                                });
                             }
 
                             if (!x.Read() || x.MoveToContent() == XmlNodeType.EndElement && x.Name == "FunctionalValues") break;
