@@ -32,7 +32,7 @@ namespace Assets._MUTUAL.Measurement
         /// <summary>
         /// Prepare the line data.
         /// </summary>
-        void PrepareData();
+        void PrepareData(DataModelsTypes.Lines line);
 
         #endregion
     }

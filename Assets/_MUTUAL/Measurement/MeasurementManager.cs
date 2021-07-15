@@ -51,7 +51,13 @@ namespace Assets._MUTUAL.Measurement
         /// </summary>
         public void RenderLines()
         {
-            // Iterate through the lines list and prepare line data for rendering the line.
+            // Iterate through the line list and prepare line data for rendering the line.
+            for (int i = 0; i < DataModels.lines.Length; i++)
+            {
+                var lineData = new LineRenderData();
+                lineData.PrepareData(DataModels.lines[i]);
+                DrawLine(lineData, GetLineParent(DataModels.lines[i].reference));
+            }
         }
 
         /// <summary>
@@ -165,6 +171,11 @@ namespace Assets._MUTUAL.Measurement
             return averagePoint - beginning;
         }
 
+
+        #endregion
+
+        #region  Private Methods
+
         private Vector3 GetAverage(Vector3[] points)
         {
             float sumX = 0f;
@@ -179,9 +190,11 @@ namespace Assets._MUTUAL.Measurement
             return new Vector3(sumX / points.Length, sumY / points.Length, sumZ / points.Length);
         }
 
-        #endregion
-
-        #region  Private Methods
+        private GameObject GetLineParent(DataModelsTypes.Lines.eReference reference)
+        {
+            // TODO : Get the parent based on line reference.
+            return new GameObject();
+        }
 
         #endregion
     }

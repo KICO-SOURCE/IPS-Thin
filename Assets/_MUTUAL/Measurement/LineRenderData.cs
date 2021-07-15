@@ -34,7 +34,7 @@ namespace Assets._MUTUAL.Measurement
         public float Thickness 
         { 
             get; 
-            set; 
+            set;
         }
 
         #endregion
@@ -55,9 +55,15 @@ namespace Assets._MUTUAL.Measurement
         /// <summary>
         /// Prepare the line data.
         /// </summary>
-        public void PrepareData()
+        public void PrepareData(DataModelsTypes.Lines line)
         {
-            // TODO : Fetch landamarks mentioned in lide model data and fill in point collection.
+           
+            LineColor = line.color;
+            Thickness = 2;
+            foreach(var point in line.points)
+            {
+                // TODO : Fetch landamarks mentioned in lide model data and fill in point collection.
+            }
         }
 
         #endregion
