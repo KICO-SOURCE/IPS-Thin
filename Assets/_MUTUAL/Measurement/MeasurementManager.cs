@@ -154,6 +154,31 @@ namespace Assets._MUTUAL.Measurement
             return points.Select(point => new Vector3(point.x, (float)(a * point.x - b), point.z)).ToList();
         }
 
+        public Vector3 GetBestFitDirection(Vector3[] points)
+        {
+            if(points.Length < 3 )
+            {
+                return points[1] - points[0];
+            }
+            Vector3 averagePoint = GetAverage(points);
+            Vector3 beginning = GetAverage(new Vector3[] { points[0], points[1], points[2] });
+            return averagePoint - beginning;
+        }
+
+        private Vector3 GetAverage(Vector3[] points)
+        {
+            float sumX = 0f;
+            float sumY = 0f;
+            float sumZ = 0f;
+            foreach (Vector3 v in points)
+            {
+                sumX += v.x;
+                sumY += v.y;
+                sumZ += v.z;
+            }
+            return new Vector3(sumX / points.Length, sumY / points.Length, sumZ / points.Length);
+        }
+
         #endregion
 
         #region  Private Methods
