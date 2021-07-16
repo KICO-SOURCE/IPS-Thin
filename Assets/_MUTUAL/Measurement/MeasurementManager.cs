@@ -134,41 +134,20 @@ namespace Assets._MUTUAL.Measurement
         }
 
         /// <summary>
-        /// Generate Line of best fit from list of points.
+        /// Get the best fit line direction from collection of points.
         /// </summary>
-        /// <param name="points">Source points collection</param>
-        /// <returns>Returns best fit line points</returns>
-        public static List<Vector3> GenerateLinearBestFit(List<Vector3> points)
-        {
-            // TODO :
-            int numPoints = points.Count;
-
-            //Calculate the mean of the x -values and the mean of the y -values.
-            double meanX = points.Average(point => point.x);
-            double meanY = points.Average(point => point.y);
-            double meanZ = points.Average(point => point.z);
-
-            //slope a of the line of best fit:
-            double sumXSquared = points.Sum(point => point.x * point.x);
-            double sumXY = points.Sum(point => point.x * point.y);
-            double a = (sumXY / numPoints - meanX * meanY) / (sumXSquared / numPoints - meanX * meanX);
-
-            //Compute the y -intercept of the line by using the formula:
-            double b = (meanY - a * meanX);
-
-            // Use the slope a and the y -intercept b to form the equation of the line y=a * point.x - b
-            return points.Select(point => new Vector3(point.x, (float)(a * point.x - b), point.z)).ToList();
-        }
-
+        /// <param name="points">Source point collection.</param>
+        /// <returns>Best fit line direction.</returns>
         public Vector3 GetBestFitDirection(Vector3[] points)
         {
             if(points.Length < 3 )
             {
                 return points[1] - points[0];
             }
-            Vector3 averagePoint = GetAverage(points);
-            Vector3 beginning = GetAverage(new Vector3[] { points[0], points[1], points[2] });
-            return averagePoint - beginning;
+            Vector3[] sortedPoints = points.OrderBy(s => s.x).ThenBy(s => s.y).ThenBy(s => s.z).ToArray();
+            Vector3 averagePoint = GetAveragePoint(points);
+            Vector3 startPoint = GetAveragePoint(new Vector3[] { sortedPoints[0], sortedPoints[1], sortedPoints[2] });
+            return averagePoint - startPoint;
         }
 
 
@@ -176,7 +155,12 @@ namespace Assets._MUTUAL.Measurement
 
         #region  Private Methods
 
-        private Vector3 GetAverage(Vector3[] points)
+        /// <summary>
+        /// Get average point for best fit line from a source collection
+        /// </summary>
+        /// <param name="points">Source point collection.</param>
+        /// <returns>Average point.</returns>
+        private Vector3 GetAveragePoint(Vector3[] points)
         {
             float sumX = 0f;
             float sumY = 0f;
@@ -190,6 +174,11 @@ namespace Assets._MUTUAL.Measurement
             return new Vector3(sumX / points.Length, sumY / points.Length, sumZ / points.Length);
         }
 
+        /// <summary>
+        /// Get the line parent object.
+        /// </summary>
+        /// <param name="reference">Line parent reference.</param>
+        /// <returns>Parent</returns>
         private GameObject GetLineParent(DataModelsTypes.Lines.eReference reference)
         {
             // TODO : Get the parent based on line reference.
