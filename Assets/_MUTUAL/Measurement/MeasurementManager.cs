@@ -1,5 +1,7 @@
 ﻿#region Usings
 
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 #endregion
@@ -45,11 +47,47 @@ namespace Assets._MUTUAL.Measurement
         }
 
         /// <summary>
+        /// Invokes the line rendering.
+        /// </summary>
+        public void RenderLines()
+        {
+            // Iterate through the line list and prepare line data for rendering the line.
+            for (int i = 0; i < DataModels.lines.Length; i++)
+            {
+                var lineData = new LineRenderData();
+                lineData.PrepareData(DataModels.lines[i]);
+                DrawLine(lineData, GetLineParent(DataModels.lines[i].reference));
+            }
+        }
+
+        /// <summary>
+        /// Draw the line with line render data.
+        /// </summary>
+        /// <param name="lineData">line data model</param>
+        public void DrawLine(LineRenderData lineData, GameObject Parent)
+        {
+            Material lineRenderMaterial = Resources.Load<Material>("Materials/LineRenderer");
+            LineRenderer lineRenderer;
+
+            Parent.TryGetComponent(out lineRenderer);
+            if (lineRenderer == null)
+            {
+                Parent.AddComponent<LineRenderer>();
+                Parent.TryGetComponent(out lineRenderer);
+            }
+
+            lineRenderer.widthMultiplier = lineData.Thickness;
+            lineRenderer.SetPositions(lineData.Points.ToArray());
+            lineRenderer.material = lineRenderMaterial;
+            lineRenderer.material.color = lineData.LineColor;
+        }
+
+        /// <summary>
         /// Calculate distance between two points
         /// </summary>
         /// <param name="point1">First point</param>
         /// <param name="point2">>Second point</param>
-        /// <returns></returns>
+        /// <returns>Distance measurement</returns>
         public static float CalculateDistance(Vector3 point1, Vector3 point2)
         {
             return Vector3.Distance(point1, point2);
@@ -60,7 +98,7 @@ namespace Assets._MUTUAL.Measurement
         /// </summary>
         /// <param name="plane">Plane data.</param>
         /// <param name="point">Point data.</param>
-        /// <returns></returns>
+        /// <returns>Distance measurement</returns>
         public static float CalculateDistanceToPlane(Plane plane, Vector3 point)
         {
             var distance = plane.GetDistanceToPoint(point);
@@ -72,16 +110,80 @@ namespace Assets._MUTUAL.Measurement
         /// </summary>
         /// <param name="line1">First leg of the angle.</param>
         /// <param name="line2">Second leg of the angle.</param>
-        /// <returns></returns>
+        /// <returns>Angle measurement</returns>
         public static float CalculateAngle(Vector3 line1, Vector3 line2)
         {
             var angle = Vector3.Angle(line1, line2);
             return angle;
         }
 
+        /// <summary>
+        /// Calculate angle between two vectors projected on a plane.
+        /// </summary>
+        /// <param name="line1">First line vector.</param>
+        /// <param name="line2">Second line vector.</param>
+        /// <returns></returns>
+        /// <param name="projectionPlane">Projection plane</param>
+        /// <returns>Angle measurement</returns>
+        public static float CalculateProjectedAngle(Vector3 line1, Vector3 line2, Plane projectionPlane)
+        {
+            line1 = Vector3.ProjectOnPlane(line1, projectionPlane.normal);
+            line2 = Vector3.ProjectOnPlane(line2, projectionPlane.normal);
+            var angle = Vector3.Angle(line1, line2);
+            return angle;
+        }
+
+        /// <summary>
+        /// Get the best fit line direction from collection of points.
+        /// </summary>
+        /// <param name="points">Source point collection.</param>
+        /// <returns>Best fit line direction.</returns>
+        public Vector3 GetBestFitDirection(Vector3[] points)
+        {
+            if(points.Length < 3 )
+            {
+                return points[1] - points[0];
+            }
+            Vector3[] sortedPoints = points.OrderBy(s => s.x).ThenBy(s => s.y).ThenBy(s => s.z).ToArray();
+            Vector3 averagePoint = GetAveragePoint(points);
+            Vector3 startPoint = GetAveragePoint(new Vector3[] { sortedPoints[0], sortedPoints[1], sortedPoints[2] });
+            return averagePoint - startPoint;
+        }
+
+
         #endregion
 
         #region  Private Methods
+
+        /// <summary>
+        /// Get average point for best fit line from a source collection
+        /// </summary>
+        /// <param name="points">Source point collection.</param>
+        /// <returns>Average point.</returns>
+        private Vector3 GetAveragePoint(Vector3[] points)
+        {
+            float sumX = 0f;
+            float sumY = 0f;
+            float sumZ = 0f;
+            foreach (Vector3 v in points)
+            {
+                sumX += v.x;
+                sumY += v.y;
+                sumZ += v.z;
+            }
+            return new Vector3(sumX / points.Length, sumY / points.Length, sumZ / points.Length);
+        }
+
+        /// <summary>
+        /// Get the line parent object.
+        /// </summary>
+        /// <param name="reference">Line parent reference.</param>
+        /// <returns>Parent</returns>
+        private GameObject GetLineParent(DataModelsTypes.Lines.eReference reference)
+        {
+            // TODO : Get the parent based on line reference.
+            return new GameObject();
+        }
 
         #endregion
     }

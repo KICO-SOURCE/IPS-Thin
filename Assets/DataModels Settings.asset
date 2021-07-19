@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   configuration:
     className: DataModels
-    documentKey: 1fpBGo7hQpEnZXkKum5zoSxR9pTVJC0vlve2er2ygtNI
+    documentKey: 1AHaaf_KaUXW4XySWLxf6g4VP3jO-78HVUWkQnpvYxvE
     documentTitle: BaseDataModels
     doAddReloadCode: 0
     proxyURL: 
