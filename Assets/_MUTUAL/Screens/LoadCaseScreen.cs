@@ -1,5 +1,5 @@
 ﻿using Assets.CaseFile;
-using System.IO;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,6 +16,7 @@ namespace Mutual.Screens
 
         #region Private Constants
 
+        private const string ParentTag = "UIParent";
         private const string LoadCaseBTNName = "LoadCaseBTN";
         private const string ViewBTNName = "ViewBTN";
 
@@ -25,6 +26,8 @@ namespace Mutual.Screens
 
         private Button m_LoadCaseBtn;
         private Button m_ViewBtn;
+        private Transform m_Parent;
+        private List<GameObject> m_Meshes;
 
         #endregion
 
@@ -33,7 +36,13 @@ namespace Mutual.Screens
         public LoadCaseScreen(Project project)
         {
             m_Project = project;
+            m_Parent = GameObject.FindGameObjectWithTag(ParentTag).transform;
+            m_Meshes = new List<GameObject>();
         }
+
+        #endregion
+
+        #region Public Methods
 
         public void ActivateScreen()
         {
@@ -48,33 +57,6 @@ namespace Mutual.Screens
             DettachListeners();
             UnPopulateUiElements();
         }
-        #endregion
-
-        #region Private Methods
-
-        private void PopulateUiElements()
-        {
-            m_LoadCaseBtn = GameObject.Find(LoadCaseBTNName).GetComponent<Button>();
-            m_ViewBtn = GameObject.Find(ViewBTNName).GetComponent<Button>();
-        }
-
-        private void AttachListeners()
-        {
-            m_ViewBtn.onClick.AddListener(OnViewButtonClicked);
-            m_LoadCaseBtn.onClick.AddListener(OnLoadCaseButtonClicked);
-        }
-
-        private void DettachListeners()
-       {
-            m_ViewBtn.onClick.RemoveAllListeners();
-            m_LoadCaseBtn.onClick.RemoveAllListeners();
-        }
-
-        private void UnPopulateUiElements()
-        {
-            m_LoadCaseBtn = null;
-            m_ViewBtn = null;
-        }
 
         public void OnLoadCaseButtonClicked()
         {
@@ -88,7 +70,7 @@ namespace Mutual.Screens
             Debug.Log($"Patient Details: {m_Project.PatientData.ToString()}");
 
             var meshKeys = string.Empty;
-            foreach(var key in m_Project.MeshGeoms.Keys)
+            foreach (var key in m_Project.MeshGeoms.Keys)
             {
                 meshKeys += (key + ", ");
             }
@@ -124,6 +106,59 @@ namespace Mutual.Screens
         public void OnViewButtonClicked()
         {
             Debug.Log("View");
+
+            foreach (var go in m_Meshes)
+            {
+                go.SetActive(false);
+                UnityEngine.Object.DestroyImmediate(go);
+            }
+            m_Meshes.Clear();
+
+
+            var material = Resources.Load<Material>("BoneMaterial");
+            foreach (var mesh in m_Project.MeshGeoms)
+            {
+                var go = new GameObject(mesh.Key, typeof(MeshFilter), typeof(MeshRenderer));
+                go.transform.parent = m_Parent;
+                go.GetComponent<MeshFilter>().mesh = mesh.Value;
+                go.GetComponent<MeshRenderer>().material = material;
+                go.SetActive(true);
+                m_Meshes.Add(go);
+            }
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private void PopulateUiElements()
+        {
+            m_LoadCaseBtn = GameObject.Find(LoadCaseBTNName).GetComponent<Button>();
+            m_ViewBtn = GameObject.Find(ViewBTNName).GetComponent<Button>();
+        }
+
+        private void AttachListeners()
+        {
+            m_ViewBtn.onClick.AddListener(OnViewButtonClicked);
+            m_LoadCaseBtn.onClick.AddListener(OnLoadCaseButtonClicked);
+        }
+
+        private void DettachListeners()
+        {
+            m_ViewBtn.onClick.RemoveAllListeners();
+            m_LoadCaseBtn.onClick.RemoveAllListeners();
+        }
+
+        private void UnPopulateUiElements()
+        {
+            m_LoadCaseBtn = null;
+            m_ViewBtn = null;
+
+            foreach(var go in m_Meshes)
+            {
+                UnityEngine.Object.DestroyImmediate(go);
+            }
+            m_Meshes.Clear();
         }
     }
     #endregion
