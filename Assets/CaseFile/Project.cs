@@ -13,7 +13,7 @@ namespace Assets.CaseFile
         public Patient PatientData { get; set; }
         public Dictionary<string, Mesh> MeshGeoms { get; set; }
         public List<Landmark> LandMarks { get; set; }
-        public Dictionary<string, string> PlanValues { get; set; }
+        public List<Dictionary<string, string>> PlanValues { get; set; }
         public List<Measurement> FunctionalValues { get; set; }
 
         #endregion
@@ -25,7 +25,8 @@ namespace Assets.CaseFile
             PatientData = new Patient();
             MeshGeoms = new Dictionary<string, Mesh>();
             LandMarks = new List<Landmark>();
-            PlanValues = new Dictionary<string, string>();
+            PlanValues = new List<Dictionary<string, string>>();
+            FunctionalValues = new List<Measurement>();
         }
 
         private void LoadLandmarks(XmlTextReader x)
@@ -106,17 +107,16 @@ namespace Assets.CaseFile
 
         public Project()
         {
+            InitializeData();
         }
 
         /// <summary>
         /// Load case file for knee and hip.
-        /// This logic may change after the filetype defnitition.
         /// </summary>
         /// <param name="sourceByte"></param>
         /// <returns></returns>
         internal bool LoadProject(byte[] sourceByte)
         {
-            InitializeData();
             string fp;
             bool chck = DecryptTheProject(sourceByte, out fp);
 
@@ -128,7 +128,21 @@ namespace Assets.CaseFile
                 return false;
             }
 
-            using (XmlTextReader x = new XmlTextReader(fp))
+            var ret = LoadProject(fp);
+            System.IO.File.Delete(fp);
+            return ret;
+        }
+
+        /// <summary>
+        /// Load case file for knee and hip.
+        /// Use this method only for not encrypted files
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
+        internal bool LoadProject(string filePath)
+        {
+            InitializeData();
+            using (XmlTextReader x = new XmlTextReader(filePath))
             {
                 x.Read();
 
@@ -220,34 +234,25 @@ namespace Assets.CaseFile
                     {
                         while (!x.EOF)
                         {
-                            string bone = string.Empty;
                             if (x.MoveToContent() == XmlNodeType.Element && x.Name == "MeshData")
                             {
-                                if (x.MoveToContent() == XmlNodeType.Element && x.Name == "Bone")
-                                {
-                                    bone = x.Value;
-                                }
-                                x.MoveToContent();
-                                if (x.MoveToContent() == XmlNodeType.Element && x.Name == "Mesh")
-                                {
-                                    MeshGeoms.Add(bone, MeshGeometryFunctions.GetXmlMeshGeometry3D(x));
-                                }
-                                x.MoveToContent();
+                                string bone = x.GetAttribute("Bone");
+                                MeshGeoms.Add(bone, MeshGeometryFunctions.GetXmlMeshGeometry3D(x));
                             }
 
                             if (!x.Read() || x.MoveToContent() == XmlNodeType.EndElement && x.Name == "Meshes") break;
                         }
                     }
-                    else if (x.MoveToContent() == XmlNodeType.Element && (x.Name == "LandMarks"))
+                    else if (x.MoveToContent() == XmlNodeType.Element && (x.Name == "Landmarks"))
                     {
                         while (!x.EOF)
                         {
-                            if (x.MoveToContent() == XmlNodeType.Element && x.Name == "LandMark")
+                            if (x.MoveToContent() == XmlNodeType.Element && x.Name == "Landmark")
                             {
                                 LoadLandmarks(x);
                             }
 
-                            if (!x.Read() || x.MoveToContent() == XmlNodeType.EndElement && x.Name == "LandMarks") break;
+                            if (!x.Read() || x.MoveToContent() == XmlNodeType.EndElement && x.Name == "Landmarks") break;
                         }
                     }
                     else if (x.MoveToContent() == XmlNodeType.Element && x.Name == "Cases")
@@ -256,91 +261,93 @@ namespace Assets.CaseFile
                         {
                             if (x.MoveToContent() == XmlNodeType.Element && x.Name == "Case")
                             {
+                                var plan = new Dictionary<string, string>();
                                 string implantTypeStr = x.GetAttribute("ImplantType");
-                                PlanValues.Add("FemurSizeString", x.GetAttribute("FemurImplant"));
-                                PlanValues.Add("FemurVarientString", x.GetAttribute("FemurImplantVarient"));
-                                PlanValues.Add("FemVv", x.GetAttribute("FemurVV"));
-                                PlanValues.Add("FemFlex", x.GetAttribute("FemurFE"));
-                                PlanValues.Add("FemIe", x.GetAttribute("FemurIE"));
-                                PlanValues.Add("FemMl", x.GetAttribute("FemurML"));
-                                PlanValues.Add("FemAp", x.GetAttribute("FemurAP"));
-                                PlanValues.Add("FemSi", x.GetAttribute("FemurSI"));
-                                PlanValues.Add("TibiaInsertSizeString", x.GetAttribute("TibiaInsert"));
-                                PlanValues.Add("TibiaInsertVarientString", x.GetAttribute("TibiaInsertVarient"));
-                                PlanValues.Add("TibiaVarientString", x.GetAttribute("TibiaImplant"));
-                                PlanValues.Add("TibiaSizeString", x.GetAttribute("TibiaImplantSize"));
-                                PlanValues.Add("TibVv", x.GetAttribute("TibiaVV"));
-                                PlanValues.Add("TibFlex", x.GetAttribute("TibiaFE"));
-                                PlanValues.Add("TibIe", x.GetAttribute("TibiaIE"));
-                                PlanValues.Add("TibMl", x.GetAttribute("TibiaML"));
-                                PlanValues.Add("TibAp", x.GetAttribute("TibiaAP"));
-                                PlanValues.Add("TibSi", x.GetAttribute("TibiaSI"));
-                                PlanValues.Add("PatellaSizeString", x.GetAttribute("PatellaImplant"));
-                                PlanValues.Add("PatellaVarientString", x.GetAttribute("PatellaImplantVariant"));
-                                PlanValues.Add("PatellaFE", x.GetAttribute("PatellaFE"));
-                                PlanValues.Add("PatellaIE", x.GetAttribute("PatellaIE"));
+                                plan.Add("FemurSizeString", x.GetAttribute("FemurImplant"));
+                                plan.Add("FemurVarientString", x.GetAttribute("FemurImplantVarient"));
+                                plan.Add("FemVv", x.GetAttribute("FemurVV"));
+                                plan.Add("FemFlex", x.GetAttribute("FemurFE"));
+                                plan.Add("FemIe", x.GetAttribute("FemurIE"));
+                                plan.Add("FemMl", x.GetAttribute("FemurML"));
+                                plan.Add("FemAp", x.GetAttribute("FemurAP"));
+                                plan.Add("FemSi", x.GetAttribute("FemurSI"));
+                                plan.Add("TibiaInsertSizeString", x.GetAttribute("TibiaInsert"));
+                                plan.Add("TibiaInsertVarientString", x.GetAttribute("TibiaInsertVarient"));
+                                plan.Add("TibiaVarientString", x.GetAttribute("TibiaImplant"));
+                                plan.Add("TibiaSizeString", x.GetAttribute("TibiaImplantSize"));
+                                plan.Add("TibVv", x.GetAttribute("TibiaVV"));
+                                plan.Add("TibFlex", x.GetAttribute("TibiaFE"));
+                                plan.Add("TibIe", x.GetAttribute("TibiaIE"));
+                                plan.Add("TibMl", x.GetAttribute("TibiaML"));
+                                plan.Add("TibAp", x.GetAttribute("TibiaAP"));
+                                plan.Add("TibSi", x.GetAttribute("TibiaSI"));
+                                plan.Add("PatellaSizeString", x.GetAttribute("PatellaImplant"));
+                                plan.Add("PatellaVarientString", x.GetAttribute("PatellaImplantVariant"));
+                                plan.Add("PatellaFE", x.GetAttribute("PatellaFE"));
+                                plan.Add("PatellaIE", x.GetAttribute("PatellaIE"));
                                 string patellaSpin = x.GetAttribute("PatellaSpin");
-                                PlanValues.Add("PatellaSpin", string.IsNullOrEmpty(patellaSpin) ? "" : patellaSpin);
-                                PlanValues.Add("PatellaML", x.GetAttribute("PatellaML"));
-                                PlanValues.Add("PatellaAP", x.GetAttribute("PatellaAP"));
-                                PlanValues.Add("PatellaSI", x.GetAttribute("PatellaSI"));
-                                PlanValues.Add("Notes", x.GetAttribute("CaseNotes"));
-                                PlanValues.Add("SurgeonsNotes", x.GetAttribute("SurgeonsNotes"));
-                                PlanValues.Add("AlignmentLabel", x.GetAttribute("AlignmentLabel"));
+                                plan.Add("PatellaSpin", string.IsNullOrEmpty(patellaSpin) ? "" : patellaSpin);
+                                plan.Add("PatellaML", x.GetAttribute("PatellaML"));
+                                plan.Add("PatellaAP", x.GetAttribute("PatellaAP"));
+                                plan.Add("PatellaSI", x.GetAttribute("PatellaSI"));
+                                plan.Add("Notes", x.GetAttribute("CaseNotes"));
+                                plan.Add("SurgeonsNotes", x.GetAttribute("SurgeonsNotes"));
+                                plan.Add("AlignmentLabel", x.GetAttribute("AlignmentLabel"));
 
                                 try
                                 {
-                                    PlanValues.Add("KicoCaseId", x.GetAttribute("KicoCaseID"));
-                                    PlanValues.Add("CaseHistoryId", x.GetAttribute("CaseHistoryID"));
-                                    PlanValues.Add("AlignmentType", x.GetAttribute("AlignmentType"));
-                                    PlanValues.Add("EngineerID", x.GetAttribute("Engineer"));
+                                    plan.Add("KicoCaseId", x.GetAttribute("KicoCaseID"));
+                                    plan.Add("CaseHistoryId", x.GetAttribute("CaseHistoryID"));
+                                    plan.Add("AlignmentType", x.GetAttribute("AlignmentType"));
+                                    plan.Add("EngineerID", x.GetAttribute("Engineer"));
 
-                                    PlanValues.Add("Approve", x.GetAttribute("Approve"));
-                                    PlanValues.Add("ChangeRequest", x.GetAttribute("ChangeRequest"));
-                                    PlanValues.Add("SurgeonAlignmentID", (x.GetAttribute("SurgeonAlignmentID")));
-                                    PlanValues.Add("AnalysisType", x.GetAttribute("AnalysisType"));
+                                    plan.Add("Approve", x.GetAttribute("Approve"));
+                                    plan.Add("ChangeRequest", x.GetAttribute("ChangeRequest"));
+                                    plan.Add("SurgeonAlignmentID", (x.GetAttribute("SurgeonAlignmentID")));
+                                    plan.Add("AnalysisType", x.GetAttribute("AnalysisType"));
                                     if (!string.IsNullOrEmpty(x.GetAttribute("LightBenderAlignment")))
                                     {
                                         var lightBenderAlignment = bool.Parse(x.GetAttribute("LightBenderAlignment"));
-                                        PlanValues.Add("LightBenderAlignment", lightBenderAlignment.ToString());
+                                        plan.Add("LightBenderAlignment", lightBenderAlignment.ToString());
                                         if (lightBenderAlignment)
                                         {
-                                            PlanValues.Add("FemurEuler", x.GetAttribute("FemurEuler"));
-                                            PlanValues.Add("TibiaEuler", x.GetAttribute("TibiaEuler"));
-                                            PlanValues.Add("PatellaEuler", x.GetAttribute("PatellaEuler"));
+                                            plan.Add("FemurEuler", x.GetAttribute("FemurEuler"));
+                                            plan.Add("TibiaEuler", x.GetAttribute("TibiaEuler"));
+                                            plan.Add("PatellaEuler", x.GetAttribute("PatellaEuler"));
                                         }
                                     }
-                                    PlanValues.Add("Delete", x.GetAttribute("Delete"));
+                                    plan.Add("Delete", x.GetAttribute("Delete"));
                                 }
                                 catch
                                 {
                                 }
-                                PlanValues.Add("StemImplantType", x.GetAttribute("StemImplantType"));
-                                PlanValues.Add("HeadImplantType", x.GetAttribute("HeadImplantType"));
-                                PlanValues.Add("CupImplantType", x.GetAttribute("CupImplantType"));
-                                PlanValues.Add("LinerImplantType", x.GetAttribute("LinerImplantType"));
+                                plan.Add("StemImplantType", x.GetAttribute("StemImplantType"));
+                                plan.Add("HeadImplantType", x.GetAttribute("HeadImplantType"));
+                                plan.Add("CupImplantType", x.GetAttribute("CupImplantType"));
+                                plan.Add("LinerImplantType", x.GetAttribute("LinerImplantType"));
 
-                                PlanValues.Add("PelvisCupVariant", x.GetAttribute("PelvisCupVariant"));
-                                PlanValues.Add("PelvisLinerVariant", x.GetAttribute("PelvisLinerVariant"));
-                                PlanValues.Add("FemurHeadVariant", x.GetAttribute("FemurHeadVariant"));
-                                PlanValues.Add("FemurStemVariant", x.GetAttribute("FemurStemVariant"));
-                                PlanValues.Add("PelvisCupSize", x.GetAttribute("PelvisCupSize"));
-                                PlanValues.Add("PelvisLinerSize", x.GetAttribute("PelvisLinerSize"));
-                                PlanValues.Add("FemurHeadSize", x.GetAttribute("FemurHeadSize"));
-                                PlanValues.Add("FemurStemSize", x.GetAttribute("FemurStemSize"));
+                                plan.Add("PelvisCupVariant", x.GetAttribute("PelvisCupVariant"));
+                                plan.Add("PelvisLinerVariant", x.GetAttribute("PelvisLinerVariant"));
+                                plan.Add("FemurHeadVariant", x.GetAttribute("FemurHeadVariant"));
+                                plan.Add("FemurStemVariant", x.GetAttribute("FemurStemVariant"));
+                                plan.Add("PelvisCupSize", x.GetAttribute("PelvisCupSize"));
+                                plan.Add("PelvisLinerSize", x.GetAttribute("PelvisLinerSize"));
+                                plan.Add("FemurHeadSize", x.GetAttribute("FemurHeadSize"));
+                                plan.Add("FemurStemSize", x.GetAttribute("FemurStemSize"));
 
-                                PlanValues.Add("PelvisAP", x.GetAttribute("PelvisAP"));
-                                PlanValues.Add("PelvisAR", x.GetAttribute("PelvisAR"));
-                                PlanValues.Add("PelvisML", x.GetAttribute("PelvisML"));
-                                PlanValues.Add("PelvisInclination", x.GetAttribute("PelvisInclination"));
-                                PlanValues.Add("PelvisSpin", x.GetAttribute("PelvisSpin"));
-                                PlanValues.Add("PelvisSI", x.GetAttribute("PelvisSI"));
-                                PlanValues.Add("FemurAR", x.GetAttribute("FemurAR"));
-                                PlanValues.Add("FemurLL", x.GetAttribute("FemurLL"));
+                                plan.Add("PelvisAP", x.GetAttribute("PelvisAP"));
+                                plan.Add("PelvisAR", x.GetAttribute("PelvisAR"));
+                                plan.Add("PelvisML", x.GetAttribute("PelvisML"));
+                                plan.Add("PelvisInclination", x.GetAttribute("PelvisInclination"));
+                                plan.Add("PelvisSpin", x.GetAttribute("PelvisSpin"));
+                                plan.Add("PelvisSI", x.GetAttribute("PelvisSI"));
+                                plan.Add("FemurAR", x.GetAttribute("FemurAR"));
+                                plan.Add("FemurLL", x.GetAttribute("FemurLL"));
                                 if (!string.IsNullOrEmpty(x.GetAttribute("FemurRO")))
                                 {
-                                    PlanValues.Add("FemurRO", x.GetAttribute("FemurRO"));
+                                    plan.Add("FemurRO", x.GetAttribute("FemurRO"));
                                 }
+                                PlanValues.Add(plan);
                             }
 
                             if (!x.Read() || x.MoveToContent() == XmlNodeType.EndElement && x.Name == "Cases") break;
@@ -375,7 +382,7 @@ namespace Assets.CaseFile
                 }
                 x.Close();
             }
-            System.IO.File.Delete(fp);
+
             return true;
         }
 

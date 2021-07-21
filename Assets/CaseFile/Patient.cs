@@ -43,5 +43,25 @@ namespace Assets.CaseFile
         public Patient()
         {
         }
+
+        public string ToString()
+        {
+            return $"Patient ID: {PatientId}\n" +
+                   $"Surgery ID: {SurgeryId}\n" +
+                   $"Name: {PatientFirstName} {PatientLastName}\n" +
+                   $"Case Number: {CaseNumber}\n" +
+                   $"Side: {Leftright}\n" +
+                   $"Surgeon: {SurgeonName}\n" +
+                   $"Date of birth: {Dob}\n" +
+                   $"Date of creation: {CreationDate.ToString()}\n" +
+                   $"Date of surgery: {SurgeryDate.ToString()}\n" +
+                   $"Date of scan: {DateOfScan.ToString()}\n" +
+                   $"MRN: {Mrn}" +
+                   $"Gender: {Gender}\n" +
+                   $"Hospital: {Hospital}\n" +
+                   $"Segmentation path: {SegmentationPath}\n" +
+                   $"PostOp case code: {PostOpCaseCode}\n" +
+                   $"PostOp date of scan: {PostOpDateOfScan.ToString()}";
+        }
     }
 }
