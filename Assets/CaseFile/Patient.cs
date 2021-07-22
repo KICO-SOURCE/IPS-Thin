@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace Assets.CaseFile
 {
@@ -40,28 +42,19 @@ namespace Assets.CaseFile
 
         public string PostOpCaseCode { get; set; }
 
+        public Dictionary<string, Mesh> MeshGeoms { get; set; }
+
+        public List<Landmark> Landmarks { get; set; }
+
         public Patient()
         {
+            InitializeData();
         }
 
-        public string ToString()
+        public void InitializeData()
         {
-            return $"Patient ID: {PatientId}\n" +
-                   $"Surgery ID: {SurgeryId}\n" +
-                   $"Name: {PatientFirstName} {PatientLastName}\n" +
-                   $"Case Number: {CaseNumber}\n" +
-                   $"Side: {Leftright}\n" +
-                   $"Surgeon: {SurgeonName}\n" +
-                   $"Date of birth: {Dob}\n" +
-                   $"Date of creation: {CreationDate.ToString()}\n" +
-                   $"Date of surgery: {SurgeryDate.ToString()}\n" +
-                   $"Date of scan: {DateOfScan.ToString()}\n" +
-                   $"MRN: {Mrn}" +
-                   $"Gender: {Gender}\n" +
-                   $"Hospital: {Hospital}\n" +
-                   $"Segmentation path: {SegmentationPath}\n" +
-                   $"PostOp case code: {PostOpCaseCode}\n" +
-                   $"PostOp date of scan: {PostOpDateOfScan.ToString()}";
+            MeshGeoms = new Dictionary<string, Mesh>();
+            Landmarks = new List<Landmark>();
         }
     }
 }

@@ -8,7 +8,9 @@ namespace Mutual.Installers
     {
         public override void InstallBindings()
         {
+            Container.Bind<Patient>().AsSingle();
             Container.Bind<Project>().AsSingle();
+            Container.Bind<CaseFileLoader>().AsSingle();
             Container.Bind<ILoadCaseScreen>().To<LoadCaseScreen>().AsSingle();
         }
     }

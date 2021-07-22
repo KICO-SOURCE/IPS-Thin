@@ -10,7 +10,9 @@ namespace Mutual.Screens
     {
         #region Dependencies
 
+        private readonly Patient m_Patient;
         private readonly Project m_Project;
+        private readonly CaseFileLoader m_CaseFileLoader;
 
         #endregion
 
@@ -33,9 +35,12 @@ namespace Mutual.Screens
 
         #region Constructors
 
-        public LoadCaseScreen(Project project)
+        public LoadCaseScreen(Patient patient, Project project,
+                              CaseFileLoader caseFileLoader)
         {
+            m_Patient = patient;
             m_Project = project;
+            m_CaseFileLoader = caseFileLoader;
             m_Parent = GameObject.FindGameObjectWithTag(ParentTag).transform;
             m_Meshes = new List<GameObject>();
         }
@@ -64,20 +69,36 @@ namespace Mutual.Screens
             string path = EditorUtility.OpenFilePanel("Select case file", "", "CASE");
             if (path.Length != 0)
             {
-                m_Project.LoadProject(path);
+                m_CaseFileLoader.LoadCaseFile(path);
             }
 
-            Debug.Log($"Patient Details: {m_Project.PatientData.ToString()}");
+            Debug.Log($"Patient Details: \n");
+            Debug.Log($"Patient ID: {m_Patient.PatientId}");
+            Debug.Log($"Surgery ID: {m_Patient.SurgeryId}");
+            Debug.Log($"Name: {m_Patient.PatientFirstName} {m_Patient.PatientLastName}");
+            Debug.Log($"Case Number: {m_Patient.CaseNumber}");
+            Debug.Log($"Side: {m_Patient.Leftright}");
+            Debug.Log($"Surgeon: {m_Patient.SurgeonName}");
+            Debug.Log($"Date of birth: {m_Patient.Dob}");
+            Debug.Log($"Date of creation: {m_Patient.CreationDate.ToString()}");
+            Debug.Log($"Date of surgery: {m_Patient.SurgeryDate.ToString()}");
+            Debug.Log($"Date of scan: {m_Patient.DateOfScan.ToString()}");
+            Debug.Log($"MRN: {m_Patient.Mrn}");
+            Debug.Log($"Gender: {m_Patient.Gender}");
+            Debug.Log($"Hospital: {m_Patient.Hospital}");
+            Debug.Log($"Segmentation path: {m_Patient.SegmentationPath}");
+            Debug.Log($"PostOp case code: {m_Patient.PostOpCaseCode}");
+            Debug.Log($"PostOp date of scan: {m_Patient.PostOpDateOfScan.ToString()}");
 
             var meshKeys = string.Empty;
-            foreach (var key in m_Project.MeshGeoms.Keys)
+            foreach (var key in m_Patient.MeshGeoms.Keys)
             {
                 meshKeys += (key + ", ");
             }
             Debug.Log($"Meshes: {meshKeys}");
 
             var landmarks = string.Empty;
-            foreach (var lm in m_Project.LandMarks)
+            foreach (var lm in m_Patient.Landmarks)
             {
                 landmarks += $"Bone:{lm.Bone}, Type: {lm.Type}, Position: {lm.Position}\n";
             }
@@ -115,8 +136,8 @@ namespace Mutual.Screens
             m_Meshes.Clear();
 
 
-            var material = Resources.Load<Material>("BoneMaterial");
-            foreach (var mesh in m_Project.MeshGeoms)
+            var material = Resources.Load<Material>("Materials/BoneMaterial");
+            foreach (var mesh in m_Patient.MeshGeoms)
             {
                 var go = new GameObject(mesh.Key, typeof(MeshFilter), typeof(MeshRenderer));
                 go.transform.parent = m_Parent;
