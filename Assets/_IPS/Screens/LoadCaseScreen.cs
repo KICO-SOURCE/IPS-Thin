@@ -143,6 +143,7 @@ namespace Ips.Screens
                 go.transform.parent = m_Parent;
                 go.GetComponent<MeshFilter>().mesh = mesh.Value;
                 go.GetComponent<MeshRenderer>().material = material;
+                go.transform.localPosition = new Vector3(0, 100, 100);
                 go.SetActive(true);
                 m_Meshes.Add(go);
             }

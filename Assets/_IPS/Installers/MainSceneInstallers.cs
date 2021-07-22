@@ -16,7 +16,7 @@ namespace Ips.Installers
 
             // Mono behaviors 
 
-            m_AppManager = GameObject.FindObjectOfType<AppManager>();
+            m_AppManager =  GetComponent<AppManager>();
             Container.Bind<IAppManager>().FromInstance(m_AppManager);
 
         }
