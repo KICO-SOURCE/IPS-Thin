@@ -89,9 +89,18 @@ namespace Assets.CaseFile
             }
         }
 
+        private bool DecryptCaseFile(byte[] source, out string filePathOut)
+        {
+            filePathOut = System.IO.Path.GetTempFileName();
+            DataEncryption encryptionFile = new DataEncryption();
+            bool chk = encryptionFile.DecryptEncryptFile(source, filePathOut);
+
+            return chk;
+        }
+
         #endregion
 
-        #region Public Methods
+        #region Constructors
 
         public CaseFileLoader(Project project,
                               Patient patient)
@@ -100,12 +109,16 @@ namespace Assets.CaseFile
             m_Patient = patient;
         }
 
+        #endregion
+
+        #region Public Methods
+
         /// <summary>
         /// Load case file for knee and hip.
         /// </summary>
         /// <param name="sourceByte"></param>
         /// <returns></returns>
-        internal bool LoadCase(byte[] sourceByte)
+        internal bool LoadCaseFile(byte[] sourceByte)
         {
             string fp;
             bool chck = DecryptCaseFile(sourceByte, out fp);
@@ -375,15 +388,6 @@ namespace Assets.CaseFile
             }
 
             return true;
-        }
-
-        internal bool DecryptCaseFile(byte[] source, out string filePathOut)
-        {
-            filePathOut = System.IO.Path.GetTempFileName();
-            DataEncryption encryptionFile = new DataEncryption();
-            bool chk = encryptionFile.DecryptEncryptFile(source, filePathOut);
-
-            return chk;
         }
 
         #endregion

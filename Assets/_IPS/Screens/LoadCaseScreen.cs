@@ -1,5 +1,6 @@
 ﻿using Assets.CaseFile;
 using System.Collections.Generic;
+using System.IO;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
@@ -69,7 +70,8 @@ namespace Ips.Screens
             string path = EditorUtility.OpenFilePanel("Select case file", "", "CASE");
             if (path.Length != 0)
             {
-                m_CaseFileLoader.LoadCaseFile(path);
+                byte[] file = File.ReadAllBytes(path);
+                m_CaseFileLoader.LoadCaseFile(file);
             }
 
             Debug.Log($"Patient Details: \n");
