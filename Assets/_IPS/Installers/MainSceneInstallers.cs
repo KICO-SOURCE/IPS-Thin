@@ -1,9 +1,8 @@
-﻿using Mutual.Installers;
-using Mutual.Managers;
+﻿using Ips.Managers;
 using UnityEngine;
 using Zenject;
 
-namespace Mutual.Installers
+namespace Ips.Installers
 {
     public class MainSceneInstallers : MonoInstaller
     {

@@ -1,9 +1,8 @@
-﻿using System.Collections;
-using Mutual.Screens;
+﻿using Ips.Screens;
 using UnityEngine;
 using Zenject;
 
-namespace Mutual.Managers
+namespace Ips.Managers
 {
     public class AppManager : MonoBehaviour, IAppManager
     {

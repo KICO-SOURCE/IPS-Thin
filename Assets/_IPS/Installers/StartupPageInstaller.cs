@@ -1,8 +1,8 @@
 ﻿using Assets.CaseFile;
-using Mutual.Screens;
+using Ips.Screens;
 using Zenject;
 
-namespace Mutual.Installers
+namespace Ips.Installers
 {
     class StartupPageInstaller : Installer
     {

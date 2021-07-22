@@ -1,4 +1,4 @@
-﻿namespace Mutual.Screens
+﻿namespace Ips.Screens
 {
     public interface ILoadCaseScreen
     {
