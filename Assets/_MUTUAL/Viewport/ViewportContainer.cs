@@ -74,7 +74,9 @@ namespace Assets._MUTUAL.Viewport
             tabGroup.Activate();
             tabGroup.TabSelected += HandleTabSelected;
             PopulateViewportTabs();
+            viewportManager.CreateViewports();
             tabGroup.Tabs.First().OnSelected();
+            viewportManager.HandleViewportSelected(tabGroup.Tabs.First().Title);
         }
 
         /// <summary>

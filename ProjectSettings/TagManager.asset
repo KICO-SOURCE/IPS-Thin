@@ -8,6 +8,8 @@ TagManager:
   - MeshParent
   - TabGroup
   - ViewportContainer
+  - TabArea
+  - ViewportArea
   layers:
   - Default
   - TransparentFX

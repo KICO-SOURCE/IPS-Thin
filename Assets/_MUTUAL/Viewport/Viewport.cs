@@ -49,6 +49,7 @@ namespace Assets._MUTUAL.Viewport
         /// </summary>
         public Viewport()
         {
+            Views = new List<IView>();
         }
 
         #endregion
@@ -60,6 +61,10 @@ namespace Assets._MUTUAL.Viewport
         /// </summary>
         public void Activate()
         {
+            foreach (var view in Views)
+            {
+                view.Activate();
+            }
         }
 
         /// <summary>
@@ -67,6 +72,10 @@ namespace Assets._MUTUAL.Viewport
         /// </summary>
         public void Deactivate()
         {
+            foreach (var view in Views)
+            {
+                view.Deactivate();
+            }
         }
 
         /// <summary>
@@ -74,6 +83,10 @@ namespace Assets._MUTUAL.Viewport
         /// </summary>
         public void CreateViews()
         {
+            foreach(var view in Views)
+            {
+                view.CreateView();
+            }
         }
 
         #endregion

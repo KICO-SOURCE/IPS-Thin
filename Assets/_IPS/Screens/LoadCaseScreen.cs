@@ -1,4 +1,5 @@
-﻿using Assets.CaseFile;
+﻿using Assets._MUTUAL.Viewport;
+using Assets.CaseFile;
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
@@ -14,6 +15,7 @@ namespace Ips.Screens
         private readonly Patient m_Patient;
         private readonly Project m_Project;
         private readonly CaseFileLoader m_CaseFileLoader;
+        private readonly ViewportContainer m_ViewportContainer;
 
         #endregion
 
@@ -22,6 +24,7 @@ namespace Ips.Screens
         private const string ParentTag = "MeshParent";
         private const string LoadCaseBTNName = "LoadCaseBTN";
         private const string ViewBTNName = "ViewBTN";
+        private const string ViewportBTNName = "Viewport";
 
         #endregion
 
@@ -29,6 +32,7 @@ namespace Ips.Screens
 
         private Button m_LoadCaseBtn;
         private Button m_ViewBtn;
+        private Button m_ViewportBtn;
         private Transform m_Parent;
         private List<GameObject> m_Meshes;
 
@@ -37,13 +41,14 @@ namespace Ips.Screens
         #region Constructors
 
         public LoadCaseScreen(Patient patient, Project project,
-                              CaseFileLoader caseFileLoader)
+                              CaseFileLoader caseFileLoader, ViewportContainer viewportContainer)
         {
             m_Patient = patient;
             m_Project = project;
             m_CaseFileLoader = caseFileLoader;
             m_Parent = GameObject.FindGameObjectWithTag(ParentTag).transform;
             m_Meshes = new List<GameObject>();
+            m_ViewportContainer = viewportContainer;
         }
 
         #endregion
@@ -151,34 +156,44 @@ namespace Ips.Screens
             }
         }
 
-        #endregion
+        public void OnViewportButtonClicked()
+        {
+            UnPopulateUiElements();
+            m_ViewportContainer.Activate();
+        }
 
-        #region Private Methods
+            #endregion
 
-        private void PopulateUiElements()
+            #region Private Methods
+
+            private void PopulateUiElements()
         {
             m_LoadCaseBtn = GameObject.Find(LoadCaseBTNName).GetComponent<Button>();
             m_ViewBtn = GameObject.Find(ViewBTNName).GetComponent<Button>();
+            m_ViewportBtn = GameObject.Find(ViewportBTNName).GetComponent<Button>();
         }
 
         private void AttachListeners()
         {
             m_ViewBtn.onClick.AddListener(OnViewButtonClicked);
             m_LoadCaseBtn.onClick.AddListener(OnLoadCaseButtonClicked);
+            m_ViewportBtn.onClick.AddListener(OnViewportButtonClicked);
         }
 
         private void DettachListeners()
         {
             m_ViewBtn.onClick.RemoveAllListeners();
             m_LoadCaseBtn.onClick.RemoveAllListeners();
+            m_ViewportBtn.onClick.RemoveAllListeners();
         }
 
         private void UnPopulateUiElements()
         {
             m_LoadCaseBtn = null;
             m_ViewBtn = null;
+            m_ViewportBtn = null;
 
-            foreach(var go in m_Meshes)
+            foreach (var go in m_Meshes)
             {
                 UnityEngine.Object.DestroyImmediate(go);
             }

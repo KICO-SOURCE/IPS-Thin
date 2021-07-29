@@ -75,10 +75,19 @@ namespace Assets._MUTUAL.Viewport
         private void PopulateViewports()
         {
             // TODO : Dummy viewports for testing
-            viewports.Add(new Viewport() { Title = "VP1" });
-            viewports.Add(new Viewport() { Title = "VP2" });
-            viewports.Add(new Viewport() { Title = "VP3" });
-            viewports.Add(new Viewport() { Title = "VP4" });
+            viewports.Add(new TestViewport() { Title = "VP1" });
+            viewports.Add(new TestViewport() { Title = "VP2" });
+            viewports.Add(new TestViewport() { Title = "VP3" });
+            viewports.Add(new TestViewport() { Title = "VP4" });
+        }
+
+        public void CreateViewports()
+        {
+            // TODO : Dummy viewports for testing
+            foreach (var viewport in viewports)
+            {
+                viewport.CreateViews();
+            }
         }
 
         #endregion

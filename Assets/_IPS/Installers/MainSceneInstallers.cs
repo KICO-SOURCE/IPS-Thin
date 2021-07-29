@@ -1,4 +1,5 @@
-﻿using Ips.Managers;
+﻿using Assets._MUTUAL.Installers;
+using Ips.Managers;
 using UnityEngine;
 using Zenject;
 
@@ -25,6 +26,7 @@ namespace Ips.Installers
         {
             // General
             Container.Install<StartupPageInstaller>();
+            Container.Install<ViewportInstaller>();
         }
     }
 }
