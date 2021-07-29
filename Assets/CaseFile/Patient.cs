@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace Assets.CaseFile
 {
@@ -40,8 +42,19 @@ namespace Assets.CaseFile
 
         public string PostOpCaseCode { get; set; }
 
+        public Dictionary<string, Mesh> MeshGeoms { get; set; }
+
+        public List<Landmark> Landmarks { get; set; }
+
         public Patient()
         {
+            InitializeData();
+        }
+
+        public void InitializeData()
+        {
+            MeshGeoms = new Dictionary<string, Mesh>();
+            Landmarks = new List<Landmark>();
         }
     }
 }
