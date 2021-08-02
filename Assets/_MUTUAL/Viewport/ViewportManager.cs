@@ -1,5 +1,6 @@
 ﻿#region Usings
 
+using Assets.CaseFile;
 using System.Collections.Generic;
 
 #endregion
@@ -14,6 +15,7 @@ namespace Assets._MUTUAL.Viewport
         #region Private Members
 
         private List<IViewport> viewports;
+        private readonly Patient patient;
 
         #endregion
 
@@ -37,8 +39,9 @@ namespace Assets._MUTUAL.Viewport
         /// <summary>
         /// Creates new instance of viewport manager.
         /// </summary>
-        public ViewportManager()
+        public ViewportManager(Patient patient)
         {
+            this.patient = patient;
             viewports = new List<IViewport>();
             PopulateViewports();
         }
@@ -75,10 +78,10 @@ namespace Assets._MUTUAL.Viewport
         private void PopulateViewports()
         {
             // TODO : Dummy viewports for testing
-            viewports.Add(new TestViewport() { Title = "VP1" });
-            viewports.Add(new TestViewport() { Title = "VP2" });
-            viewports.Add(new TestViewport() { Title = "VP3" });
-            viewports.Add(new TestViewport() { Title = "VP4" });
+            viewports.Add(new TestViewport(patient) { Title = "VP1" });
+            viewports.Add(new TestViewport(patient) { Title = "VP2" });
+            viewports.Add(new TestViewport(patient) { Title = "VP3" });
+            viewports.Add(new TestViewport(patient) { Title = "VP4" });
         }
 
         public void CreateViewports()
