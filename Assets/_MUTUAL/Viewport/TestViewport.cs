@@ -30,7 +30,7 @@ namespace Assets._MUTUAL.Viewport
             this.patient = patient;
             Views.Add(new TestView() { Postion = new Vector2(0, 0), Size = new Vector2(100,100) });
 
-            _3DView = new _3DView() { Postion = new Vector2(0.7f, 0), Size = new Vector2(0.3f, 1) };
+            _3DView = new _3DView() { Postion = new Vector2(0.7f, 0), Size = new Vector2(0.3f, 0.95f) };
             Views.Add(_3DView);
         }
 
