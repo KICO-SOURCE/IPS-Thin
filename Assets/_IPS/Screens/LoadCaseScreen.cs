@@ -23,6 +23,7 @@ namespace Ips.Screens
 
         private const string LoadCaseBTNName = "LoadCaseBTN";
         private const string ViewportBTNName = "Viewport";
+        private const string ControlParentName = "Overlay";
 
         #endregion
 
@@ -57,7 +58,6 @@ namespace Ips.Screens
 
         public void DeactivateScreen()
         {
-            Camera.main.gameObject.SetActive(true);
             DettachListeners();
             UnPopulateUiElements();
         }
@@ -126,15 +126,15 @@ namespace Ips.Screens
 
         public void OnViewportButtonClicked()
         {
-            UnPopulateUiElements();
+            GameObject.Find(ControlParentName).SetActive(false);
             m_ViewportContainer.Activate();
         }
 
-            #endregion
+        #endregion
 
-            #region Private Methods
+        #region Private Methods
 
-            private void PopulateUiElements()
+        private void PopulateUiElements()
         {
             m_LoadCaseBtn = GameObject.Find(LoadCaseBTNName).GetComponent<Button>();
             m_ViewportBtn = GameObject.Find(ViewportBTNName).GetComponent<Button>();
@@ -148,8 +148,8 @@ namespace Ips.Screens
 
         private void DettachListeners()
         {
-            m_LoadCaseBtn.onClick.RemoveAllListeners();
-            m_ViewportBtn.onClick.RemoveAllListeners();
+            m_LoadCaseBtn?.onClick.RemoveAllListeners();
+            m_ViewportBtn?.onClick.RemoveAllListeners();
         }
 
         private void UnPopulateUiElements()
@@ -158,5 +158,6 @@ namespace Ips.Screens
             m_ViewportBtn = null;
         }
     }
+
     #endregion
 }

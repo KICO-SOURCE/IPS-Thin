@@ -79,7 +79,7 @@ namespace Assets._MUTUAL.Viewport
         {
             // TODO : Dummy viewports for testing
             viewports.Add(new TestViewport(patient) { Title = "VP1" });
-            viewports.Add(new TestViewport(patient) { Title = "VP2" });
+            viewports.Add(new NativeViewport(patient) { Title = "VP2" });
             viewports.Add(new TestViewport(patient) { Title = "VP3" });
             viewports.Add(new TestViewport(patient) { Title = "VP4" });
         }

@@ -17,7 +17,6 @@ namespace Assets._MUTUAL.Viewport
 
         private const string parentPrefabPath = "Prefabs/3DViewport";
         private const string meshMaterialPath = "Materials/BoneMaterial";
-        private const string layerName = "3D";
 
         #endregion
 
@@ -31,6 +30,8 @@ namespace Assets._MUTUAL.Viewport
         private Dictionary<string, Mesh> meshes;
         private ViewType viewType;
         private Vector3 origin, siAxis, mlAxis, apAxis;
+        private int cullingMask = -1;
+        private string layerName = "3D";
 
         #endregion
 
@@ -64,9 +65,14 @@ namespace Assets._MUTUAL.Viewport
         /// <summary>
         /// Create new test view instance.
         /// </summary>
-        public _3DView()
+        public _3DView(string culling = null)
         {
             meshObjects = new List<GameObject>();
+
+            if (!string.IsNullOrWhiteSpace(culling))
+            {
+                cullingMask = (1 << LayerMask.NameToLayer(culling));
+            }
         }
 
         #endregion
@@ -82,8 +88,11 @@ namespace Assets._MUTUAL.Viewport
         /// <param name="siAxis"></param>
         /// <param name="mlAxis"></param>
         /// <param name="apAxis"></param>
-        public void InitialiseView(Dictionary<string, Mesh> meshes, ViewType viewType,
-                       Vector3 origin, Vector3 siAxis, Vector3 mlAxis, Vector3 apAxis)
+        /// <param name="culling"></param>
+        public void InitialiseView(Dictionary<string, Mesh> meshes,
+                                   ViewType viewType, Vector3 origin,
+                                   Vector3 siAxis, Vector3 mlAxis,
+                                   Vector3 apAxis, string layer = "3D")
         {
             this.viewType = viewType;
             this.meshes = meshes;
@@ -91,6 +100,8 @@ namespace Assets._MUTUAL.Viewport
             this.siAxis = siAxis;
             this.mlAxis = mlAxis;
             this.apAxis = apAxis;
+            layerName = layer;
+
         }
 
         /// <summary>
@@ -108,6 +119,9 @@ namespace Assets._MUTUAL.Viewport
             leftCamera.rect = new Rect(Postion.x, Postion.y, Size.x/2, Size.y);
             rightCamera.rect = new Rect(Postion.x + Size.x / 2, Postion.y, Size.x/2, Size.y);
 
+            centerCamera.cullingMask = cullingMask;
+            leftCamera.cullingMask = cullingMask;
+            rightCamera.cullingMask = cullingMask;
 
             leftCamera.enabled = false;
             rightCamera.enabled = false;
