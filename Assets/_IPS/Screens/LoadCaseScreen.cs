@@ -21,9 +21,7 @@ namespace Ips.Screens
 
         #region Private Constants
 
-        private const string ParentTag = "MeshParent";
         private const string LoadCaseBTNName = "LoadCaseBTN";
-        private const string ViewBTNName = "ViewBTN";
         private const string ViewportBTNName = "Viewport";
 
         #endregion
@@ -31,10 +29,7 @@ namespace Ips.Screens
         #region Private Members
 
         private Button m_LoadCaseBtn;
-        private Button m_ViewBtn;
         private Button m_ViewportBtn;
-        private Transform m_Parent;
-        private List<GameObject> m_Meshes;
 
         #endregion
 
@@ -46,8 +41,6 @@ namespace Ips.Screens
             m_Patient = patient;
             m_Project = project;
             m_CaseFileLoader = caseFileLoader;
-            m_Parent = GameObject.FindGameObjectWithTag(ParentTag).transform;
-            m_Meshes = new List<GameObject>();
             m_ViewportContainer = viewportContainer;
         }
 
@@ -131,31 +124,6 @@ namespace Ips.Screens
             Debug.Log($"Functional values: \n{functionalValues}");
         }
 
-        public void OnViewButtonClicked()
-        {
-            Debug.Log("View");
-
-            foreach (var go in m_Meshes)
-            {
-                go.SetActive(false);
-                UnityEngine.Object.DestroyImmediate(go);
-            }
-            m_Meshes.Clear();
-
-
-            var material = Resources.Load<Material>("Materials/BoneMaterial");
-            foreach (var mesh in m_Patient.MeshGeoms)
-            {
-                var go = new GameObject(mesh.Key, typeof(MeshFilter), typeof(MeshRenderer));
-                go.transform.parent = m_Parent;
-                go.GetComponent<MeshFilter>().mesh = mesh.Value;
-                go.GetComponent<MeshRenderer>().material = material;
-                go.transform.localPosition = new Vector3(0, 100, 100);
-                go.SetActive(true);
-                m_Meshes.Add(go);
-            }
-        }
-
         public void OnViewportButtonClicked()
         {
             UnPopulateUiElements();
@@ -169,20 +137,17 @@ namespace Ips.Screens
             private void PopulateUiElements()
         {
             m_LoadCaseBtn = GameObject.Find(LoadCaseBTNName).GetComponent<Button>();
-            m_ViewBtn = GameObject.Find(ViewBTNName).GetComponent<Button>();
             m_ViewportBtn = GameObject.Find(ViewportBTNName).GetComponent<Button>();
         }
 
         private void AttachListeners()
         {
-            m_ViewBtn.onClick.AddListener(OnViewButtonClicked);
             m_LoadCaseBtn.onClick.AddListener(OnLoadCaseButtonClicked);
             m_ViewportBtn.onClick.AddListener(OnViewportButtonClicked);
         }
 
         private void DettachListeners()
         {
-            m_ViewBtn.onClick.RemoveAllListeners();
             m_LoadCaseBtn.onClick.RemoveAllListeners();
             m_ViewportBtn.onClick.RemoveAllListeners();
         }
@@ -190,14 +155,7 @@ namespace Ips.Screens
         private void UnPopulateUiElements()
         {
             m_LoadCaseBtn = null;
-            m_ViewBtn = null;
             m_ViewportBtn = null;
-
-            foreach (var go in m_Meshes)
-            {
-                UnityEngine.Object.DestroyImmediate(go);
-            }
-            m_Meshes.Clear();
         }
     }
     #endregion

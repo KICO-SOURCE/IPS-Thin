@@ -17,6 +17,7 @@ namespace Assets._MUTUAL.Viewport
 
         private const string parentPrefabPath = "Prefabs/3DViewport";
         private const string meshMaterialPath = "Materials/BoneMaterial";
+        private const string layerName = "3D";
 
         #endregion
 
@@ -38,12 +39,12 @@ namespace Assets._MUTUAL.Viewport
         /// <summary>
         /// View position
         /// </summary>
-        public Vector2 Postion { get; set; }
+        public Vector2 Postion { get; set; } = new Vector2(0, 0);
 
         /// <summary>
         /// Viewport size
         /// </summary>
-        public Vector2 Size { get; set; }
+        public Vector2 Size { get; set; } = new Vector2(1, 1);
 
         /// <summary>
         /// Parent element
@@ -84,6 +85,7 @@ namespace Assets._MUTUAL.Viewport
         public void InitialiseView(Dictionary<string, Mesh> meshes, ViewType viewType,
                        Vector3 origin, Vector3 siAxis, Vector3 mlAxis, Vector3 apAxis)
         {
+            this.viewType = viewType;
             this.meshes = meshes;
             this.origin = origin;
             this.siAxis = siAxis;
@@ -101,6 +103,11 @@ namespace Assets._MUTUAL.Viewport
             leftCamera = cameras[0];
             rightCamera = cameras[1];
             centerCamera = cameras[2];
+
+            centerCamera.rect = new Rect(Postion, Size);
+            leftCamera.rect = new Rect(Postion.x, Postion.y, Size.x/2, Size.y);
+            rightCamera.rect = new Rect(Postion.x + Size.x / 2, Postion.y, Size.x/2, Size.y);
+
 
             leftCamera.enabled = false;
             rightCamera.enabled = false;
@@ -140,12 +147,14 @@ namespace Assets._MUTUAL.Viewport
                 go.transform.parent = parent.transform;
                 go.GetComponent<MeshFilter>().mesh = mesh.Value;
                 go.GetComponent<MeshRenderer>().material = material;
+                go.layer = LayerMask.NameToLayer(layerName);
 
                 //Need to revisit why this is required
                 go.transform.localScale = new Vector3(1, -1, 1);
                 go.SetActive(true);
                 meshObjects.Add(go);
             }
+            parent.SetActive(true);
         }
 
         /// <summary>

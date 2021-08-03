@@ -59,7 +59,7 @@ namespace Assets._MUTUAL.Viewport
         /// <summary>
         /// Activates the viewport.
         /// </summary>
-        public virtual void Activate()
+        public void Activate()
         {
             foreach (var view in Views)
             {
@@ -81,7 +81,7 @@ namespace Assets._MUTUAL.Viewport
         /// <summary>
         /// Create viewports.
         /// </summary>
-        public void CreateViews()
+        public virtual void CreateViews()
         {
             foreach(var view in Views)
             {
