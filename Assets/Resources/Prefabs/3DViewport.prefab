@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1396032302241566968}
   - component: {fileID: 9067764333923450860}
-  m_Layer: 8
+  m_Layer: 5
   m_Name: Directional Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -103,7 +103,7 @@ GameObject:
   - component: {fileID: 8781627780191513659}
   - component: {fileID: 2133568894395044445}
   - component: {fileID: 8876971387010652312}
-  m_Layer: 8
+  m_Layer: 5
   m_Name: CenterCamera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -187,7 +187,7 @@ GameObject:
   - component: {fileID: 1596063949714812849}
   - component: {fileID: 766502274896511000}
   - component: {fileID: 2513923937329397770}
-  m_Layer: 8
+  m_Layer: 5
   m_Name: RightCamera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -270,7 +270,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2977265711322727067}
   - component: {fileID: 7788904086671234718}
-  m_Layer: 8
+  m_Layer: 5
   m_Name: Directional Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -363,7 +363,7 @@ GameObject:
   - component: {fileID: 65440929955522897}
   - component: {fileID: 3435140639750813515}
   - component: {fileID: 8214845318608572155}
-  m_Layer: 8
+  m_Layer: 5
   m_Name: LeftCamera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -445,7 +445,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7775469003463601215}
-  m_Layer: 8
+  m_Layer: 5
   m_Name: 3DViewport
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -479,7 +479,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1416056056996518607}
   - component: {fileID: 8723721748315894654}
-  m_Layer: 8
+  m_Layer: 5
   m_Name: Directional Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}

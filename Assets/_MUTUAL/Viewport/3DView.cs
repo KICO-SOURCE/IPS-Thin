@@ -65,14 +65,11 @@ namespace Assets._MUTUAL.Viewport
         /// <summary>
         /// Create new test view instance.
         /// </summary>
-        public _3DView(string culling = null)
+        public _3DView(string layer = "3D")
         {
             meshObjects = new List<GameObject>();
-
-            if (!string.IsNullOrWhiteSpace(culling))
-            {
-                cullingMask = (1 << LayerMask.NameToLayer(culling));
-            }
+            layerName = layer;
+            cullingMask = (1 << LayerMask.NameToLayer(layerName));
         }
 
         #endregion
@@ -88,11 +85,9 @@ namespace Assets._MUTUAL.Viewport
         /// <param name="siAxis"></param>
         /// <param name="mlAxis"></param>
         /// <param name="apAxis"></param>
-        /// <param name="culling"></param>
-        public void InitialiseView(Dictionary<string, Mesh> meshes,
-                                   ViewType viewType, Vector3 origin,
-                                   Vector3 siAxis, Vector3 mlAxis,
-                                   Vector3 apAxis, string layer = "3D")
+        public void InitialiseView(Dictionary<string, Mesh> meshes, ViewType viewType,
+                                   Vector3 origin, Vector3 siAxis,
+                                   Vector3 mlAxis, Vector3 apAxis)
         {
             this.viewType = viewType;
             this.meshes = meshes;
@@ -100,8 +95,6 @@ namespace Assets._MUTUAL.Viewport
             this.siAxis = siAxis;
             this.mlAxis = mlAxis;
             this.apAxis = apAxis;
-            layerName = layer;
-
         }
 
         /// <summary>
