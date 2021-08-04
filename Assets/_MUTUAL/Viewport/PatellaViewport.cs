@@ -33,10 +33,10 @@ namespace Assets._MUTUAL.Viewport
         {
             this.patient = patient;
             nativePatellaView = new _3DView() { Postion = new Vector2(0, 0), Size = new Vector2(0.4f, 0.95f) };
-            axialView = new _3DView() { Postion = new Vector2(0.4f, 0), Size = new Vector2(0.3f, 0.5f) };
-            coronalView = new _3DView() { Postion = new Vector2(0.4f, 0.5f), Size = new Vector2(0.3f, 0.5f) };
-            resectedAxialView = new _3DView() { Postion = new Vector2(0.7f, 0), Size = new Vector2(0.3f, 0.5f) };
-            resectedCoronalView = new _3DView() { Postion = new Vector2(0.7f, 0.5f), Size = new Vector2(0.3f, 0.5f) };
+            axialView = new _3DView() { Postion = new Vector2(0.4f, 0), Size = new Vector2(0.3f, 0.475f) };
+            coronalView = new _3DView() { Postion = new Vector2(0.4f, 0.475f), Size = new Vector2(0.3f, 0.475f) };
+            resectedAxialView = new _3DView() { Postion = new Vector2(0.7f, 0), Size = new Vector2(0.3f, 0.475f) };
+            resectedCoronalView = new _3DView() { Postion = new Vector2(0.7f, 0.475f), Size = new Vector2(0.3f, 0.475f) };
 
             Views.Add(nativePatellaView);
             Views.Add(axialView);
@@ -60,11 +60,10 @@ namespace Assets._MUTUAL.Viewport
                 var meshes = patient.MeshGeoms.Where(m => m.Key == "Patella").ToDictionary(x => x.Key, x => x.Value);
 
                 var origin = patient.Landmarks.FirstOrDefault(lm => lm.Type == "posteriorApex").Position;
+                origin = origin - apAxis * 60;
                 nativePatellaView.InitialiseView(meshes, ViewType.CoronalView, origin, siAxis, mlAxis, apAxis);
                 coronalView.InitialiseView(meshes, ViewType.CoronalView, origin, siAxis, mlAxis, apAxis);
                 resectedCoronalView.InitialiseView(meshes, ViewType.CoronalView, origin, siAxis, mlAxis, apAxis);
-
-                origin = patient.Landmarks.FirstOrDefault(lm => lm.Type == "quadTendonInsertion").Position;
                 axialView.InitialiseView(meshes, ViewType.AxialView, origin, -siAxis, mlAxis, apAxis);
                 resectedAxialView.InitialiseView(meshes, ViewType.AxialView, origin, -siAxis, mlAxis, apAxis);
             }

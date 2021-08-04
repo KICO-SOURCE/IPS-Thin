@@ -35,12 +35,12 @@ namespace Assets._MUTUAL.Viewport
         public TibioFemoralViewport(Patient patient)
         {
             this.patient = patient;
-            coronalFemurView = new _3DView("Femur") { Postion = new Vector2(0, 0.5f), Size = new Vector2(0.25f, 0.5f) };
-            coronalTibiaView = new _3DView("Tibia") { Postion = new Vector2(0, 0), Size = new Vector2(0.25f, 0.5f) };
-            axialFemurView = new _3DView("Femur") { Postion = new Vector2(0.25f, 0.5f), Size = new Vector2(0.25f, 0.5f) };
-            axialTibiaView = new _3DView("Tibia") { Postion = new Vector2(0.25f, 0), Size = new Vector2(0.25f, 0.5f) };
-            sagittalFemurView = new _3DView("Femur") { Postion = new Vector2(0.5f, 0.5f), Size = new Vector2(0.25f, 0.5f) };
-            sagittalTibiaView = new _3DView("Tibia") { Postion = new Vector2(0.5f, 0), Size = new Vector2(0.25f, 0.5f) };
+            coronalFemurView = new _3DView("Femur") { Postion = new Vector2(0, 0.475f), Size = new Vector2(0.25f, 0.475f) };
+            coronalTibiaView = new _3DView("Tibia") { Postion = new Vector2(0, 0), Size = new Vector2(0.25f, 0.475f) };
+            axialFemurView = new _3DView("Femur") { Postion = new Vector2(0.25f, 0.475f), Size = new Vector2(0.25f, 0.475f) };
+            axialTibiaView = new _3DView("Tibia") { Postion = new Vector2(0.25f, 0), Size = new Vector2(0.25f, 0.475f) };
+            sagittalFemurView = new _3DView("Femur") { Postion = new Vector2(0.5f, 0.475f), Size = new Vector2(0.25f, 0.475f) };
+            sagittalTibiaView = new _3DView("Tibia") { Postion = new Vector2(0.5f, 0), Size = new Vector2(0.25f, 0.475f) };
             longlegView = new _3DView() { Postion = new Vector2(0.75f, 0), Size = new Vector2(0.25f, 0.95f) };
             Views.Add(coronalFemurView);
             Views.Add(coronalTibiaView);
@@ -72,7 +72,7 @@ namespace Assets._MUTUAL.Viewport
                 meshes = patient.MeshGeoms.Where(m => m.Key != "Patella").ToDictionary(x => x.Key, x => x.Value);
                 longlegView.InitialiseView(meshes, ViewType.LongLegCoronalView, origin, siAxis, mlAxis, apAxis);
 
-                origin = patient.Landmarks.FirstOrDefault(lm => lm.Type == "Tubercle").Position;
+                origin = patient.Landmarks.FirstOrDefault(lm => lm.Type == "PCLInsertion").Position;
                 Ips.Utils.MeasurementUtils.GetTibiaAxes(patient, out siAxis, out mlAxis, out apAxis);
                 meshes = patient.MeshGeoms.Where(m => m.Key == "ProximalTibia").ToDictionary(x => x.Key, x => x.Value);
                 coronalTibiaView.InitialiseView(meshes, ViewType.CoronalView, origin, siAxis, mlAxis, -apAxis);

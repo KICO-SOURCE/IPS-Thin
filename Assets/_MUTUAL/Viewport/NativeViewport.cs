@@ -31,10 +31,10 @@ namespace Assets._MUTUAL.Viewport
         public NativeViewport(Patient patient)
         {
             this.patient = patient;
-            coronalFemurView = new _3DView("Femur") { Postion = new Vector2(0, 0.3f), Size = new Vector2(0.5f, 0.3f) };
-            coronalTibiaView = new _3DView("Tibia") { Postion = new Vector2(0.5f, 0.3f), Size = new Vector2(0.5f, 0.3f) };
-            axialFemurView = new _3DView("Femur") { Postion = new Vector2(0, 0), Size = new Vector2(0.5f, 0.3f) };
-            sagittalTibiaView = new _3DView("Tibia") { Postion = new Vector2(0.5f, 0), Size = new Vector2(0.5f, 0.3f) };
+            coronalFemurView = new _3DView("Femur") { Postion = new Vector2(0, 0.475f), Size = new Vector2(0.5f, 0.475f) };
+            coronalTibiaView = new _3DView("Tibia") { Postion = new Vector2(0.5f, 0.475f), Size = new Vector2(0.5f, 0.475f) };
+            axialFemurView = new _3DView("Femur") { Postion = new Vector2(0, 0), Size = new Vector2(0.5f, 0.475f) };
+            sagittalTibiaView = new _3DView("Tibia") { Postion = new Vector2(0.5f, 0), Size = new Vector2(0.5f, 0.475f) };
             Views.Add(coronalFemurView);
             Views.Add(coronalTibiaView);
             Views.Add(axialFemurView);
@@ -58,7 +58,7 @@ namespace Assets._MUTUAL.Viewport
                 coronalFemurView.InitialiseView(meshes, ViewType.CoronalView, origin, siAxis, mlAxis, apAxis);
                 axialFemurView.InitialiseView(meshes, ViewType.AxialView, origin, siAxis, mlAxis, apAxis);
 
-                origin = patient.Landmarks.FirstOrDefault(lm => lm.Type == "Tubercle").Position;
+                origin = patient.Landmarks.FirstOrDefault(lm => lm.Type == "PCLInsertion").Position;
                 Ips.Utils.MeasurementUtils.GetTibiaAxes(patient, out siAxis, out mlAxis, out apAxis);
                 meshes = patient.MeshGeoms.Where(m => m.Key == "ProximalTibia").ToDictionary(x => x.Key, x => x.Value);
                 coronalTibiaView.InitialiseView(meshes, ViewType.CoronalView, origin, siAxis, mlAxis, -apAxis);

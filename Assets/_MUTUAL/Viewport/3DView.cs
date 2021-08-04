@@ -203,11 +203,6 @@ namespace Assets._MUTUAL.Viewport
             centerCamera.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
             centerCamera.transform.position = origin - siAxis * 400;
             centerCamera.transform.LookAt(origin, -siAxis);
-
-            //Need to remove after changing axis definition
-            var camAxis = centerCamera.transform.TransformVector(Vector3.back);
-            centerCamera.transform.Rotate(camAxis, 5);
-
             centerCamera.gameObject.SetActive(true);
         }
 
@@ -220,7 +215,7 @@ namespace Assets._MUTUAL.Viewport
 
             //Need to remove after changing axis definition
             var camAxis = centerCamera.transform.TransformVector(Vector3.left);
-            centerCamera.transform.Rotate(camAxis, 80);
+            centerCamera.transform.Rotate(camAxis, 90);
 
             centerCamera.gameObject.SetActive(true);
         }
@@ -231,11 +226,6 @@ namespace Assets._MUTUAL.Viewport
             centerCamera.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
             centerCamera.transform.position = origin - apAxis * 2000;
             centerCamera.transform.LookAt(origin, -apAxis);
-
-            //Need to remove after changing axis definition
-            var camAxis = centerCamera.transform.TransformVector(Vector3.up);
-            centerCamera.transform.Rotate(camAxis, 10);
-
             leftCamera.gameObject.SetActive(true);
         }
 
@@ -246,18 +236,14 @@ namespace Assets._MUTUAL.Viewport
             leftCamera.transform.position = origin - apAxis * 1000;
             leftCamera.transform.LookAt(origin, -apAxis);
 
-            //Need to remove after changing axis definition
-            var camAxis = leftCamera.transform.TransformVector(Vector3.up);
-            leftCamera.transform.Rotate(camAxis, 10);
-
             rightCamera.enabled = true;
             rightCamera.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
             rightCamera.transform.position = origin - mlAxis * 1000;
             rightCamera.transform.LookAt(origin, -mlAxis);
 
             //Need to remove after changing axis definition
-            camAxis = rightCamera.transform.TransformVector(Vector3.left);
-            rightCamera.transform.Rotate(camAxis, 80);
+            var camAxis = rightCamera.transform.TransformVector(Vector3.left);
+            rightCamera.transform.Rotate(camAxis, 90);
 
             leftCamera.gameObject.SetActive(true);
             rightCamera.gameObject.SetActive(true);
