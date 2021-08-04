@@ -78,7 +78,7 @@ namespace Assets._MUTUAL.Viewport
         private void PopulateViewports()
         {
             // TODO : Dummy viewports for testing
-            viewports.Add(new TestViewport(patient) { Title = "VP1" });
+            viewports.Add(new NativeAlignment(patient) { Title = "NativeAlignment" });
             viewports.Add(new NativeViewport(patient) { Title = "VP2" });
             viewports.Add(new TibioFemoralViewport(patient) { Title = "VP3" });
             viewports.Add(new TibioFemoralViewport(patient) { Title = "VP4" });
