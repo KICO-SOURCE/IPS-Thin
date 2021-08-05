@@ -17,6 +17,7 @@ namespace Assets._MUTUAL.Viewport
 
         const string prefabPath = "Prefabs/ImageView";
         private const string parentTag = "ViewportArea";
+        private const string sampleImagePath = "Images/ImageDummy";
 
         #endregion
 
@@ -72,12 +73,6 @@ namespace Assets._MUTUAL.Viewport
             parent = GameObject.FindGameObjectWithTag(parentTag);
             m_ImageView = UnityEngine.Object.Instantiate(viewPrefab, parent.transform);
 
-            var h = Screen.height;
-            var w = Screen.width;
-
-            var hh = parent.GetComponent<RectTransform>().rect.height;
-            var ww = parent.GetComponent<RectTransform>().rect.width;
-
             // Positioning the image view
             // [ left - bottom ]
             m_ImageView.gameObject.GetComponent<RectTransform>().offsetMin = new Vector2(0f, 0);
@@ -85,10 +80,8 @@ namespace Assets._MUTUAL.Viewport
             m_ImageView.gameObject.GetComponent<RectTransform>().offsetMax = new Vector2(-parent.GetComponent<RectTransform>().rect.width/2, 
                                                                             -parent.GetComponent<RectTransform>().rect.height / 2);
             // Loading sample image
-            var ImageFilePath = "E:\\ImageDummy.png";
-            byte[] b = File.ReadAllBytes(ImageFilePath);
-            Texture2D texture2D = new Texture2D(1,2);
-            texture2D.LoadImage(b);
+            var sampleImage = Resources.Load<Sprite>(sampleImagePath);
+            Texture2D texture2D = sampleImage.texture;
 
             var recttexture = texture2D.texelSize;
             var recttextureheight = texture2D.height;
