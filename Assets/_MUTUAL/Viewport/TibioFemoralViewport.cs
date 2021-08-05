@@ -1,7 +1,6 @@
 ﻿#region Usings
 
 using Assets.CaseFile;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -35,13 +34,13 @@ namespace Assets._MUTUAL.Viewport
         public TibioFemoralViewport(Patient patient)
         {
             this.patient = patient;
-            coronalFemurView = new _3DView("Femur") { Postion = new Vector2(0, 0.475f), Size = new Vector2(0.25f, 0.475f) };
-            coronalTibiaView = new _3DView("Tibia") { Postion = new Vector2(0, 0), Size = new Vector2(0.25f, 0.475f) };
-            axialFemurView = new _3DView("Femur") { Postion = new Vector2(0.25f, 0.475f), Size = new Vector2(0.25f, 0.475f) };
-            axialTibiaView = new _3DView("Tibia") { Postion = new Vector2(0.25f, 0), Size = new Vector2(0.25f, 0.475f) };
-            sagittalFemurView = new _3DView("Femur") { Postion = new Vector2(0.5f, 0.475f), Size = new Vector2(0.25f, 0.475f) };
-            sagittalTibiaView = new _3DView("Tibia") { Postion = new Vector2(0.5f, 0), Size = new Vector2(0.25f, 0.475f) };
-            longlegView = new _3DView() { Postion = new Vector2(0.75f, 0), Size = new Vector2(0.25f, 0.95f) };
+            coronalFemurView = new _3DView(8) { Postion = new Vector2(0, 0.475f), Size = new Vector2(0.25f, 0.475f) };
+            coronalTibiaView = new _3DView(9) { Postion = new Vector2(0, 0), Size = new Vector2(0.25f, 0.475f) };
+            axialFemurView = new _3DView(10) { Postion = new Vector2(0.25f, 0.475f), Size = new Vector2(0.25f, 0.475f) };
+            axialTibiaView = new _3DView(11) { Postion = new Vector2(0.25f, 0), Size = new Vector2(0.25f, 0.475f) };
+            sagittalFemurView = new _3DView(12) { Postion = new Vector2(0.5f, 0.475f), Size = new Vector2(0.25f, 0.475f) };
+            sagittalTibiaView = new _3DView(13) { Postion = new Vector2(0.5f, 0), Size = new Vector2(0.25f, 0.475f) };
+            longlegView = new _3DView(14) { Postion = new Vector2(0.75f, 0), Size = new Vector2(0.25f, 0.95f) };
             Views.Add(coronalFemurView);
             Views.Add(coronalTibiaView);
             Views.Add(axialFemurView);

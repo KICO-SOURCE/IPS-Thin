@@ -32,11 +32,11 @@ namespace Assets._MUTUAL.Viewport
         public PatellaViewport(Patient patient)
         {
             this.patient = patient;
-            nativePatellaView = new _3DView() { Postion = new Vector2(0, 0), Size = new Vector2(0.4f, 0.95f) };
-            axialView = new _3DView() { Postion = new Vector2(0.4f, 0), Size = new Vector2(0.3f, 0.475f) };
-            coronalView = new _3DView() { Postion = new Vector2(0.4f, 0.475f), Size = new Vector2(0.3f, 0.475f) };
-            resectedAxialView = new _3DView() { Postion = new Vector2(0.7f, 0), Size = new Vector2(0.3f, 0.475f) };
-            resectedCoronalView = new _3DView() { Postion = new Vector2(0.7f, 0.475f), Size = new Vector2(0.3f, 0.475f) };
+            nativePatellaView = new _3DView(8) { Postion = new Vector2(0, 0), Size = new Vector2(0.4f, 0.95f) };
+            axialView = new _3DView(9) { Postion = new Vector2(0.4f, 0), Size = new Vector2(0.3f, 0.475f) };
+            coronalView = new _3DView(10) { Postion = new Vector2(0.4f, 0.475f), Size = new Vector2(0.3f, 0.475f) };
+            resectedAxialView = new _3DView(11) { Postion = new Vector2(0.7f, 0), Size = new Vector2(0.3f, 0.475f) };
+            resectedCoronalView = new _3DView(12) { Postion = new Vector2(0.7f, 0.475f), Size = new Vector2(0.3f, 0.475f) };
 
             Views.Add(nativePatellaView);
             Views.Add(axialView);

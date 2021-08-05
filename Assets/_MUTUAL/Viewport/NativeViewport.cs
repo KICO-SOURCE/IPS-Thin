@@ -31,10 +31,10 @@ namespace Assets._MUTUAL.Viewport
         public NativeViewport(Patient patient)
         {
             this.patient = patient;
-            coronalFemurView = new _3DView("Femur") { Postion = new Vector2(0, 0.475f), Size = new Vector2(0.5f, 0.475f) };
-            coronalTibiaView = new _3DView("Tibia") { Postion = new Vector2(0.5f, 0.475f), Size = new Vector2(0.5f, 0.475f) };
-            axialFemurView = new _3DView("Femur") { Postion = new Vector2(0, 0), Size = new Vector2(0.5f, 0.475f) };
-            sagittalTibiaView = new _3DView("Tibia") { Postion = new Vector2(0.5f, 0), Size = new Vector2(0.5f, 0.475f) };
+            coronalFemurView = new _3DView(8) { Postion = new Vector2(0, 0.475f), Size = new Vector2(0.5f, 0.475f) };
+            coronalTibiaView = new _3DView(9) { Postion = new Vector2(0.5f, 0.475f), Size = new Vector2(0.5f, 0.475f) };
+            axialFemurView = new _3DView(10) { Postion = new Vector2(0, 0), Size = new Vector2(0.5f, 0.475f) };
+            sagittalTibiaView = new _3DView(11) { Postion = new Vector2(0.5f, 0), Size = new Vector2(0.5f, 0.475f) };
             Views.Add(coronalFemurView);
             Views.Add(coronalTibiaView);
             Views.Add(axialFemurView);

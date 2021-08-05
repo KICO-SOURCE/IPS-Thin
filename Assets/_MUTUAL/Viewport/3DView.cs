@@ -27,11 +27,14 @@ namespace Assets._MUTUAL.Viewport
         private Camera leftCamera;
         private Camera rightCamera;
         private Camera centerCamera;
+        private Light leftLight;
+        private Light rightLight;
+        private Light centerLight;
         private Dictionary<string, Mesh> meshes;
         private ViewType viewType;
         private Vector3 origin, siAxis, mlAxis, apAxis;
         private int cullingMask = -1;
-        private string layerName = "3D";
+        private int layer = 8;
 
         #endregion
 
@@ -65,11 +68,11 @@ namespace Assets._MUTUAL.Viewport
         /// <summary>
         /// Create new test view instance.
         /// </summary>
-        public _3DView(string layer = "3D")
+        public _3DView(int layer = 8)
         {
             meshObjects = new List<GameObject>();
-            layerName = layer;
-            cullingMask = (1 << LayerMask.NameToLayer(layerName));
+            this.layer = layer;
+            cullingMask = (1 << layer);
         }
 
         #endregion
@@ -120,6 +123,19 @@ namespace Assets._MUTUAL.Viewport
             rightCamera.enabled = false;
             centerCamera.enabled = false;
 
+            var lights = parent.GetComponentsInChildren<Light>();
+            leftLight = lights[0];
+            rightLight = lights[1];
+            centerLight = lights[2];
+
+            leftLight.cullingMask = cullingMask;
+            rightLight.cullingMask = cullingMask;
+            centerLight.cullingMask = cullingMask;
+
+            leftLight.enabled = false;
+            rightLight.enabled = false;
+            centerLight.enabled = false;
+
             switch (viewType)
             {
                 case ViewType.CoronalView:
@@ -154,7 +170,7 @@ namespace Assets._MUTUAL.Viewport
                 go.transform.parent = parent.transform;
                 go.GetComponent<MeshFilter>().mesh = mesh.Value;
                 go.GetComponent<MeshRenderer>().material = material;
-                go.layer = LayerMask.NameToLayer(layerName);
+                go.layer = layer;
 
                 //Need to revisit why this is required
                 go.transform.localScale = new Vector3(1, -1, 1);
@@ -190,6 +206,7 @@ namespace Assets._MUTUAL.Viewport
 
         private void CreateCoronalView()
         {
+            centerLight.enabled = true;
             centerCamera.enabled = true;
             centerCamera.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
             centerCamera.transform.position = origin - apAxis * 400;
@@ -199,6 +216,7 @@ namespace Assets._MUTUAL.Viewport
 
         private void CreateAxialView()
         {
+            centerLight.enabled = true;
             centerCamera.enabled = true;
             centerCamera.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
             centerCamera.transform.position = origin - siAxis * 400;
@@ -208,6 +226,7 @@ namespace Assets._MUTUAL.Viewport
 
         private void CreateSagittalView()
         {
+            centerLight.enabled = true;
             centerCamera.enabled = true;
             centerCamera.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
             centerCamera.transform.position = origin - mlAxis * 400;
@@ -222,6 +241,7 @@ namespace Assets._MUTUAL.Viewport
 
         private void CreateLongLegCoronalView()
         {
+            centerLight.enabled = true;
             centerCamera.enabled = true;
             centerCamera.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
             centerCamera.transform.position = origin - apAxis * 2000;
@@ -231,11 +251,13 @@ namespace Assets._MUTUAL.Viewport
 
         private void CreateLongLegView()
         {
+            leftLight.enabled = true;
             leftCamera.enabled = true;
             leftCamera.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
             leftCamera.transform.position = origin - apAxis * 1000;
             leftCamera.transform.LookAt(origin, -apAxis);
 
+            rightLight.enabled = true;
             rightCamera.enabled = true;
             rightCamera.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
             rightCamera.transform.position = origin - mlAxis * 1000;
