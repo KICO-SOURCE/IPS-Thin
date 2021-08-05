@@ -209,7 +209,7 @@ namespace Assets._MUTUAL.Viewport
             centerLight.enabled = true;
             centerCamera.enabled = true;
             centerCamera.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
-            centerCamera.transform.position = origin - apAxis * 400;
+            centerCamera.transform.position = origin - apAxis * 250;
             centerCamera.transform.LookAt(origin, -apAxis);
             centerCamera.gameObject.SetActive(true);
         }
@@ -219,7 +219,7 @@ namespace Assets._MUTUAL.Viewport
             centerLight.enabled = true;
             centerCamera.enabled = true;
             centerCamera.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
-            centerCamera.transform.position = origin - siAxis * 400;
+            centerCamera.transform.position = origin - siAxis * 250;
             centerCamera.transform.LookAt(origin, -siAxis);
             centerCamera.gameObject.SetActive(true);
         }
@@ -229,7 +229,7 @@ namespace Assets._MUTUAL.Viewport
             centerLight.enabled = true;
             centerCamera.enabled = true;
             centerCamera.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
-            centerCamera.transform.position = origin - mlAxis * 400;
+            centerCamera.transform.position = origin - mlAxis * 250;
             centerCamera.transform.LookAt(origin, -mlAxis);
 
             //Need to remove after changing axis definition
@@ -254,13 +254,13 @@ namespace Assets._MUTUAL.Viewport
             leftLight.enabled = true;
             leftCamera.enabled = true;
             leftCamera.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
-            leftCamera.transform.position = origin - apAxis * 1000;
+            leftCamera.transform.position = origin - apAxis * 2000;
             leftCamera.transform.LookAt(origin, -apAxis);
 
             rightLight.enabled = true;
             rightCamera.enabled = true;
             rightCamera.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
-            rightCamera.transform.position = origin - mlAxis * 1000;
+            rightCamera.transform.position = origin - mlAxis * 2000;
             rightCamera.transform.LookAt(origin, -mlAxis);
 
             //Need to remove after changing axis definition
