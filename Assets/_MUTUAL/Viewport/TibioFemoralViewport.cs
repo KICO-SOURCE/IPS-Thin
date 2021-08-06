@@ -40,7 +40,8 @@ namespace Assets._MUTUAL.Viewport
             axialTibiaView = new _3DView(11) { Postion = new Vector2(0.25f, 0), Size = new Vector2(0.25f, 0.475f) };
             sagittalFemurView = new _3DView(12) { Postion = new Vector2(0.5f, 0.475f), Size = new Vector2(0.25f, 0.475f) };
             sagittalTibiaView = new _3DView(13) { Postion = new Vector2(0.5f, 0), Size = new Vector2(0.25f, 0.475f) };
-            longlegView = new _3DView(14) { Postion = new Vector2(0.75f, 0), Size = new Vector2(0.25f, 0.95f) };
+            longlegView = new _3DView(14) { Postion = new Vector2(0.75f, 0),
+                        Size = new Vector2(0.25f, 0.95f), CameraPostion = 2000 };
             Views.Add(coronalFemurView);
             Views.Add(coronalTibiaView);
             Views.Add(axialFemurView);
@@ -69,7 +70,7 @@ namespace Assets._MUTUAL.Viewport
                 sagittalFemurView.InitialiseView(meshes, ViewType.SagittalView, origin, siAxis, mlAxis, apAxis);
 
                 meshes = patient.MeshGeoms.Where(m => m.Key != "Patella").ToDictionary(x => x.Key, x => x.Value);
-                longlegView.InitialiseView(meshes, ViewType.LongLegCoronalView, origin, siAxis, mlAxis, apAxis);
+                longlegView.InitialiseView(meshes, ViewType.CoronalView, origin, siAxis, mlAxis, apAxis);
 
                 origin = patient.Landmarks.FirstOrDefault(lm => lm.Type == "PCLInsertion").Position;
                 Ips.Utils.MeasurementUtils.GetTibiaAxes(patient, out siAxis, out mlAxis, out apAxis);

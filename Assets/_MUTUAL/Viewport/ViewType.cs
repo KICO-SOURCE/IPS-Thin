@@ -4,8 +4,6 @@
     {
         CoronalView,
         AxialView,
-        SagittalView,
-        LongLegCoronalView,
-        LongLegView
+        SagittalView
     }
 }

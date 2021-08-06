@@ -8,7 +8,8 @@ namespace Assets._MUTUAL.Viewport
     {
         #region Private Members
 
-        private _3DView _3DView;
+        private _3DView coronalView;
+        private _3DView sagittalView;
         private Patient patient;
 
         #endregion
@@ -24,8 +25,14 @@ namespace Assets._MUTUAL.Viewport
             Views.Add(new TableView() { Postion = new Vector2(0, 0), Size = new Vector2(50, 50) });
             Views.Add(new ImageView() { Postion = new Vector2(0, 0), Size = new Vector2(50, 50) });
 
-            _3DView = new _3DView() { Postion = new Vector2(0.7f, 0), Size = new Vector2(0.3f, 0.95f) };
-            Views.Add(_3DView);
+            coronalView = new _3DView(8) { Postion = new Vector2(0.7f, 0),
+                                           Size = new Vector2(0.15f, 0.95f),
+                                           CameraPostion = 2000};
+            sagittalView = new _3DView(9) { Postion = new Vector2(0.85f, 0),
+                                            Size = new Vector2(0.15f, 0.95f),
+                                            CameraPostion = 2000};
+            Views.Add(coronalView);
+            Views.Add(sagittalView);
         }
 
         #endregion
@@ -42,7 +49,8 @@ namespace Assets._MUTUAL.Viewport
                 var origin = patient.Landmarks.FirstOrDefault(lm => lm.Type == "femoralCenter").Position;
                 Ips.Utils.MeasurementUtils.GetFemurAxes(patient, out var siAxis, out var mlAxis, out var apAxis);
 
-                _3DView.InitialiseView(patient.MeshGeoms, ViewType.LongLegView, origin, siAxis, mlAxis, apAxis);
+                coronalView.InitialiseView(patient.MeshGeoms, ViewType.CoronalView, origin, siAxis, mlAxis, apAxis);
+                sagittalView.InitialiseView(patient.MeshGeoms, ViewType.SagittalView, origin, siAxis, mlAxis, apAxis);
             }
             base.CreateViews();
         }

@@ -24,11 +24,7 @@ namespace Assets._MUTUAL.Viewport
 
         private GameObject parent;
         private List<GameObject> meshObjects;
-        private Camera leftCamera;
-        private Camera rightCamera;
         private Camera centerCamera;
-        private Light leftLight;
-        private Light rightLight;
         private Light centerLight;
         private Dictionary<string, Mesh> meshes;
         private ViewType viewType;
@@ -60,6 +56,11 @@ namespace Assets._MUTUAL.Viewport
                 return parent;
             }
         }
+
+        /// <summary>
+        /// Camera position
+        /// </summary>
+        public int CameraPostion { get; set; } = 250;
 
         #endregion
 
@@ -106,34 +107,16 @@ namespace Assets._MUTUAL.Viewport
         public void CreateView()
         {
             parent = UnityEngine.Object.Instantiate(Resources.Load<GameObject>(parentPrefabPath));
+
             var cameras = parent.GetComponentsInChildren<Camera>();
-            leftCamera = cameras[0];
-            rightCamera = cameras[1];
-            centerCamera = cameras[2];
-
+            centerCamera = cameras[0];
             centerCamera.rect = new Rect(Postion, Size);
-            leftCamera.rect = new Rect(Postion.x, Postion.y, Size.x/2, Size.y);
-            rightCamera.rect = new Rect(Postion.x + Size.x / 2, Postion.y, Size.x/2, Size.y);
-
             centerCamera.cullingMask = cullingMask;
-            leftCamera.cullingMask = cullingMask;
-            rightCamera.cullingMask = cullingMask;
-
-            leftCamera.enabled = false;
-            rightCamera.enabled = false;
             centerCamera.enabled = false;
 
             var lights = parent.GetComponentsInChildren<Light>();
-            leftLight = lights[0];
-            rightLight = lights[1];
-            centerLight = lights[2];
-
-            leftLight.cullingMask = cullingMask;
-            rightLight.cullingMask = cullingMask;
+            centerLight = lights[0];
             centerLight.cullingMask = cullingMask;
-
-            leftLight.enabled = false;
-            rightLight.enabled = false;
             centerLight.enabled = false;
 
             switch (viewType)
@@ -146,12 +129,6 @@ namespace Assets._MUTUAL.Viewport
                     break;
                 case ViewType.SagittalView:
                     CreateSagittalView();
-                    break;
-                case ViewType.LongLegCoronalView:
-                    CreateLongLegCoronalView();
-                    break;
-                case ViewType.LongLegView:
-                    CreateLongLegView();
                     break;
                 default:
                     break;
@@ -209,7 +186,7 @@ namespace Assets._MUTUAL.Viewport
             centerLight.enabled = true;
             centerCamera.enabled = true;
             centerCamera.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
-            centerCamera.transform.position = origin - apAxis * 250;
+            centerCamera.transform.position = origin - apAxis * CameraPostion;
             centerCamera.transform.LookAt(origin, -apAxis);
             centerCamera.gameObject.SetActive(true);
         }
@@ -219,7 +196,7 @@ namespace Assets._MUTUAL.Viewport
             centerLight.enabled = true;
             centerCamera.enabled = true;
             centerCamera.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
-            centerCamera.transform.position = origin - siAxis * 250;
+            centerCamera.transform.position = origin - siAxis * CameraPostion;
             centerCamera.transform.LookAt(origin, -siAxis);
             centerCamera.gameObject.SetActive(true);
         }
@@ -229,7 +206,7 @@ namespace Assets._MUTUAL.Viewport
             centerLight.enabled = true;
             centerCamera.enabled = true;
             centerCamera.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
-            centerCamera.transform.position = origin - mlAxis * 250;
+            centerCamera.transform.position = origin - mlAxis * CameraPostion;
             centerCamera.transform.LookAt(origin, -mlAxis);
 
             //Need to remove after changing axis definition
@@ -237,38 +214,6 @@ namespace Assets._MUTUAL.Viewport
             centerCamera.transform.Rotate(camAxis, 90);
 
             centerCamera.gameObject.SetActive(true);
-        }
-
-        private void CreateLongLegCoronalView()
-        {
-            centerLight.enabled = true;
-            centerCamera.enabled = true;
-            centerCamera.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
-            centerCamera.transform.position = origin - apAxis * 2000;
-            centerCamera.transform.LookAt(origin, -apAxis);
-            leftCamera.gameObject.SetActive(true);
-        }
-
-        private void CreateLongLegView()
-        {
-            leftLight.enabled = true;
-            leftCamera.enabled = true;
-            leftCamera.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
-            leftCamera.transform.position = origin - apAxis * 2000;
-            leftCamera.transform.LookAt(origin, -apAxis);
-
-            rightLight.enabled = true;
-            rightCamera.enabled = true;
-            rightCamera.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
-            rightCamera.transform.position = origin - mlAxis * 2000;
-            rightCamera.transform.LookAt(origin, -mlAxis);
-
-            //Need to remove after changing axis definition
-            var camAxis = rightCamera.transform.TransformVector(Vector3.left);
-            rightCamera.transform.Rotate(camAxis, 90);
-
-            leftCamera.gameObject.SetActive(true);
-            rightCamera.gameObject.SetActive(true);
         }
 
         #endregion
