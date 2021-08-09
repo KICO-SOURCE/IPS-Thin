@@ -22,7 +22,8 @@ namespace Assets._MUTUAL.Viewport
         public NativeAlignment(Patient patient)
         {
             this.patient = patient;
-            Views.Add(new TableView() { Postion = new Vector2(0, 0), Size = new Vector2(50, 50) });
+            Views.Add(new AnatomicalTableView() { Postion = new Vector2(0, 0), Size = new Vector2(50, 50) });
+            Views.Add(new CoronalAlignmentTableView() { Postion = new Vector2(0, 0), Size = new Vector2(100, 100) });
             Views.Add(new ImageView() { Postion = new Vector2(0, 0), Size = new Vector2(50, 50) });
 
             coronalView = new _3DView() { Postion = new Vector2(0.7f, 0),
