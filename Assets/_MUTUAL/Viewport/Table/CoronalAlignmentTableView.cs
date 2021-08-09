@@ -12,7 +12,7 @@ using Zenject;
 
 namespace Assets._MUTUAL.Viewport
 {
-    public class TableView : IView
+    public class CoronalAlignmentTableView : IView
     {
         #region Private Constants
 
@@ -23,21 +23,10 @@ namespace Assets._MUTUAL.Viewport
 
         #endregion
 
-        /// <summary>
-        /// View position
-        /// </summary>
-        public Vector2 Postion { get; set; }
-
-        /// <summary>
-        /// Viewport size
-        /// </summary>
-        public Vector2 Size { get; set; }
-
         #region Private Members
 
         private GameObject parent;
         private GameObject viewPrefab;
-        private GameObject AnatomicalTable;
         private GameObject CoronalPlaneDataTable;
 
         #endregion
@@ -55,6 +44,16 @@ namespace Assets._MUTUAL.Viewport
             }
         }
 
+        /// <summary>
+        /// View position
+        /// </summary>
+        public Vector2 Postion { get; set; }
+
+        /// <summary>
+        /// Viewport size
+        /// </summary>
+        public Vector2 Size { get; set; }
+
         #endregion
 
         #region Constructor
@@ -62,7 +61,7 @@ namespace Assets._MUTUAL.Viewport
         /// <summary>
         /// Create new TableView instance.
         /// </summary>
-        public TableView()
+        public CoronalAlignmentTableView()
         {
             viewPrefab = Resources.Load<GameObject>(ViewportPrefabPath);
         }
@@ -74,55 +73,10 @@ namespace Assets._MUTUAL.Viewport
         /// </summary>
         public void CreateView()
         {
-            // Creating anamtomical measurement table data and table view
-            var tableData = CreateanatomicTableData();
-            var cellData = CreateanatomicCellData(tableData.ColumnCount, tableData.RowCount);
-            CreateAnatomicMeasurementsTable(cellData, tableData);
-
             // Creating coronal plane alignment of the knee data and atble view
-            tableData = CreateCoronalAlignmentKneeTableData();
-            cellData = CreateCoronalAlignmentKneeCellData(tableData.ColumnCount, tableData.RowCount);
+            var tableData = CreateCoronalAlignmentKneeTableData();
+            var cellData = CreateCoronalAlignmentKneeCellData(tableData.ColumnCount, tableData.RowCount);
             CreateCoronalAlignmentKneeTable(cellData, tableData);
-        }
-
-        /// <summary>
-        /// Create new TableView instance.
-        /// </summary>
-        private List<CellData> CreateanatomicCellData(int columnCount, int rowCount)
-        {
-            CellData cellData;
-            List<CellData> cellDataList = new List<CellData>();
-            for(int i =0; i< columnCount*rowCount; i++)
-            {
-                cellData = new CellData();
-                cellData.CellBackground = Color.white;
-                cellData.FontSize = 22;
-                cellData.TextColor = Color.black;
-                cellData.CellText = "SampleText" + i.ToString();
-
-                cellDataList.Add(cellData);
-            }
-
-            return cellDataList;
-        }
-
-        /// <summary>
-        /// Create new TableView instance.
-        /// </summary>
-        private TableData CreateanatomicTableData()
-        {
-            TableData tableData = new TableData();
-
-            tableData.ColumnCount = 2;
-            tableData.RowCount = 3;
-            tableData.HeaderBackground = Color.white;
-            tableData.HeaderTextColor = Color.black;
-            tableData.HeaderTextSize = 22;
-            tableData.HeaderTextAreaHeight = 50;
-            tableData.HeaderTextAreaWidth = 400;
-            tableData.HeaderText = "Anatomic Measurements";
-
-            return tableData;
         }
 
         /// <summary>
@@ -168,91 +122,6 @@ namespace Assets._MUTUAL.Viewport
         /// <summary>
         /// Create new TableView instance.
         /// </summary>
-        private void CreateAnatomicMeasurementsTable(List<CellData> cellDatas, TableData tableData)
-        {
-            // Table object creration
-            parent = GameObject.FindGameObjectWithTag(parentTag);
-            AnatomicalTable = new GameObject("AnatomicalTable");
-            AnatomicalTable = UnityEngine.Object.Instantiate(viewPrefab, parent.transform);
-
-            //Header panel creation
-            var HeaderPanel = AnatomicalTable.transform.Find("HeaderArea").gameObject;
-            HeaderPanel.AddComponent<CanvasRenderer>();
-            var headerOutline = HeaderPanel.AddComponent<Outline>();
-            headerOutline.effectDistance = new Vector2(-2.5f, -2.5f);
-            var image = HeaderPanel.AddComponent<Image>();
-            image.color = tableData.HeaderBackground;
-
-            GameObject headerTextObj = new GameObject("HeaderText");
-            var headerTextRect = headerTextObj.AddComponent<RectTransform>();
-            headerTextRect.anchorMin = new Vector2(0, 0);
-            headerTextRect.anchorMax = new Vector2(1, 1);
-            headerTextRect.offsetMin = new Vector2(0, 0);
-            headerTextRect.offsetMax = new Vector2(0, 0);
-            headerTextObj.AddComponent<CanvasRenderer>();
-            var headerText = headerTextObj.AddComponent<TextMeshProUGUI>();
-            headerText.text = tableData.HeaderText;
-            headerText.color = tableData.HeaderTextColor;
-            headerText.alignment = TextAlignmentOptions.Center;
-            headerText.fontSize = tableData.HeaderTextSize;
-            headerTextObj.transform.SetParent(HeaderPanel.transform, false);
-
-            // Setting table positions
-            var cellheight = 50;
-            var tableGap = 14;
-
-            // [ left - bottom ]
-            AnatomicalTable.gameObject.GetComponent<RectTransform>().offsetMin = 
-                                                        new Vector2(tableGap, parent.GetComponent<RectTransform>().rect.height -
-                                                        (cellheight * tableData.RowCount + HeaderPanel.GetComponent<RectTransform>().rect.height - tableGap));
-            // [ right - top ]
-            AnatomicalTable.gameObject.GetComponent<RectTransform>().offsetMax = 
-                                                        new Vector2(-(parent.GetComponent<RectTransform>().rect.width / tableData.ColumnCount - tableGap), -tableGap);
-            // Table cell creation
-            var cellWidth = AnatomicalTable.GetComponent<RectTransform>().rect.width / tableData.ColumnCount;
-
-            // Creating grid layout (table layout)
-            var LayoutParent = AnatomicalTable.transform.Find("TableArea").gameObject;
-            LayoutParent.AddComponent<CanvasRenderer>();
-            var gridLayoutGroup = LayoutParent.AddComponent<GridLayoutGroup>();
-            gridLayoutGroup.cellSize = new Vector2(cellWidth, cellheight);
-            gridLayoutGroup.startCorner = GridLayoutGroup.Corner.UpperLeft;
-            LayoutParent.transform.SetParent(AnatomicalTable.transform, false);
-
-            var cellCount = tableData.ColumnCount * tableData.RowCount;
-            // Creating cell and adding to table
-            for(int cellNo = 0; cellNo < cellCount; cellNo++)
-            {
-                // Creating cell structure
-                GameObject cellObj = new GameObject("Cell" + cellNo.ToString());
-                cellObj.AddComponent<CanvasRenderer>();
-                cellObj.AddComponent<RectTransform>();
-                var canvas = cellObj.AddComponent<Canvas>();
-                var cellOutline = cellObj.AddComponent<Outline>();
-                cellOutline.effectDistance = new Vector2(-2.5f, -2.5f);
-                var cellBackGround = cellObj.AddComponent<Image>();
-                cellBackGround.color = cellDatas[cellNo].CellBackground;
-
-                // Adding text to cell
-                GameObject tabletextobj = new GameObject("CellText" + cellNo.ToString());
-                tabletextobj.AddComponent<RectTransform>();
-                tabletextobj.AddComponent<CanvasRenderer>();
-                var cellText = tabletextobj.AddComponent<TextMeshProUGUI>();
-                cellText.text = cellDatas[cellNo].CellText;
-                cellText.color = cellDatas[cellNo].TextColor;
-                cellText.alignment = TextAlignmentOptions.Center;
-                cellText.fontSize = cellDatas[cellNo].FontSize;
-                // Adding cell text under cell
-                cellText.transform.SetParent(cellObj.transform, false);
-                // Adding cell object under the table parent
-                cellObj.transform.SetParent(LayoutParent.transform, false);
-            }
-
-        }
-
-        /// <summary>
-        /// Create new TableView instance.
-        /// </summary>
         private void CreateCoronalAlignmentKneeTable(List<CellData> cellDatas, TableData tableData)
         {
             // Table object creration
@@ -283,7 +152,7 @@ namespace Assets._MUTUAL.Viewport
             headerTextObj.transform.SetParent(HeaderPanel.transform, false);
 
             // Setting table positions
-            var cellheight = 50;
+            var cellheight = 40;
             var tableGap = 14;
 
             // [ left - bottom ]
@@ -292,8 +161,8 @@ namespace Assets._MUTUAL.Viewport
                                                         (cellheight * tableData.RowCount + HeaderPanel.GetComponent<RectTransform>().rect.height - tableGap));
             // [ right - top ]
             CoronalPlaneDataTable.gameObject.GetComponent<RectTransform>().offsetMax =
-                                                        new Vector2(-(parent.GetComponent<RectTransform>().rect.width / tableData.ColumnCount - tableGap), 
-                                                        -( tableGap + cellheight * 5));
+                                                        new Vector2(-(parent.GetComponent<RectTransform>().rect.width / tableData.ColumnCount - tableGap),
+                                                        -(tableGap + cellheight * 5));
 
             var cellWidth = CoronalPlaneDataTable.GetComponent<RectTransform>().rect.width / tableData.ColumnCount;
 
@@ -343,7 +212,6 @@ namespace Assets._MUTUAL.Viewport
         public void Activate()
         {
 
-            AnatomicalTable.SetActive(true);
             CoronalPlaneDataTable.SetActive(true);
         }
 
@@ -352,7 +220,6 @@ namespace Assets._MUTUAL.Viewport
         /// </summary>
         public void Deactivate()
         {
-            AnatomicalTable.SetActive(false);
             CoronalPlaneDataTable.SetActive(false);
         }
     }

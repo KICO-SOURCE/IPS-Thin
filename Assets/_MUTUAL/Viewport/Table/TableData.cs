@@ -38,6 +38,8 @@ namespace Assets._MUTUAL.Viewport.Table
         public string HeaderText;
         public int HeaderTextAreaHeight;
         public int HeaderTextAreaWidth;
+
+        public List<CellData> cellData;
     }
 
     #endregion
