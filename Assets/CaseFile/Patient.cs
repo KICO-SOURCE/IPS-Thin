@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Assets.CaseFile
@@ -55,6 +56,19 @@ namespace Assets.CaseFile
         {
             MeshGeoms = new Dictionary<string, Mesh>();
             Landmarks = new List<Landmark>();
+        }
+
+        public Vector3 GetLandmarkPosition(string landmarkType)
+        {
+            var landmark = Landmarks.FirstOrDefault(lm => lm.Type == landmarkType);
+            return landmark?.Position ?? Vector3.zero;
+        }
+
+        public Dictionary<string, Mesh> GetMeshes(params string[] meshKeys)
+        {
+            if (meshKeys == null || meshKeys.Length <= 0) return null;
+            return MeshGeoms.Where(m => meshKeys.Contains(m.Key))
+                            .ToDictionary(x => x.Key, x => x.Value);
         }
     }
 }

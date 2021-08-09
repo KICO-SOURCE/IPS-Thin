@@ -32,11 +32,11 @@ namespace Assets._MUTUAL.Viewport
         public PatellaViewport(Patient patient)
         {
             this.patient = patient;
-            nativePatellaView = new _3DView(8) { Postion = new Vector2(0, 0), Size = new Vector2(0.4f, 0.95f) };
-            axialView = new _3DView(9) { Postion = new Vector2(0.4f, 0), Size = new Vector2(0.3f, 0.475f) };
-            coronalView = new _3DView(10) { Postion = new Vector2(0.4f, 0.475f), Size = new Vector2(0.3f, 0.475f) };
-            resectedAxialView = new _3DView(11) { Postion = new Vector2(0.7f, 0), Size = new Vector2(0.3f, 0.475f) };
-            resectedCoronalView = new _3DView(12) { Postion = new Vector2(0.7f, 0.475f), Size = new Vector2(0.3f, 0.475f) };
+            nativePatellaView = new _3DView() { Postion = new Vector2(0, 0), Size = new Vector2(0.4f, 0.95f) };
+            axialView = new _3DView() { Postion = new Vector2(0.4f, 0), Size = new Vector2(0.3f, 0.475f) };
+            coronalView = new _3DView() { Postion = new Vector2(0.4f, 0.475f), Size = new Vector2(0.3f, 0.475f) };
+            resectedAxialView = new _3DView() { Postion = new Vector2(0.7f, 0), Size = new Vector2(0.3f, 0.475f) };
+            resectedCoronalView = new _3DView() { Postion = new Vector2(0.7f, 0.475f), Size = new Vector2(0.3f, 0.475f) };
 
             Views.Add(nativePatellaView);
             Views.Add(axialView);
@@ -54,19 +54,21 @@ namespace Assets._MUTUAL.Viewport
         /// </summary>
         public override void CreateViews()
         {
-            if (patient.Landmarks.Any(lm => lm.Type == "posteriorApex"))
-            {
-                Ips.Utils.MeasurementUtils.GetPatellaAxes(patient, out var siAxis, out var mlAxis, out var apAxis);
-                var meshes = patient.MeshGeoms.Where(m => m.Key == "Patella").ToDictionary(x => x.Key, x => x.Value);
+            var origin = patient.GetLandmarkPosition("posteriorApex");
+            Ips.Utils.MeasurementUtils.GetPatellaAxes(patient, out var siAxis,
+                                            out var mlAxis, out var apAxis);
 
-                var origin = patient.Landmarks.FirstOrDefault(lm => lm.Type == "posteriorApex").Position;
-                origin = origin - apAxis * 60;
-                nativePatellaView.InitialiseView(meshes, ViewType.CoronalView, origin, siAxis, mlAxis, apAxis);
-                coronalView.InitialiseView(meshes, ViewType.CoronalView, origin, siAxis, mlAxis, apAxis);
-                resectedCoronalView.InitialiseView(meshes, ViewType.CoronalView, origin, siAxis, mlAxis, apAxis);
-                axialView.InitialiseView(meshes, ViewType.AxialView, origin, -siAxis, mlAxis, apAxis);
-                resectedAxialView.InitialiseView(meshes, ViewType.AxialView, origin, -siAxis, mlAxis, apAxis);
-            }
+            var meshes = patient.GetMeshes("Patella");
+            InitialiseMeshes(origin, meshes);
+
+            origin = origin - apAxis * 60;
+            var mask = GetCullingMask("Patella");
+
+            nativePatellaView.InitialiseView(mask, origin, apAxis);
+            coronalView.InitialiseView(mask, origin, apAxis);
+            resectedCoronalView.InitialiseView(mask, origin, apAxis);
+            axialView.InitialiseView(mask, origin, -siAxis);
+            resectedAxialView.InitialiseView(mask, origin, -siAxis);
             base.CreateViews();
         }
 

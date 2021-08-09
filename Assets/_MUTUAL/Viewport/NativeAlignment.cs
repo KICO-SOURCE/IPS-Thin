@@ -25,12 +25,13 @@ namespace Assets._MUTUAL.Viewport
             Views.Add(new TableView() { Postion = new Vector2(0, 0), Size = new Vector2(50, 50) });
             Views.Add(new ImageView() { Postion = new Vector2(0, 0), Size = new Vector2(50, 50) });
 
-            coronalView = new _3DView(8) { Postion = new Vector2(0.7f, 0),
+            coronalView = new _3DView() { Postion = new Vector2(0.7f, 0),
                                            Size = new Vector2(0.15f, 0.95f),
                                            CameraPostion = 2000};
-            sagittalView = new _3DView(9) { Postion = new Vector2(0.85f, 0),
+            sagittalView = new _3DView() { Postion = new Vector2(0.85f, 0),
                                             Size = new Vector2(0.15f, 0.95f),
-                                            CameraPostion = 2000};
+                                            CameraPostion = 2000,
+                                            RotationAngle = 90};
             Views.Add(coronalView);
             Views.Add(sagittalView);
         }
@@ -44,14 +45,16 @@ namespace Assets._MUTUAL.Viewport
         /// </summary>
         public override void CreateViews()
         {
-            if (patient.Landmarks.Any(lm => lm.Type == "femoralCenter"))
-            {
-                var origin = patient.Landmarks.FirstOrDefault(lm => lm.Type == "femoralCenter").Position;
-                Ips.Utils.MeasurementUtils.GetFemurAxes(patient, out var siAxis, out var mlAxis, out var apAxis);
+            Ips.Utils.MeasurementUtils.GetFemurAxes(patient, out var siAxis,
+                                            out var mlAxis, out var apAxis);
 
-                coronalView.InitialiseView(patient.MeshGeoms, ViewType.CoronalView, origin, siAxis, mlAxis, apAxis);
-                sagittalView.InitialiseView(patient.MeshGeoms, ViewType.SagittalView, origin, siAxis, mlAxis, apAxis);
-            }
+            var origin = patient.GetLandmarkPosition("posteriorApex");
+            InitialiseMeshes(origin, patient.MeshGeoms);
+
+            var mask = GetCullingMask(patient.MeshGeoms.Keys.ToArray());
+            origin = patient.GetLandmarkPosition("femoralCenter");
+            coronalView.InitialiseView(mask, origin, apAxis);
+            sagittalView.InitialiseView(mask, origin, mlAxis);
             base.CreateViews();
         }
 

@@ -15,22 +15,18 @@ namespace Assets._MUTUAL.Viewport
     {
         #region Private Constants
 
-        private const string parentPrefabPath = "Prefabs/3DViewport";
-        private const string meshMaterialPath = "Materials/BoneMaterial";
+        private const string parentTag = "MeshParent";
+        private const string prefabPath = "Prefabs/3DViewport";
 
         #endregion
 
         #region Private Members
 
         private GameObject parent;
-        private List<GameObject> meshObjects;
-        private Camera centerCamera;
-        private Light centerLight;
-        private Dictionary<string, Mesh> meshes;
-        private ViewType viewType;
-        private Vector3 origin, siAxis, mlAxis, apAxis;
+        private GameObject meshView;
+        private Camera camera;
+        private Vector3 origin, camAxis;
         private int cullingMask = -1;
-        private int layer = 8;
 
         #endregion
 
@@ -62,6 +58,16 @@ namespace Assets._MUTUAL.Viewport
         /// </summary>
         public int CameraPostion { get; set; } = 250;
 
+        /// <summary>
+        /// View rotation direction
+        /// </summary>
+        public Vector3 RotateDirection { get; set; } = Vector3.left;
+
+        /// <summary>
+        /// View rotation angle
+        /// </summary>
+        public int RotationAngle { get; set; } = 0;
+
         #endregion
 
         #region Constructor
@@ -69,11 +75,8 @@ namespace Assets._MUTUAL.Viewport
         /// <summary>
         /// Create new test view instance.
         /// </summary>
-        public _3DView(int layer = 8)
+        public _3DView()
         {
-            meshObjects = new List<GameObject>();
-            this.layer = layer;
-            cullingMask = (1 << layer);
         }
 
         #endregion
@@ -83,22 +86,15 @@ namespace Assets._MUTUAL.Viewport
         /// <summary>
         /// Initialise the view
         /// </summary>
-        /// <param name="meshes"></param>
-        /// <param name="viewType"></param>
+        /// <param name="cullingMask"></param>
         /// <param name="origin"></param>
-        /// <param name="siAxis"></param>
-        /// <param name="mlAxis"></param>
-        /// <param name="apAxis"></param>
-        public void InitialiseView(Dictionary<string, Mesh> meshes, ViewType viewType,
-                                   Vector3 origin, Vector3 siAxis,
-                                   Vector3 mlAxis, Vector3 apAxis)
+        /// <param name="camAxis"></param>
+        public void InitialiseView(int cullingMask,
+                                   Vector3 origin, Vector3 camAxis)
         {
-            this.viewType = viewType;
-            this.meshes = meshes;
+            this.cullingMask = cullingMask;
             this.origin = origin;
-            this.siAxis = siAxis;
-            this.mlAxis = mlAxis;
-            this.apAxis = apAxis;
+            this.camAxis = camAxis;
         }
 
         /// <summary>
@@ -106,33 +102,23 @@ namespace Assets._MUTUAL.Viewport
         /// </summary>
         public void CreateView()
         {
-            parent = UnityEngine.Object.Instantiate(Resources.Load<GameObject>(parentPrefabPath));
+            parent = GameObject.FindGameObjectWithTag(parentTag);
+            meshView = UnityEngine.Object.Instantiate(Resources
+                        .Load<GameObject>(prefabPath), parent.transform);
 
-            var cameras = parent.GetComponentsInChildren<Camera>();
-            centerCamera = cameras[0];
-            centerCamera.rect = new Rect(Postion, Size);
-            centerCamera.cullingMask = cullingMask;
-            centerCamera.enabled = false;
+            var cameras = meshView.GetComponentsInChildren<Camera>();
+            camera = cameras[0];
+            camera.rect = new Rect(Postion, Size);
+            camera.cullingMask = cullingMask;
 
-            var lights = parent.GetComponentsInChildren<Light>();
-            centerLight = lights[0];
-            centerLight.cullingMask = cullingMask;
-            centerLight.enabled = false;
+            camera.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
+            camera.transform.position = origin - camAxis * CameraPostion;
+            camera.transform.LookAt(origin, -camAxis);
 
-            switch (viewType)
-            {
-                case ViewType.CoronalView:
-                    CreateCoronalView();
-                    break;
-                case ViewType.AxialView:
-                    CreateAxialView();
-                    break;
-                case ViewType.SagittalView:
-                    CreateSagittalView();
-                    break;
-                default:
-                    break;
-            }
+            var axis = camera.transform.TransformVector(RotateDirection);
+            camera.transform.Rotate(axis, RotationAngle);
+
+            camera.gameObject.SetActive(true);
         }
 
         /// <summary>
@@ -140,21 +126,11 @@ namespace Assets._MUTUAL.Viewport
         /// </summary>
         public void Activate()
         {
-            var material = Resources.Load<Material>(meshMaterialPath);
-            foreach (var mesh in meshes)
+            camera.enabled = true;
+            if (meshView != null)
             {
-                var go = new GameObject(mesh.Key, typeof(MeshFilter), typeof(MeshRenderer));
-                go.transform.parent = parent.transform;
-                go.GetComponent<MeshFilter>().mesh = mesh.Value;
-                go.GetComponent<MeshRenderer>().material = material;
-                go.layer = layer;
-
-                //Need to revisit why this is required
-                go.transform.localScale = new Vector3(1, -1, 1);
-                go.SetActive(true);
-                meshObjects.Add(go);
+                meshView.SetActive(true);
             }
-            parent.SetActive(true);
         }
 
         /// <summary>
@@ -162,58 +138,13 @@ namespace Assets._MUTUAL.Viewport
         /// </summary>
         public void Deactivate()
         {
-            foreach (var go in meshObjects)
+            camera.enabled = false;
+            if (meshView != null)
             {
-                go.SetActive(false);
-                UnityEngine.Object.DestroyImmediate(go);
+                meshView.SetActive(false);
+                //UnityEngine.Object.DestroyImmediate(meshView);
+                //meshView = null;
             }
-            meshObjects.Clear();
-
-            if (parent != null)
-            {
-                parent.SetActive(false);
-                //UnityEngine.Object.DestroyImmediate(m_Parent);
-                //m_Parent = null;
-            }
-        }
-
-        #endregion
-
-        #region Private Methods
-
-        private void CreateCoronalView()
-        {
-            centerLight.enabled = true;
-            centerCamera.enabled = true;
-            centerCamera.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
-            centerCamera.transform.position = origin - apAxis * CameraPostion;
-            centerCamera.transform.LookAt(origin, -apAxis);
-            centerCamera.gameObject.SetActive(true);
-        }
-
-        private void CreateAxialView()
-        {
-            centerLight.enabled = true;
-            centerCamera.enabled = true;
-            centerCamera.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
-            centerCamera.transform.position = origin - siAxis * CameraPostion;
-            centerCamera.transform.LookAt(origin, -siAxis);
-            centerCamera.gameObject.SetActive(true);
-        }
-
-        private void CreateSagittalView()
-        {
-            centerLight.enabled = true;
-            centerCamera.enabled = true;
-            centerCamera.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
-            centerCamera.transform.position = origin - mlAxis * CameraPostion;
-            centerCamera.transform.LookAt(origin, -mlAxis);
-
-            //Need to remove after changing axis definition
-            var camAxis = centerCamera.transform.TransformVector(Vector3.left);
-            centerCamera.transform.Rotate(camAxis, 90);
-
-            centerCamera.gameObject.SetActive(true);
         }
 
         #endregion
