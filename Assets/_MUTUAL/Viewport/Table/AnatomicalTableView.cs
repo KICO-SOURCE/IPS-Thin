@@ -76,7 +76,6 @@ namespace Assets._MUTUAL.Viewport
             // Creating anamtomical measurement table data and table view
             var tableData = CreateanatomicTableData();
             CreateAnatomicMeasurementsTable( tableData);
-            ResizeHandler resizeHandler = new ResizeHandler();
         }
 
 
