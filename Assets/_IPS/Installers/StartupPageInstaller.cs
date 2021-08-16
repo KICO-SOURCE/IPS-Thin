@@ -10,6 +10,7 @@ namespace Ips.Installers
         {
             Container.Bind<Patient>().AsSingle();
             Container.Bind<Project>().AsSingle();
+            Container.Bind<ComponentLoader>().AsSingle();
             Container.Bind<CaseFileLoader>().AsSingle();
             Container.Bind<ILoadCaseScreen>().To<LoadCaseScreen>().AsSingle();
         }

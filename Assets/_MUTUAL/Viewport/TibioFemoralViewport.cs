@@ -78,7 +78,9 @@ namespace Assets._MUTUAL.Viewport
             longlegView.InitialiseView(mask, origin, apAxis);
 
             mask = GetCullingMask("ProximalTibia");
-            origin = patient.GetLandmarkPosition("PCLInsertion");
+            var tubercle = patient.GetLandmarkPosition("Tubercle");
+            var pclInsertion = patient.GetLandmarkPosition("PCLInsertion");
+            origin = (tubercle + pclInsertion) * 0.5f;
             Ips.Utils.MeasurementUtils.GetTibiaAxes(patient, out siAxis, out mlAxis, out apAxis);
             coronalTibiaView.InitialiseView(mask, origin, -apAxis);
             axialTibiaView.InitialiseView(mask, origin, -siAxis);

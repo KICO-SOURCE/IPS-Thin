@@ -35,7 +35,7 @@ namespace Assets.CaseFile
 
         public int Gender { get; set; }
 
-        public int Hospital { get; set; }
+        public string Hospital { get; set; }
 
         public string SegmentationPath { get; set; }
 

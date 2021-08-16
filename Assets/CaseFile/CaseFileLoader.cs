@@ -1,8 +1,8 @@
+using Assets.CaseFile.Components;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Xml;
-using UnityEngine;
 
 namespace Assets.CaseFile
 {
@@ -10,28 +10,13 @@ namespace Assets.CaseFile
     {
         #region Fields
 
+        private readonly ComponentLoader m_ComponentLoader;
         private readonly Project m_Project;
         private readonly Patient m_Patient;
 
         #endregion
 
         #region Private Methods
-
-        private void LoadLandmarks(XmlTextReader x)
-        {
-            string bone = x.GetAttribute("Bone");
-            string type = x.GetAttribute("ID");
-            var x1 = float.Parse(x.GetAttribute("X"));
-            var y = float.Parse(x.GetAttribute("Y"));
-            var z = float.Parse(x.GetAttribute("Z"));
-
-            m_Patient.Landmarks.Add(new Landmark()
-            {
-                Bone = bone,
-                Type = type,
-                 Position = new Vector3(x1, y, z)
-            });
-        }
 
         private DateTime ParseDate(string dateString)
         {
@@ -102,9 +87,10 @@ namespace Assets.CaseFile
 
         #region Constructors
 
-        public CaseFileLoader(Project project,
-            Patient patient)
+        public CaseFileLoader(ComponentLoader componentLoader,
+                              Project project, Patient patient)
         {
+            m_ComponentLoader = componentLoader;
             m_Project = project;
             m_Patient = patient;
         }
@@ -146,13 +132,15 @@ namespace Assets.CaseFile
         {
             m_Project.InitializeData();
             m_Patient.InitializeData();
+
+            string implantType = ImplantType.Apex.ToString();
             using (XmlTextReader x = new XmlTextReader(filePath))
             {
                 x.Read();
 
                 while (!x.EOF)
                 {
-                    if (x.MoveToContent() == XmlNodeType.Element && x.Name == "CaseFile")
+                    if (x.MoveToContent() == XmlNodeType.Element && (x.Name == "CaseFile" || x.Name == "KICOCASE"))
                     {
                         try
                         {
@@ -203,6 +191,14 @@ namespace Assets.CaseFile
                         {
                             m_Patient.Mrn = "";
                         }
+                        try
+                        {
+                            implantType = x.GetAttribute("ImplantType");
+                        }
+                        catch
+                        {
+                        }
+
 
                         try
                         {
@@ -216,11 +212,11 @@ namespace Assets.CaseFile
 
                         try
                         {
-                            m_Patient.Hospital = int.Parse(x.GetAttribute("Hospital"));
+                            m_Patient.Hospital = x.GetAttribute("Hospital");
                         }
                         catch
                         {
-                            m_Patient.Hospital = 0;
+                            m_Patient.Hospital = "";
                         }
 
                         try
@@ -247,19 +243,38 @@ namespace Assets.CaseFile
                             if (!x.Read() || x.MoveToContent() == XmlNodeType.EndElement && x.Name == "Meshes") break;
                         }
                     }
-                    else if (x.MoveToContent() == XmlNodeType.Element && (x.Name == "Landmarks"))
+                    else if (x.MoveToContent() == XmlNodeType.Element && (x.Name == "MeshDistalFemur" || x.Name == "MeshProximalFemur"
+                             || x.Name == "MeshDistalTibia" || x.Name == "MeshProximalTibia" || x.Name == "MeshPatella" || x.Name == "GeomFemurLeft"
+                             || x.Name == "GeomFemurRight" || x.Name == "GeomTibiaLeft" || x.Name == "GeomTibiaRight" || x.Name == "GeomPelvis"
+                             || x.Name == "GeomFemurCorticalLeft" || x.Name == "GeomFemurCorticalRight" || x.Name == "GeomFemurDecimatedLeft"
+                             || x.Name == "GeomFemurDecimatedRight" || x.Name == "GeomPelvisDecimated" || x.Name == "TibiaCancellous"
+                             || x.Name == "FemoralGuideRefModel" || x.Name == "TibiaGuideRefModel" || x.Name == "FemurTagFaces"
+                             || x.Name == "FemurScanData" || x.Name == "FemurMeshDecimated" || x.Name == "TibiaScanData"
+                             || x.Name == "FemurConfidenceMesh" || x.Name == "FemurNonConfidenceMesh" || x.Name == "FemurTrochMesh"))
+                    {
+                        m_Patient.MeshGeoms.Add(x.Name.Replace("Mesh", ""), MeshGeometryFunctions.GetXmlMeshGeometry3D(x));
+                    }
+                    else if (x.MoveToContent() == XmlNodeType.Element && (x.Name == "Landmarks" || x.Name == "FemurLandMarks" ||
+                             x.Name == "TibiaLandMarks" || x.Name == "PatellaLandMarks" || x.Name == "FemurLeftLandmarks" ||
+                             x.Name == "FemurRightLandmarks" || x.Name == "TibiaLeftLandmarks" || x.Name == "TibiaRightLandmarks" ||
+                             x.Name == "PelvisLandmarks"))
                     {
                         while (!x.EOF)
                         {
-                            if (x.MoveToContent() == XmlNodeType.Element && x.Name == "Landmark")
+                            if (x.MoveToContent() == XmlNodeType.Element && (x.Name == "Landmark" || x.Name == "LandMark"))
                             {
-                                LoadLandmarks(x);
+                                var lm = new Landmark();
+                                lm.ReadLandmark(x);
+                                m_Patient.Landmarks.Add(lm);
                             }
 
-                            if (!x.Read() || x.MoveToContent() == XmlNodeType.EndElement && x.Name == "Landmarks") break;
+                        if (!x.Read() || x.MoveToContent() == XmlNodeType.EndElement && (x.Name == "Landmarks" ||
+                                x.Name == "FemurLandMarks" || x.Name == "TibiaLandMarks" || x.Name == "PatellaLandMarks" ||
+                                x.Name == "FemurLeftLandmarks" || x.Name == "FemurRightLandmarks" || x.Name == "TibiaLeftLandmarks" ||
+                                x.Name == "TibiaRightLandmarks" || x.Name == "PelvisLandmarks")) break;
                         }
                     }
-                    else if (x.MoveToContent() == XmlNodeType.Element && x.Name == "Cases")
+                    else if (x.MoveToContent() == XmlNodeType.Element && (x.Name == "Cases" || x.Name == "KicoCASEfiles"))
                     {
                         while (!x.EOF)
                         {
@@ -267,6 +282,16 @@ namespace Assets.CaseFile
                             {
                                 var plan = new Dictionary<string, string>();
                                 string implantTypeStr = x.GetAttribute("ImplantType");
+                                if(int.TryParse(implantTypeStr, out int implant))
+                                {
+                                    var type = (ImplantType)(implant -1);
+                                    implantTypeStr = type.ToString();
+                                }
+                                else
+                                {
+                                    implantTypeStr = implantType;
+                                }
+                                plan.Add("Brand", implantTypeStr);
                                 plan.Add("FemurSizeString", x.GetAttribute("FemurImplant"));
                                 plan.Add("FemurVarientString", x.GetAttribute("FemurImplantVarient"));
                                 plan.Add("FemVv", x.GetAttribute("FemurVV"));
@@ -348,7 +373,8 @@ namespace Assets.CaseFile
                                 m_Project.PlanValues.Add(plan);
                             }
 
-                            if (!x.Read() || x.MoveToContent() == XmlNodeType.EndElement && x.Name == "Cases") break;
+                            if (!x.Read() || x.MoveToContent() == XmlNodeType.EndElement &&
+                                (x.Name == "Cases" || x.Name == "KicoCASEfiles")) break;
                         }
                     }
                     else if (x.MoveToContent() == XmlNodeType.Element && x.Name == "FunctionalValues")
@@ -376,17 +402,48 @@ namespace Assets.CaseFile
                             if (!x.Read() || x.MoveToContent() == XmlNodeType.EndElement && x.Name == "FunctionalValues") break;
                         }
                     }
+                    else if (x.MoveToContent() == XmlNodeType.Element && x.Name == "PostOpInfo")
+                    {
+                        m_Patient.PostOpCaseCode = x.GetAttribute("PostOpCaseCode");
+                        var date = x.GetAttribute("PostOpDateOfScan");
+                        if (date != null)
+                        {
+                            m_Patient.PostOpDateOfScan = ParseDate(date);
+                        }
+                    }
+
                     if (!x.Read()) break;
                 }
                 x.Close();
             }
             LoadPositionalData();
+            LoadComponentData();
             return true;
         }
 
         #endregion
 
         #region Private Methods
+
+        private int GetImplantTypeId(ImplantType implantType)
+        {
+            switch (implantType)
+            {
+                case ImplantType.Unity:
+                    return 2;
+                case ImplantType.Saiph:
+                    return 3;
+                case ImplantType.Attune:
+                    return 4;
+                case ImplantType.Madison:
+                    return 5;
+                case ImplantType.BalanSys:
+                    return 20;
+                case ImplantType.Apex:
+                default:
+                    return 1;
+            }
+        }
 
         /// <summary>
         /// Load positional data.
@@ -403,6 +460,53 @@ namespace Assets.CaseFile
 
                 m_Project.PlanComponentPosition.Add(index,dictionary);
             }
+        }
+
+        /// <summary>
+        /// Load component data
+        /// </summary>
+        private void LoadComponentData()
+        {
+            m_ComponentLoader.LoadLibrary();
+
+            foreach (var plan in m_Project.PlanValues)
+            {
+                var index = m_Project.PlanValues.IndexOf(plan);
+                if(plan.ContainsKey("FemurImplant"))
+                {
+                    m_ComponentLoader.LoadDatFile(index, ComponentType.Femur, plan["Brand"],
+                        m_Patient.Leftright, plan["FemurImplantVarient"],
+                        plan["FemurImplant"], OnComponentLoaded);
+                }
+                if (plan.ContainsKey("TibiaInsert"))
+                {
+                    m_ComponentLoader.LoadDatFile(index, ComponentType.TibiaInsert, plan["Brand"],
+                        m_Patient.Leftright, plan["TibiaInsertVarient"],
+                        plan["TibiaInsert"], OnComponentLoaded);
+                }
+                if (plan.ContainsKey("TibiaImplantSize"))
+                {
+                    m_ComponentLoader.LoadDatFile(index, ComponentType.TibiaTray, plan["Brand"],
+                        m_Patient.Leftright, plan["TibiaImplant"],
+                        plan["TibiaImplantSize"], OnComponentLoaded);
+                }
+                if (plan.ContainsKey("PatellaImplant"))
+                {
+                    m_ComponentLoader.LoadDatFile(index, ComponentType.Patella, plan["Brand"],
+                        m_Patient.Leftright, plan["PatellaImplantVariant"],
+                        plan["PatellaImplant"], OnComponentLoaded);
+                }
+            }
+        }
+
+        private void OnComponentLoaded(int index, ComponentType type, Implant implant)
+        {
+            if(!m_Project.PlanImplants.ContainsKey(index))
+            {
+                m_Project.PlanImplants.Add(index, new Dictionary<ComponentType, Implant>());
+            }
+            m_Project.PlanImplants[index].Remove(type);
+            m_Project.PlanImplants[index].Add(type, implant);
         }
 
         #endregion

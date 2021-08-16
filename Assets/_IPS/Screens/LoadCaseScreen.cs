@@ -54,6 +54,7 @@ namespace Ips.Screens
             Debug.Log("Activated");
             PopulateUiElements();
             AttachListeners();
+            m_ViewportBtn.enabled = false;
         }
 
         public void DeactivateScreen()
@@ -65,12 +66,14 @@ namespace Ips.Screens
         public void OnLoadCaseButtonClicked()
         {
             Debug.Log("Load");
-            string path = EditorUtility.OpenFilePanel("Select case file", "", "CASE");
+            string path = EditorUtility.OpenFilePanel("Select case file", "", "case,CASE,kic,KIC,hic,HIC");
             if (path.Length != 0)
             {
                 byte[] file = File.ReadAllBytes(path);
                 m_CaseFileLoader.LoadCaseFile(file);
             }
+
+            m_ViewportBtn.enabled = true;
 
             Debug.Log($"Patient Details: \n");
             Debug.Log($"Patient ID: {m_Patient.PatientId}");
