@@ -103,7 +103,7 @@ namespace Assets.CaseFile
         #region Constructors
 
         public CaseFileLoader(Project project,
-                              Patient patient)
+            Patient patient)
         {
             m_Project = project;
             m_Patient = patient;
@@ -309,17 +309,11 @@ namespace Assets.CaseFile
                                     plan.Add("ChangeRequest", x.GetAttribute("ChangeRequest"));
                                     plan.Add("SurgeonAlignmentID", (x.GetAttribute("SurgeonAlignmentID")));
                                     plan.Add("AnalysisType", x.GetAttribute("AnalysisType"));
-                                    if (!string.IsNullOrEmpty(x.GetAttribute("LightBenderAlignment")))
-                                    {
-                                        var lightBenderAlignment = bool.Parse(x.GetAttribute("LightBenderAlignment"));
-                                        plan.Add("LightBenderAlignment", lightBenderAlignment.ToString());
-                                        if (lightBenderAlignment)
-                                        {
-                                            plan.Add("FemurEuler", x.GetAttribute("FemurEuler"));
-                                            plan.Add("TibiaEuler", x.GetAttribute("TibiaEuler"));
-                                            plan.Add("PatellaEuler", x.GetAttribute("PatellaEuler"));
-                                        }
-                                    }
+                                    
+                                    plan.Add("FemurEuler", x.GetAttribute("FemurEuler"));
+                                    plan.Add("TibiaEuler", x.GetAttribute("TibiaEuler"));
+                                    plan.Add("PatellaEuler", x.GetAttribute("PatellaEuler"));
+
                                     plan.Add("Delete", x.GetAttribute("Delete"));
                                 }
                                 catch
@@ -386,8 +380,29 @@ namespace Assets.CaseFile
                 }
                 x.Close();
             }
-
+            LoadPositionalData();
             return true;
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        /// <summary>
+        /// Load positional data.
+        /// </summary>
+        private void LoadPositionalData()
+        {
+            foreach (var plan in m_Project.PlanValues)
+            {
+                var index = m_Project.PlanValues.IndexOf(plan);
+                var dictionary = new Dictionary<string,PositionalData>();
+                dictionary.Add("FemurEuler", new PositionalData(plan["FemurEuler"]));
+                dictionary.Add("TibiaEuler", new PositionalData(plan["TibiaEuler"]));
+                dictionary.Add("PatellaEuler", new PositionalData(plan["PatellaEuler"]));
+
+                m_Project.PlanComponentPosition.Add(index,dictionary);
+            }
         }
 
         #endregion
