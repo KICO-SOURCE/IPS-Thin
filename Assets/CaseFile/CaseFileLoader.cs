@@ -13,6 +13,7 @@ namespace Assets.CaseFile
         private readonly ComponentLoader m_ComponentLoader;
         private readonly Project m_Project;
         private readonly Patient m_Patient;
+        private Action m_LoadCompleted;
 
         #endregion
 
@@ -104,8 +105,9 @@ namespace Assets.CaseFile
         /// </summary>
         /// <param name="sourceByte"></param>
         /// <returns></returns>
-        internal bool LoadCaseFile(byte[] sourceByte)
+        internal bool LoadCaseFile(byte[] sourceByte, Action loadCompleted)
         {
+            m_LoadCompleted = loadCompleted;
             string fp;
             bool chck = DecryptCaseFile(sourceByte, out fp);
 
@@ -487,6 +489,11 @@ namespace Assets.CaseFile
             }
             m_Project.PlanImplants[index].Remove(type);
             m_Project.PlanImplants[index].Add(type, implant);
+
+            if(m_Project.PlanValues.Count == m_Project.PlanImplants.Count)
+            {
+                m_LoadCompleted?.Invoke();
+            }
         }
 
         #endregion

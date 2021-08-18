@@ -70,10 +70,8 @@ namespace Ips.Screens
             if (path.Length != 0)
             {
                 byte[] file = File.ReadAllBytes(path);
-                m_CaseFileLoader.LoadCaseFile(file);
+                m_CaseFileLoader.LoadCaseFile(file, LoadCompleted);
             }
-
-            m_ViewportBtn.enabled = true;
 
             Debug.Log($"Patient Details: \n");
             Debug.Log($"Patient ID: {m_Patient.PatientId}");
@@ -136,6 +134,11 @@ namespace Ips.Screens
         #endregion
 
         #region Private Methods
+
+        private void LoadCompleted()
+        {
+            m_ViewportBtn.enabled = true;
+        }
 
         private void PopulateUiElements()
         {
