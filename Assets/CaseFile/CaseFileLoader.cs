@@ -425,26 +425,6 @@ namespace Assets.CaseFile
 
         #region Private Methods
 
-        private int GetImplantTypeId(ImplantType implantType)
-        {
-            switch (implantType)
-            {
-                case ImplantType.Unity:
-                    return 2;
-                case ImplantType.Saiph:
-                    return 3;
-                case ImplantType.Attune:
-                    return 4;
-                case ImplantType.Madison:
-                    return 5;
-                case ImplantType.BalanSys:
-                    return 20;
-                case ImplantType.Apex:
-                default:
-                    return 1;
-            }
-        }
-
         /// <summary>
         /// Load positional data.
         /// </summary>
@@ -472,29 +452,29 @@ namespace Assets.CaseFile
             foreach (var plan in m_Project.PlanValues)
             {
                 var index = m_Project.PlanValues.IndexOf(plan);
-                if(plan.ContainsKey("FemurImplant"))
+                if(plan.ContainsKey("FemurSizeString"))
                 {
                     m_ComponentLoader.LoadDatFile(index, ComponentType.Femur, plan["Brand"],
-                        m_Patient.Leftright, plan["FemurImplantVarient"],
-                        plan["FemurImplant"], OnComponentLoaded);
+                        m_Patient.Leftright, plan["FemurVarientString"],
+                        plan["FemurSizeString"], OnComponentLoaded);
                 }
-                if (plan.ContainsKey("TibiaInsert"))
+                if (plan.ContainsKey("TibiaInsertSizeString"))
                 {
                     m_ComponentLoader.LoadDatFile(index, ComponentType.TibiaInsert, plan["Brand"],
-                        m_Patient.Leftright, plan["TibiaInsertVarient"],
-                        plan["TibiaInsert"], OnComponentLoaded);
+                        m_Patient.Leftright, plan["TibiaInsertVarientString"],
+                        plan["TibiaInsertSizeString"], OnComponentLoaded);
                 }
-                if (plan.ContainsKey("TibiaImplantSize"))
+                if (plan.ContainsKey("TibiaSizeString"))
                 {
                     m_ComponentLoader.LoadDatFile(index, ComponentType.TibiaTray, plan["Brand"],
-                        m_Patient.Leftright, plan["TibiaImplant"],
-                        plan["TibiaImplantSize"], OnComponentLoaded);
+                        m_Patient.Leftright, plan["TibiaVarientString"],
+                        plan["TibiaSizeString"], OnComponentLoaded);
                 }
-                if (plan.ContainsKey("PatellaImplant"))
+                if (plan.ContainsKey("PatellaSizeString"))
                 {
                     m_ComponentLoader.LoadDatFile(index, ComponentType.Patella, plan["Brand"],
-                        m_Patient.Leftright, plan["PatellaImplantVariant"],
-                        plan["PatellaImplant"], OnComponentLoaded);
+                        m_Patient.Leftright, plan["PatellaVarientString"],
+                        plan["PatellaSizeString"], OnComponentLoaded);
                 }
             }
         }

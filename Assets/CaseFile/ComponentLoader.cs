@@ -110,7 +110,8 @@ namespace Assets.CaseFile
                 size = sbBytes.ToString();
             }
 
-            var url = WebServerBaseUrl + "api/KICOCADWebAPIService?type=" + type + "&brand=" + brand + "&Variant=" + variant + "&side=" + side + "&size=" + size;
+            var url = WebServerBaseUrl + "api/KICOCADWebAPIService?type=" + GetComponentType(type) +
+                "&brand=" + brand + "&Variant=" + variant + "&side=" + side + "&size=" + size;
             //Debug.Log(url);
 
             using (UnityWebRequest www = UnityWebRequest.Get(url))
@@ -227,5 +228,29 @@ namespace Assets.CaseFile
             }
         }
 
+        private string GetComponentType(ComponentType componentType)
+        {
+            switch (componentType)
+            {
+                case ComponentType.Femur:
+                    return "Femur Component";
+                case ComponentType.TibiaInsert:
+                    return "Tibia Insert";
+                case ComponentType.TibiaTray:
+                    return "Tibia Tray";
+                case ComponentType.Patella:
+                    return "Patella Component";
+                case ComponentType.PelvisCup:
+                    return "Pelvis Cup";
+                case ComponentType.PelvisLiner:
+                    return "Pelvis Liner";
+                case ComponentType.FemurHead:
+                    return "Femur Head";
+                case ComponentType.FemurStem:
+                    return "Femur Stem";
+                default:
+                    return "";
+            }
+        }
     }
 }
