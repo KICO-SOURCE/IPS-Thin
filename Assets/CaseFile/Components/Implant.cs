@@ -12,9 +12,6 @@ namespace Assets.CaseFile.Components
         public string Side { get; set; }
         public Mesh Geometry { get; set; }
         public List<Landmark> Landmarks { get; set; }
-        public abstract string ComponentType();
-        public Mesh CompVisual;
-        public Transform ComponentTransformation { get; set; }
         public Vector3[] InnerTrayPoly { get; set; }
         public Vector3[] OuterPoly { get; set; }
 
@@ -37,32 +34,12 @@ namespace Assets.CaseFile.Components
             if (mesh != null) Geometry = mesh;
             if (landmarks != null) Landmarks = landmarks;
         }
+
         public Implant()
         {
 
         }
 
         internal abstract void ReadFromFixedpath(byte[] datFileContent);
-
-        public string ConCatComp
-        {
-            get { return Brand + "," + Size; }
-
-        }
-
-        #region Visuals
-
-        /// <summary>
-        /// 7.2.2015  JKH  Added to clear visuals
-        /// </summary>
-        /// 
-
-        internal void Clear()
-        {
-            if (CompVisual != null) CompVisual.Clear();
-        }
-
-        #endregion
-
     }
 }

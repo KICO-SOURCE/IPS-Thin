@@ -18,11 +18,6 @@ namespace Assets.CaseFile.Components
         {
         }
 
-        public override string ComponentType()
-        {
-            return "Patella Component";
-        }
-
         public PatellaComponent()
         {
 

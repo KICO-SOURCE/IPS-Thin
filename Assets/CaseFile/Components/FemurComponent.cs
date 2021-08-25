@@ -16,11 +16,6 @@ namespace Assets.CaseFile.Components
 
         }
 
-        public override string ComponentType()
-        {
-            return "Femur Component";
-        }
-
         internal override void ReadFromFixedpath(byte[] datFileContent)
         {
             var path = System.IO.Path.GetTempFileName();

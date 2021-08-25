@@ -8,8 +8,6 @@ namespace Assets.CaseFile.Components
 {
     public class FemurStem : Implant
     {
-        public const string ComponentTypeName = "Femur Stem";
-
         public Vector3 StemAxis
         {
             get
@@ -46,11 +44,6 @@ namespace Assets.CaseFile.Components
         public FemurStem(string brand, string variant, String size, string side, Mesh mesh, List<Landmark> landmark)
             : base(brand, variant, size, side, mesh, landmark)
         {
-        }
-
-        public override string ComponentType()
-        {
-            return ComponentTypeName;
         }
 
         internal override void ReadFromFixedpath(byte[] datFileContent)

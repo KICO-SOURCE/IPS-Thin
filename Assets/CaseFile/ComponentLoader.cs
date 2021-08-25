@@ -170,10 +170,10 @@ namespace Assets.CaseFile
                                     comp = new TibiaTray(brand, brand, size, variant, null, null);
                                 }
                             }
-                            else if (type == PelvisCup.ComponentTypeName) comp = new PelvisCup(brand, variant, size, side, null, null);
-                            else if (type == PelvisLiner.ComponentTypeName) comp = new PelvisLiner(brand, variant, size, side, null, null);
-                            else if (type == FemurStem.ComponentTypeName) comp = new FemurStem(brand, variant, size, side, null, null);
-                            else if (type == FemurHead.ComponentTypeName) comp = new FemurHead(brand, variant, size, side, null, null);
+                            else if (type == GetComponentType(ComponentType.PelvisCup)) comp = new PelvisCup(brand, variant, size, side, null, null);
+                            else if (type == GetComponentType(ComponentType.PelvisLiner)) comp = new PelvisLiner(brand, variant, size, side, null, null);
+                            else if (type == GetComponentType(ComponentType.FemurStem)) comp = new FemurStem(brand, variant, size, side, null, null);
+                            else if (type == GetComponentType(ComponentType.FemurHead)) comp = new FemurHead(brand, variant, size, side, null, null);
                             if (comp != null) componentlibrary.Add(comp, count);
 
                             count++;
@@ -228,7 +228,7 @@ namespace Assets.CaseFile
             }
         }
 
-        private string GetComponentType(ComponentType componentType)
+        private static string GetComponentType(ComponentType componentType)
         {
             switch (componentType)
             {

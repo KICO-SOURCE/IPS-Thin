@@ -13,11 +13,6 @@ namespace Assets.CaseFile.Components
         {
         }
 
-        public override string ComponentType()
-        {
-            return "Tibia Insert";
-        }
-
         public TibiaInsert()
         {
 

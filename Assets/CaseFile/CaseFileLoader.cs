@@ -105,9 +105,8 @@ namespace Assets.CaseFile
         /// </summary>
         /// <param name="sourceByte"></param>
         /// <returns></returns>
-        internal bool LoadCaseFile(byte[] sourceByte, Action loadCompleted)
+        internal bool LoadCaseFile(byte[] sourceByte)
         {
-            m_LoadCompleted = loadCompleted;
             string fp;
             bool chck = DecryptCaseFile(sourceByte, out fp);
 
@@ -419,8 +418,86 @@ namespace Assets.CaseFile
                 x.Close();
             }
             LoadPositionalData();
-            LoadComponentData();
+            m_ComponentLoader.LoadLibrary();
             return true;
+        }
+
+        /// <summary>
+        /// Load component data
+        /// </summary>
+        /// <param name="loadCompleted"></param>
+        /// <param name="index"></param>
+        public void LoadComponentData(Action loadCompleted, int index = 0)
+        {
+            m_LoadCompleted = loadCompleted;
+
+            if(m_Project.PlanValues == null ||
+                m_Project.PlanValues.Count - 1 < index)
+            {
+                m_LoadCompleted?.Invoke();
+                return;
+            }
+
+            var plan = m_Project.PlanValues[index];
+
+            if (plan != null)
+            {
+                if (plan.ContainsKey("FemurSizeString") &&
+                    !string.IsNullOrEmpty(plan["FemurSizeString"]))
+                {
+                    m_ComponentLoader.LoadDatFile(index, ComponentType.Femur, plan["Brand"],
+                        m_Patient.Leftright, plan["FemurVarientString"],
+                        plan["FemurSizeString"], OnComponentLoaded);
+                }
+                if (plan.ContainsKey("TibiaInsertSizeString") &&
+                    !string.IsNullOrEmpty(plan["TibiaInsertSizeString"]))
+                {
+                    m_ComponentLoader.LoadDatFile(index, ComponentType.TibiaInsert, plan["Brand"],
+                        m_Patient.Leftright, plan["TibiaInsertVarientString"],
+                        plan["TibiaInsertSizeString"], OnComponentLoaded);
+                }
+                if (plan.ContainsKey("TibiaSizeString") &&
+                    !string.IsNullOrEmpty(plan["TibiaSizeString"]))
+                {
+                    m_ComponentLoader.LoadDatFile(index, ComponentType.TibiaTray, plan["Brand"],
+                        m_Patient.Leftright, plan["TibiaVarientString"],
+                        plan["TibiaSizeString"], OnComponentLoaded);
+                }
+                if (plan.ContainsKey("PatellaSizeString") &&
+                    !string.IsNullOrEmpty(plan["PatellaSizeString"]))
+                {
+                    m_ComponentLoader.LoadDatFile(index, ComponentType.Patella, plan["Brand"],
+                        m_Patient.Leftright, plan["PatellaVarientString"],
+                        plan["PatellaSizeString"], OnComponentLoaded);
+                }
+                if (plan.ContainsKey("PelvisCupSize") &&
+                    !string.IsNullOrEmpty(plan["PelvisCupSize"]))
+                {
+                    var side = char.ToUpper(m_Patient.Leftright[0]) + m_Patient.Leftright.Substring(1);
+                    m_ComponentLoader.LoadDatFile(index, ComponentType.PelvisCup, plan["CupImplantType"],
+                       side, plan["PelvisCupVariant"], plan["PelvisCupSize"], OnComponentLoaded);
+                }
+                if (plan.ContainsKey("PelvisLinerSize") &&
+                    !string.IsNullOrEmpty(plan["PelvisLinerSize"]))
+                {
+                    var side = char.ToUpper(m_Patient.Leftright[0]) + m_Patient.Leftright.Substring(1);
+                    m_ComponentLoader.LoadDatFile(index, ComponentType.PelvisLiner, plan["LinerImplantType"],
+                       side, plan["PelvisLinerVariant"], plan["PelvisLinerSize"], OnComponentLoaded);
+                }
+                if (plan.ContainsKey("FemurHeadSize") &&
+                    !string.IsNullOrEmpty(plan["FemurHeadSize"]))
+                {
+                    m_ComponentLoader.LoadDatFile(index, ComponentType.FemurHead, plan["HeadImplantType"],
+                        string.Empty, plan["FemurHeadVariant"], plan["FemurHeadSize"], OnComponentLoaded);
+                }
+                if (plan.ContainsKey("FemurStemSize") &&
+                    !string.IsNullOrEmpty(plan["FemurStemSize"]))
+                {
+                    var side = char.ToUpper(m_Patient.Leftright[0]) + m_Patient.Leftright.Substring(1);
+                    m_ComponentLoader.LoadDatFile(index, ComponentType.FemurStem, plan["StemImplantType"],
+                        side, plan["FemurStemVariant"], plan["FemurStemSize"], OnComponentLoaded);
+                }
+            }
         }
 
         #endregion
@@ -444,43 +521,6 @@ namespace Assets.CaseFile
             }
         }
 
-        /// <summary>
-        /// Load component data
-        /// </summary>
-        private void LoadComponentData()
-        {
-            m_ComponentLoader.LoadLibrary();
-
-            foreach (var plan in m_Project.PlanValues)
-            {
-                var index = m_Project.PlanValues.IndexOf(plan);
-                if(plan.ContainsKey("FemurSizeString"))
-                {
-                    m_ComponentLoader.LoadDatFile(index, ComponentType.Femur, plan["Brand"],
-                        m_Patient.Leftright, plan["FemurVarientString"],
-                        plan["FemurSizeString"], OnComponentLoaded);
-                }
-                if (plan.ContainsKey("TibiaInsertSizeString"))
-                {
-                    m_ComponentLoader.LoadDatFile(index, ComponentType.TibiaInsert, plan["Brand"],
-                        m_Patient.Leftright, plan["TibiaInsertVarientString"],
-                        plan["TibiaInsertSizeString"], OnComponentLoaded);
-                }
-                if (plan.ContainsKey("TibiaSizeString"))
-                {
-                    m_ComponentLoader.LoadDatFile(index, ComponentType.TibiaTray, plan["Brand"],
-                        m_Patient.Leftright, plan["TibiaVarientString"],
-                        plan["TibiaSizeString"], OnComponentLoaded);
-                }
-                if (plan.ContainsKey("PatellaSizeString"))
-                {
-                    m_ComponentLoader.LoadDatFile(index, ComponentType.Patella, plan["Brand"],
-                        m_Patient.Leftright, plan["PatellaVarientString"],
-                        plan["PatellaSizeString"], OnComponentLoaded);
-                }
-            }
-        }
-
         private void OnComponentLoaded(int index, ComponentType type, Implant implant)
         {
             if(!m_Project.PlanImplants.ContainsKey(index))
@@ -490,10 +530,74 @@ namespace Assets.CaseFile
             m_Project.PlanImplants[index].Remove(type);
             m_Project.PlanImplants[index].Add(type, implant);
 
-            if(m_Project.PlanValues.Count == m_Project.PlanImplants.Count)
+            if(IsLoadCompleted(index))
             {
                 m_LoadCompleted?.Invoke();
             }
+        }
+
+        private bool IsLoadCompleted(int index)
+        {
+            bool loadCompleted = true;
+            var plan = m_Project.PlanValues[index];
+
+            if (!m_Project.PlanImplants.ContainsKey(index))
+            {
+                loadCompleted = false;
+            }
+            else if (plan != null)
+            {
+                if (plan.ContainsKey("FemurSizeString") &&
+                    !string.IsNullOrEmpty(plan["FemurSizeString"]) &&
+                    !m_Project.PlanImplants[0].ContainsKey(ComponentType.Femur))
+                {
+                    loadCompleted = false;
+                }
+                if (plan.ContainsKey("TibiaInsertSizeString") &&
+                    !string.IsNullOrEmpty(plan["TibiaInsertSizeString"]) &&
+                    !m_Project.PlanImplants[0].ContainsKey(ComponentType.TibiaInsert))
+                {
+                    loadCompleted = false;
+                }
+                if (plan.ContainsKey("TibiaSizeString") &&
+                    !string.IsNullOrEmpty(plan["TibiaSizeString"]) &&
+                    !m_Project.PlanImplants[0].ContainsKey(ComponentType.TibiaTray))
+                {
+                    loadCompleted = false;
+                }
+                if (plan.ContainsKey("PatellaSizeString") &&
+                    !string.IsNullOrEmpty(plan["PatellaSizeString"]) &&
+                    !m_Project.PlanImplants[0].ContainsKey(ComponentType.Patella))
+                {
+                    loadCompleted = false;
+                }
+                if (plan.ContainsKey("PelvisCupSize") &&
+                    !string.IsNullOrEmpty(plan["PelvisCupSize"]) &&
+                    !m_Project.PlanImplants[0].ContainsKey(ComponentType.PelvisCup))
+                {
+                    loadCompleted = false;
+                }
+                if (plan.ContainsKey("PelvisLinerSize") &&
+                    !string.IsNullOrEmpty(plan["PelvisLinerSize"]) &&
+                    !m_Project.PlanImplants[0].ContainsKey(ComponentType.PelvisLiner))
+                {
+                    loadCompleted = false;
+                }
+                if (plan.ContainsKey("FemurHeadSize") &&
+                    !string.IsNullOrEmpty(plan["FemurHeadSize"]) &&
+                    !m_Project.PlanImplants[0].ContainsKey(ComponentType.FemurHead))
+                {
+                    loadCompleted = false;
+                }
+                if (plan.ContainsKey("FemurStemSize") &&
+                    !string.IsNullOrEmpty(plan["FemurStemSize"]) &&
+                    !m_Project.PlanImplants[0].ContainsKey(ComponentType.FemurStem))
+                {
+                    loadCompleted = false;
+                }
+            }
+
+            return loadCompleted;
         }
 
         #endregion

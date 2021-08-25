@@ -8,8 +8,6 @@ namespace Assets.CaseFile.Components
 {
     public class PelvisCup : Implant
     {
-        public const string ComponentTypeName = "Pelvis Cup";
-
         public Vector3 AcetabularAxis
         {
             get
@@ -34,11 +32,6 @@ namespace Assets.CaseFile.Components
         public PelvisCup(string brand, string variant, String size, string side, Mesh mesh, List<Landmark> landmark)
             : base(brand, variant, size, side, mesh, landmark)
         {
-        }
-
-        public override string ComponentType()
-        {
-            return ComponentTypeName;
         }
 
         internal override void ReadFromFixedpath(byte[] datFileContent)
