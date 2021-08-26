@@ -275,7 +275,8 @@ namespace Assets.CaseFile
                                 x.Name == "TibiaRightLandmarks" || x.Name == "PelvisLandmarks")) break;
                         }
                     }
-                    else if (x.MoveToContent() == XmlNodeType.Element && (x.Name == "Cases" || x.Name == "KicoCASEfiles"))
+                    else if (x.MoveToContent() == XmlNodeType.Element && (x.Name == "Cases" ||
+                        x.Name == "KicoCASEfiles" || x.Name == "TempVersion"))
                     {
                         while (!x.EOF)
                         {
@@ -375,7 +376,7 @@ namespace Assets.CaseFile
                             }
 
                             if (!x.Read() || x.MoveToContent() == XmlNodeType.EndElement &&
-                                (x.Name == "Cases" || x.Name == "KicoCASEfiles")) break;
+                                (x.Name == "Cases" || x.Name == "KicoCASEfiles" || x.Name == "TempVersion")) break;
                         }
                     }
                     else if (x.MoveToContent() == XmlNodeType.Element && x.Name == "FunctionalValues")
@@ -549,49 +550,49 @@ namespace Assets.CaseFile
             {
                 if (plan.ContainsKey("FemurSizeString") &&
                     !string.IsNullOrEmpty(plan["FemurSizeString"]) &&
-                    !m_Project.PlanImplants[0].ContainsKey(ComponentType.Femur))
+                    !m_Project.PlanImplants[index].ContainsKey(ComponentType.Femur))
                 {
                     loadCompleted = false;
                 }
                 if (plan.ContainsKey("TibiaInsertSizeString") &&
                     !string.IsNullOrEmpty(plan["TibiaInsertSizeString"]) &&
-                    !m_Project.PlanImplants[0].ContainsKey(ComponentType.TibiaInsert))
+                    !m_Project.PlanImplants[index].ContainsKey(ComponentType.TibiaInsert))
                 {
                     loadCompleted = false;
                 }
                 if (plan.ContainsKey("TibiaSizeString") &&
                     !string.IsNullOrEmpty(plan["TibiaSizeString"]) &&
-                    !m_Project.PlanImplants[0].ContainsKey(ComponentType.TibiaTray))
+                    !m_Project.PlanImplants[index].ContainsKey(ComponentType.TibiaTray))
                 {
                     loadCompleted = false;
                 }
                 if (plan.ContainsKey("PatellaSizeString") &&
                     !string.IsNullOrEmpty(plan["PatellaSizeString"]) &&
-                    !m_Project.PlanImplants[0].ContainsKey(ComponentType.Patella))
+                    !m_Project.PlanImplants[index].ContainsKey(ComponentType.Patella))
                 {
                     loadCompleted = false;
                 }
                 if (plan.ContainsKey("PelvisCupSize") &&
                     !string.IsNullOrEmpty(plan["PelvisCupSize"]) &&
-                    !m_Project.PlanImplants[0].ContainsKey(ComponentType.PelvisCup))
+                    !m_Project.PlanImplants[index].ContainsKey(ComponentType.PelvisCup))
                 {
                     loadCompleted = false;
                 }
                 if (plan.ContainsKey("PelvisLinerSize") &&
                     !string.IsNullOrEmpty(plan["PelvisLinerSize"]) &&
-                    !m_Project.PlanImplants[0].ContainsKey(ComponentType.PelvisLiner))
+                    !m_Project.PlanImplants[index].ContainsKey(ComponentType.PelvisLiner))
                 {
                     loadCompleted = false;
                 }
                 if (plan.ContainsKey("FemurHeadSize") &&
                     !string.IsNullOrEmpty(plan["FemurHeadSize"]) &&
-                    !m_Project.PlanImplants[0].ContainsKey(ComponentType.FemurHead))
+                    !m_Project.PlanImplants[index].ContainsKey(ComponentType.FemurHead))
                 {
                     loadCompleted = false;
                 }
                 if (plan.ContainsKey("FemurStemSize") &&
                     !string.IsNullOrEmpty(plan["FemurStemSize"]) &&
-                    !m_Project.PlanImplants[0].ContainsKey(ComponentType.FemurStem))
+                    !m_Project.PlanImplants[index].ContainsKey(ComponentType.FemurStem))
                 {
                     loadCompleted = false;
                 }
