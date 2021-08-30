@@ -372,6 +372,9 @@ namespace Assets.CaseFile
                                 {
                                     plan.Add("FemurRO", x.GetAttribute("FemurRO"));
                                 }
+                                plan.Add("CupEuler", x.GetAttribute("CupPositionalDataString"));
+                                plan.Add("StemEuler", x.GetAttribute("StemPositionalDataString"));
+                                plan.Add("FemurHeadEuler", x.GetAttribute("FemurPositionalDataString"));
                                 m_Project.PlanValues.Add(plan);
                             }
 
@@ -517,6 +520,9 @@ namespace Assets.CaseFile
                 dictionary.Add("FemurEuler", new PositionalData(plan["FemurEuler"]));
                 dictionary.Add("TibiaEuler", new PositionalData(plan["TibiaEuler"]));
                 dictionary.Add("PatellaEuler", new PositionalData(plan["PatellaEuler"]));
+                dictionary.Add("CupEuler", new PositionalData(plan["CupEuler"]));
+                dictionary.Add("StemEuler", new PositionalData(plan["StemEuler"]));
+                dictionary.Add("FemurHeadEuler", new PositionalData(plan["FemurHeadEuler"]));
 
                 m_Project.PlanComponentPosition.Add(index,dictionary);
             }
