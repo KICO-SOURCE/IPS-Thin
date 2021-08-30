@@ -63,6 +63,11 @@ namespace Assets._MUTUAL.Viewport
         /// </summary>
         public int RotationAngle { get; set; } = 0;
 
+        /// <summary>
+        /// Background color
+        /// </summary>
+        public Color Background { get; set; } = Color.white;
+
         #endregion
 
         #region Constructor
@@ -105,6 +110,7 @@ namespace Assets._MUTUAL.Viewport
             camera = cameras[0];
             camera.rect = new Rect(Postion, Size);
             camera.cullingMask = cullingMask;
+            camera.backgroundColor = Background;
 
             camera.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
             camera.transform.position = origin - camAxis * CameraPostion;

@@ -32,7 +32,7 @@ namespace Assets._MUTUAL.Viewport
             this.project = project;
             this.planIndex = planIndex;
 
-            coronalView = new _3DView();
+            coronalView = new _3DView() { CameraPostion = 500, Background = Color.black };
             Views.Add(coronalView);
         }
 
