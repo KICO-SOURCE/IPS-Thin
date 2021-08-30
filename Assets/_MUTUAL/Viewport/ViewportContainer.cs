@@ -71,12 +71,21 @@ namespace Assets._MUTUAL.Viewport
         public void Activate()
         {
             mainContainer = UnityEngine.Object.Instantiate(containerPrefab, parent.transform);
-            tabGroup.Activate();
-            tabGroup.TabSelected += HandleTabSelected;
-            PopulateViewportTabs();
-            viewportManager.CreateViewports();
-            tabGroup.Tabs.First().OnSelected();
-            viewportManager.HandleViewportSelected(tabGroup.Tabs.First().Title);
+            viewportManager.PopulateViewports();
+            if (viewportManager.Viewports.Count > 1)
+            {
+                tabGroup.Activate();
+                tabGroup.TabSelected += HandleTabSelected;
+                PopulateViewportTabs();
+                viewportManager.CreateViewports();
+                tabGroup.Tabs.First().OnSelected();
+                viewportManager.HandleViewportSelected(tabGroup.Tabs.First().Title);
+            }
+            else
+            {
+                viewportManager.CreateViewports();
+                viewportManager.Viewports.FirstOrDefault()?.Activate();
+            }
         }
 
         /// <summary>

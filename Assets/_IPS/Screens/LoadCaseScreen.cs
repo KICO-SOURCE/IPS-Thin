@@ -16,6 +16,7 @@ namespace Ips.Screens
         private readonly Project m_Project;
         private readonly CaseFileLoader m_CaseFileLoader;
         private readonly ViewportContainer m_ViewportContainer;
+        private readonly ViewportFactory m_ViewportFactory;
 
         #endregion
 
@@ -37,12 +38,15 @@ namespace Ips.Screens
         #region Constructors
 
         public LoadCaseScreen(Patient patient, Project project,
-                              CaseFileLoader caseFileLoader, ViewportContainer viewportContainer)
+                              CaseFileLoader caseFileLoader,
+                              ViewportContainer viewportContainer,
+                              ViewportFactory viewportFactory)
         {
             m_Patient = patient;
             m_Project = project;
             m_CaseFileLoader = caseFileLoader;
             m_ViewportContainer = viewportContainer;
+            m_ViewportFactory = viewportFactory;
         }
 
         #endregion
@@ -129,6 +133,14 @@ namespace Ips.Screens
         public void OnViewportButtonClicked()
         {
             GameObject.Find(ControlParentName).SetActive(false);
+            m_ViewportFactory.PopulateReportViewports();
+            m_ViewportContainer.Activate();
+        }
+		
+		private void OnViewButtonClicked()
+        {
+            GameObject.Find(ControlParentName).SetActive(false);
+            m_ViewportFactory.PopulatePlanViewports();
             m_ViewportContainer.Activate();
         }
 

@@ -1,6 +1,5 @@
 ﻿#region Usings
 
-using Assets.CaseFile;
 using System.Collections.Generic;
 
 #endregion
@@ -15,7 +14,7 @@ namespace Assets._MUTUAL.Viewport
         #region Private Members
 
         private List<IViewport> viewports;
-        private readonly Patient patient;
+        private readonly ViewportFactory viewportFactory;
 
         #endregion
 
@@ -39,9 +38,9 @@ namespace Assets._MUTUAL.Viewport
         /// <summary>
         /// Creates new instance of viewport manager.
         /// </summary>
-        public ViewportManager(Patient patient)
+        public ViewportManager(ViewportFactory viewportFactory)
         {
-            this.patient = patient;
+            this.viewportFactory = viewportFactory;
             viewports = new List<IViewport>();
             PopulateViewports();
         }
@@ -68,21 +67,15 @@ namespace Assets._MUTUAL.Viewport
             });
         }
 
-        #endregion
-
-        #region Private Methods
-
         /// <summary>
         /// Populate viewports.
         /// </summary>
-        private void PopulateViewports()
+        public void PopulateViewports()
         {
-            // TODO : Dummy viewports for testing
-            viewports.Add(new NativeAlignment(patient) { Title = "NativeAlignment" });
-            viewports.Add(new NativeViewport(patient) { Title = "VP2" });
-            viewports.Add(new TibioFemoralViewport(patient) { Title = "VP3" });
-            viewports.Add(new TibioFemoralViewport(patient) { Title = "VP4" });
-            viewports.Add(new PatellaViewport(patient) { Title = "VP5" });
+            viewports.ForEach(v => v.Deactivate());
+            viewports.Clear();
+
+            viewports.AddRange(viewportFactory.Viewports);
         }
 
         public void CreateViewports()

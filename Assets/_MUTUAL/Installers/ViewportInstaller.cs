@@ -18,6 +18,7 @@ namespace Assets._MUTUAL.Installers
             Container.Bind<TabGroup>().AsSingle();
             Container.Bind<ViewportContainer>().AsSingle();
             Container.Bind<ViewportManager>().AsSingle();
+            Container.Bind<ViewportFactory>().AsSingle();
         }
     }
 }
