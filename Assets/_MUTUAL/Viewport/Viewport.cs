@@ -3,6 +3,8 @@
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
+using Assets.CaseFile;
+using UnityEngine.SceneManagement;
 
 #endregion
 
@@ -24,8 +26,11 @@ namespace Assets._MUTUAL.Viewport
         private const string meshMaterialPath = "Materials/BoneMaterial";
 
         private Dictionary<string, Mesh> meshes;
+        private Dictionary<string, Mesh> components;
+        private Dictionary<string, Transform> componentPositions;
         private Dictionary<string, int> layers;
         private List<GameObject> meshObjects;
+        private int nextLayer = 8;
 
         #endregion
 
@@ -121,19 +126,38 @@ namespace Assets._MUTUAL.Viewport
             this.meshes = meshes;
             if (meshes == null) return;
 
-            int layer = 8;
             foreach (var mesh in meshes)
             {
-                layers.Add(mesh.Key, layer);
-                layer++;
+                layers.Add(mesh.Key, nextLayer);
+                nextLayer++;
             }
-            parent = GameObject.FindGameObjectWithTag(parentTag);
+            if (parent == null)
+            {
+                parent = GameObject.FindGameObjectWithTag(parentTag);
+            }
+        }
+
+        protected void InitialiseComponents(Dictionary<string, Mesh> meshes,
+                                            Dictionary<string, Transform> transforms)
+        {
+            components = meshes;
+            componentPositions = transforms;
+            if (components == null) return;
+
+            foreach (var component in components)
+            {
+                layers.Add(component.Key, nextLayer);
+                nextLayer++;
+            }
+
+            if (parent == null)
+            {
+                parent = GameObject.FindGameObjectWithTag(parentTag);
+            }
         }
 
         protected void LoadMeshes()
         {
-            if (meshes == null) return;
-
             meshView = UnityEngine.Object.Instantiate(meshPrefab, parent.transform);
             var lights = meshView.GetComponentsInChildren<Light>();
 
@@ -151,16 +175,39 @@ namespace Assets._MUTUAL.Viewport
             lights[5].transform.LookAt(origin, Vector3.down);
 
             var material = Resources.Load<Material>(meshMaterialPath);
-            foreach (var mesh in meshes)
-            {
-                var go = new GameObject(mesh.Key, typeof(MeshFilter), typeof(MeshRenderer));
-                go.transform.parent = meshView.transform;
-                go.GetComponent<MeshFilter>().mesh = mesh.Value;
-                go.GetComponent<MeshRenderer>().material = material;
-                go.layer = layers[mesh.Key];
 
-                go.SetActive(true);
-                meshObjects.Add(go);
+            if (meshes != null)
+            {
+                foreach (var mesh in meshes)
+                {
+                    var go = new GameObject(mesh.Key, typeof(MeshFilter), typeof(MeshRenderer));
+                    go.transform.parent = meshView.transform;
+                    go.GetComponent<MeshFilter>().mesh = mesh.Value;
+                    go.GetComponent<MeshRenderer>().material = material;
+                    go.layer = layers[mesh.Key];
+
+                    go.SetActive(true);
+                    meshObjects.Add(go);
+                }
+            }
+
+            if (components != null)
+            {
+                foreach (var component in components)
+                {
+                    var go = new GameObject(component.Key, typeof(MeshFilter), typeof(MeshRenderer));
+                    go.transform.parent = meshView.transform;
+                    go.GetComponent<MeshFilter>().mesh = component.Value;
+                    go.GetComponent<MeshRenderer>().material = material;
+                    go.GetComponent<MeshRenderer>().material.color = Color.blue;
+                    go.layer = layers[component.Key];
+
+                    go.transform.localPosition = componentPositions[component.Key].position;
+                    go.transform.localEulerAngles = componentPositions[component.Key].eulerAngles;
+
+                    go.SetActive(true);
+                    meshObjects.Add(go);
+                }
             }
         }
 

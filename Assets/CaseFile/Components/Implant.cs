@@ -6,6 +6,7 @@ namespace Assets.CaseFile.Components
 {
     public abstract class Implant
     {
+        public string Name { get; set; }
         public string Brand { get; set; }
         public string Variant { get; set; }
         public string Size { get; set; }

@@ -65,12 +65,12 @@ namespace Assets._MUTUAL.Viewport
         }
 
         /// <summary>
-        /// Populate knee viewports.
+        /// Populate knee plan viewports.
         /// </summary>
-        public void PopulatePlanViewports()
+        public void PopulatePlanViewports(int planIndex = 0)
         {
             viewports.Clear();
-            viewports.Add(new CoronalViewport(patient, project));
+            viewports.Add(new KneePlanViewport(patient, project, planIndex));
         }
 
         #endregion

@@ -110,7 +110,7 @@ namespace Assets.CaseFile
                 size = sbBytes.ToString();
             }
 
-            var url = WebServerBaseUrl + "api/KICOCADWebAPIService?type=" + GetComponentType(type) +
+            var url = WebServerBaseUrl + "api/KICOCADWebAPIService?type=" + GetComponentName(type) +
                 "&brand=" + brand + "&Variant=" + variant + "&side=" + side + "&size=" + size;
             //Debug.Log(url);
 
@@ -170,10 +170,10 @@ namespace Assets.CaseFile
                                     comp = new TibiaTray(brand, brand, size, variant, null, null);
                                 }
                             }
-                            else if (type == GetComponentType(ComponentType.PelvisCup)) comp = new PelvisCup(brand, variant, size, side, null, null);
-                            else if (type == GetComponentType(ComponentType.PelvisLiner)) comp = new PelvisLiner(brand, variant, size, side, null, null);
-                            else if (type == GetComponentType(ComponentType.FemurStem)) comp = new FemurStem(brand, variant, size, side, null, null);
-                            else if (type == GetComponentType(ComponentType.FemurHead)) comp = new FemurHead(brand, variant, size, side, null, null);
+                            else if (type == GetComponentName(ComponentType.PelvisCup)) comp = new PelvisCup(brand, variant, size, side, null, null);
+                            else if (type == GetComponentName(ComponentType.PelvisLiner)) comp = new PelvisLiner(brand, variant, size, side, null, null);
+                            else if (type == GetComponentName(ComponentType.FemurStem)) comp = new FemurStem(brand, variant, size, side, null, null);
+                            else if (type == GetComponentName(ComponentType.FemurHead)) comp = new FemurHead(brand, variant, size, side, null, null);
                             if (comp != null) componentlibrary.Add(comp, count);
 
                             count++;
@@ -228,7 +228,7 @@ namespace Assets.CaseFile
             }
         }
 
-        private static string GetComponentType(ComponentType componentType)
+        public static string GetComponentName(ComponentType componentType)
         {
             switch (componentType)
             {

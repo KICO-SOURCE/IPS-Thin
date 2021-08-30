@@ -530,7 +530,8 @@ namespace Assets.CaseFile
 
         private void OnComponentLoaded(int index, ComponentType type, Implant implant)
         {
-            if(!m_Project.PlanImplants.ContainsKey(index))
+            implant.Name = ComponentLoader.GetComponentName(type);
+            if (!m_Project.PlanImplants.ContainsKey(index))
             {
                 m_Project.PlanImplants.Add(index, new Dictionary<ComponentType, Implant>());
             }

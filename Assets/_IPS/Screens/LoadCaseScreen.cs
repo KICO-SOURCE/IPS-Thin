@@ -25,6 +25,7 @@ namespace Ips.Screens
         private const string LoadCaseBTNName = "LoadCaseBTN";
         private const string ViewportBTNName = "Viewport";
         private const string ControlParentName = "Overlay";
+        private const string ViewBTNName = "View";
 
         #endregion
 
@@ -32,6 +33,7 @@ namespace Ips.Screens
 
         private Button m_LoadCaseBtn;
         private Button m_ViewportBtn;
+        private Button m_ViewBtn;
 
         #endregion
 
@@ -73,6 +75,7 @@ namespace Ips.Screens
             if (path.Length != 0)
             {
                 m_ViewportBtn.enabled = false;
+                m_ViewBtn.enabled = false;
                 byte[] file = File.ReadAllBytes(path);
                 m_CaseFileLoader.LoadCaseFile(file);
                 m_CaseFileLoader.LoadComponentData(LoadCompleted);
@@ -151,30 +154,35 @@ namespace Ips.Screens
         private void LoadCompleted()
         {
             m_ViewportBtn.enabled = true;
+            m_ViewBtn.enabled = true;
         }
 
         private void PopulateUiElements()
         {
             m_LoadCaseBtn = GameObject.Find(LoadCaseBTNName).GetComponent<Button>();
             m_ViewportBtn = GameObject.Find(ViewportBTNName).GetComponent<Button>();
+            m_ViewBtn = GameObject.Find(ViewBTNName).GetComponent<Button>();
         }
 
         private void AttachListeners()
         {
             m_LoadCaseBtn.onClick.AddListener(OnLoadCaseButtonClicked);
             m_ViewportBtn.onClick.AddListener(OnViewportButtonClicked);
+            m_ViewBtn.onClick.AddListener(OnViewButtonClicked);
         }
 
         private void DettachListeners()
         {
             m_LoadCaseBtn?.onClick.RemoveAllListeners();
             m_ViewportBtn?.onClick.RemoveAllListeners();
+            m_ViewBtn?.onClick.RemoveAllListeners();
         }
 
         private void UnPopulateUiElements()
         {
             m_LoadCaseBtn = null;
             m_ViewportBtn = null;
+            m_ViewBtn = null;
         }
     }
 
