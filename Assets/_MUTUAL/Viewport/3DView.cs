@@ -59,11 +59,6 @@ namespace Assets._MUTUAL.Viewport
         public int CameraPostion { get; set; } = 250;
 
         /// <summary>
-        /// View rotation direction
-        /// </summary>
-        public Vector3 RotateDirection { get; set; } = Vector3.left;
-
-        /// <summary>
         /// View rotation angle
         /// </summary>
         public int RotationAngle { get; set; } = 0;
@@ -115,8 +110,8 @@ namespace Assets._MUTUAL.Viewport
             camera.transform.position = origin - camAxis * CameraPostion;
             camera.transform.LookAt(origin, -camAxis);
 
-            var axis = camera.transform.TransformVector(RotateDirection);
-            camera.transform.Rotate(axis, RotationAngle);
+            var axis = camera.transform.TransformVector(Vector3.forward);
+            camera.transform.RotateAround(origin, axis, RotationAngle);
 
             camera.gameObject.SetActive(true);
         }

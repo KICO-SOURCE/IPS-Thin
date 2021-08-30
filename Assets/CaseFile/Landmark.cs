@@ -11,7 +11,8 @@ namespace Assets.CaseFile
         public Vector3 Position { get; set; }
 
         public void ReadLandmark(XmlTextReader reader,
-            bool encrypted = false, string bone = null)
+            bool encrypted = false, string bone = null,
+            bool switchCoordinateSystem = true)
         {
             string attachedBone = string.Empty;
             string type = string.Empty;
@@ -45,9 +46,18 @@ namespace Assets.CaseFile
             Bone = string.IsNullOrEmpty(bone) ?
                         attachedBone : bone;
             Type = type;
-            Position = new Vector3(float.Parse(x),
-                                   float.Parse(y),
-                                   float.Parse(z));
+            if (switchCoordinateSystem)
+            {
+                Position = new Vector3(-1 * float.Parse(y),
+                                       float.Parse(z),
+                                       float.Parse(x));
+            }
+            else
+            {
+                Position = new Vector3(float.Parse(x),
+                                       float.Parse(y),
+                                       float.Parse(z));
+            }
         }
     }
 }

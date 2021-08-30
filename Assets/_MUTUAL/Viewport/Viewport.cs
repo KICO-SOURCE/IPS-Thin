@@ -159,8 +159,6 @@ namespace Assets._MUTUAL.Viewport
                 go.GetComponent<MeshRenderer>().material = material;
                 go.layer = layers[mesh.Key];
 
-                //Need to revisit why this is required
-                go.transform.localScale = new Vector3(1, -1, 1);
                 go.SetActive(true);
                 meshObjects.Add(go);
             }

@@ -36,10 +36,10 @@ namespace Assets._MUTUAL.Viewport
             this.patient = patient;
             coronalFemurView = new _3DView() { Postion = new Vector2(0, 0.475f), Size = new Vector2(0.25f, 0.475f) };
             coronalTibiaView = new _3DView() { Postion = new Vector2(0, 0), Size = new Vector2(0.25f, 0.475f) };
-            axialFemurView = new _3DView() { Postion = new Vector2(0.25f, 0.475f), Size = new Vector2(0.25f, 0.475f) };
-            axialTibiaView = new _3DView() { Postion = new Vector2(0.25f, 0), Size = new Vector2(0.25f, 0.475f) };
-            sagittalFemurView = new _3DView() { Postion = new Vector2(0.5f, 0.475f), Size = new Vector2(0.25f, 0.475f), RotationAngle = 90 };
-            sagittalTibiaView = new _3DView() { Postion = new Vector2(0.5f, 0), Size = new Vector2(0.25f, 0.475f), RotationAngle = 90 };
+            axialFemurView = new _3DView() { Postion = new Vector2(0.25f, 0.475f), Size = new Vector2(0.25f, 0.475f), RotationAngle = -90 };
+            axialTibiaView = new _3DView() { Postion = new Vector2(0.25f, 0), Size = new Vector2(0.25f, 0.475f), RotationAngle = -90 };
+            sagittalFemurView = new _3DView() { Postion = new Vector2(0.5f, 0.475f), Size = new Vector2(0.25f, 0.475f)};
+            sagittalTibiaView = new _3DView() { Postion = new Vector2(0.5f, 0), Size = new Vector2(0.25f, 0.475f)};
             longlegView = new _3DView() { Postion = new Vector2(0.75f, 0),
                         Size = new Vector2(0.25f, 0.95f), CameraPostion = 2000 };
             Views.Add(coronalFemurView);
@@ -78,9 +78,7 @@ namespace Assets._MUTUAL.Viewport
             longlegView.InitialiseView(mask, origin, apAxis);
 
             mask = GetCullingMask("ProximalTibia");
-            var tubercle = patient.GetLandmarkPosition("Tubercle");
-            var pclInsertion = patient.GetLandmarkPosition("PCLInsertion");
-            origin = (tubercle + pclInsertion) * 0.5f;
+            origin = patient.GetLandmarkPosition("PCLInsertion");
             Ips.Utils.MeasurementUtils.GetTibiaAxes(patient, out siAxis, out mlAxis, out apAxis);
             coronalTibiaView.InitialiseView(mask, origin, -apAxis);
             axialTibiaView.InitialiseView(mask, origin, -siAxis);

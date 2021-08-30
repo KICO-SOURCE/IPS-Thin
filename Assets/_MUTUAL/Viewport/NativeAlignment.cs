@@ -31,8 +31,7 @@ namespace Assets._MUTUAL.Viewport
                                            CameraPostion = 2000};
             sagittalView = new _3DView() { Postion = new Vector2(0.85f, 0),
                                             Size = new Vector2(0.15f, 0.95f),
-                                            CameraPostion = 2000,
-                                            RotationAngle = 90};
+                                            CameraPostion = 2000};
             Views.Add(coronalView);
             Views.Add(sagittalView);
         }

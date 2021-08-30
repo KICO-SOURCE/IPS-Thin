@@ -33,9 +33,9 @@ namespace Assets._MUTUAL.Viewport
         {
             this.patient = patient;
             nativePatellaView = new _3DView() { Postion = new Vector2(0, 0), Size = new Vector2(0.4f, 0.95f) };
-            axialView = new _3DView() { Postion = new Vector2(0.4f, 0), Size = new Vector2(0.3f, 0.475f) };
+            axialView = new _3DView() { Postion = new Vector2(0.4f, 0), Size = new Vector2(0.3f, 0.475f), RotationAngle = -90 };
             coronalView = new _3DView() { Postion = new Vector2(0.4f, 0.475f), Size = new Vector2(0.3f, 0.475f) };
-            resectedAxialView = new _3DView() { Postion = new Vector2(0.7f, 0), Size = new Vector2(0.3f, 0.475f) };
+            resectedAxialView = new _3DView() { Postion = new Vector2(0.7f, 0), Size = new Vector2(0.3f, 0.475f), RotationAngle = -90 };
             resectedCoronalView = new _3DView() { Postion = new Vector2(0.7f, 0.475f), Size = new Vector2(0.3f, 0.475f) };
 
             Views.Add(nativePatellaView);
@@ -61,7 +61,6 @@ namespace Assets._MUTUAL.Viewport
             var meshes = patient.GetMeshes("Patella");
             InitialiseMeshes(origin, meshes);
 
-            origin = origin - apAxis * 60;
             var mask = GetCullingMask("Patella");
 
             nativePatellaView.InitialiseView(mask, origin, apAxis);

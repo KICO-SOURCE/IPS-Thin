@@ -14,7 +14,8 @@ namespace Assets.CaseFile
         private static string _header;
         private static readonly Regex VertexRegex = new Regex(@"vertex\s*(\S*)\s*(\S*)\s*(\S*)", RegexOptions.Compiled);
 
-        internal static Mesh GetXmlMeshGeometry3D(XmlTextReader reader)
+        internal static Mesh GetXmlMeshGeometry3D(XmlTextReader reader,
+                                    bool switchCoordinateSystem = true)
         {
             try
             {
@@ -128,12 +129,11 @@ namespace Assets.CaseFile
                                     {
                                         hasnormals = false;
                                     }
-                                    //TODO: This settings may need to enabled in future
-                                    //if (ApplicationSettings.SwitchCoordinateSystem)
-                                    //{
-                                    //    points.Add(new Vector3(-y, z, x));
-                                    //}
-                                    //else
+                                    if (switchCoordinateSystem)
+                                    {
+                                        points.Add(new Vector3(-y, z, x));
+                                    }
+                                    else
                                     {
                                         points.Add(new Vector3(x, y, z));
                                     }
@@ -155,14 +155,13 @@ namespace Assets.CaseFile
                                         node2Index = (int)br.ReadUInt32();
                                         node3Index = (int)br.ReadUInt32();
                                     }
-                                    //TODO: This settings may need to enabled in future
-                                    //if (ApplicationSettings.SwitchCoordinateSystem)
-                                    //{
-                                    //    indeces.Add(node3Index + ndOffset);
-                                    //    indeces.Add(node2Index + ndOffset);
-                                    //    indeces.Add(node1Index + ndOffset);
-                                    //}
-                                    //else
+                                    if (switchCoordinateSystem)
+                                    {
+                                        indeces.Add(node3Index + ndOffset);
+                                        indeces.Add(node2Index + ndOffset);
+                                        indeces.Add(node1Index + ndOffset);
+                                    }
+                                    else
                                     {
                                         indeces.Add(node1Index + ndOffset);
                                         indeces.Add(node2Index + ndOffset);

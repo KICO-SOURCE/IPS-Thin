@@ -47,8 +47,8 @@ namespace Assets.CaseFile
         {
             GameObject obj = new GameObject();
             Transform finalTransform = obj.transform;
-            finalTransform.SetFromRightHandEuler((float)TranslationX, (float)TranslationY, (float)TranslationZ, (float)Yaw, (float)Pitch, (float)Roll);
-           // GameObject.DestroyImmediate(obj);
+            finalTransform.SetFromRightHandEuler((float)TranslationX, (float)TranslationY, (float)TranslationZ, (float)Yaw, (float)Roll, (float)Pitch);
+            // GameObject.DestroyImmediate(obj);
             return finalTransform;
         }
 

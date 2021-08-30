@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Assets.CaseFile
 {
-    internal class Project
+    public class Project
     {
         #region Fields
 
