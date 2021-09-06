@@ -143,6 +143,36 @@ namespace Assets._MUTUAL.Utils
             }
         }
 
+        /// <summary>
+        /// Convert the given point to unity coordinate systems
+        /// </summary>
+        /// <param name="v">Point to be converted</param>
+        /// <returns>Converted point.</returns>
+        internal static Vector3 ConvertToUnityCoordinate(this Vector3 v)
+        {
+            var SwitchCoordinateSystem = true;
+            if (SwitchCoordinateSystem)
+            {
+                return new Vector3(-v.y, v.z, v.x);
+            }
+            return v;
+        }
+
+        /// <summary>
+        /// Convert the given point to non-unity coordinate systems
+        /// </summary>
+        /// <param name="v">Point to be converted</param>
+        /// <returns>Converted point.</returns>
+        internal static Vector3 ConvertToNonUnityCoordinate(this Vector3 v)
+        {
+            var SwitchCoordinateSystem = true;
+            if (SwitchCoordinateSystem)
+            {
+                return new Vector3(v.z, -v.x, v.y);
+            }
+            return v;
+        }
+
         #endregion
     }
 }

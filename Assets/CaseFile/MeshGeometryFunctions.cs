@@ -6,6 +6,9 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Globalization;
+using System.Linq;
+using Assets._MUTUAL.Utils;
 
 namespace Assets.CaseFile
 {
@@ -249,6 +252,422 @@ namespace Assets.CaseFile
                 normals[i] = w;
             }
             return normals;
+        }
+
+        /// <summary>
+        /// Read the stl file
+        /// </summary>
+        /// <param name="fileName">File path</param>
+        /// <returns>Return mesh data.</returns>
+        public static MeshData ReadStl(string fileName)
+        {
+            if (!System.IO.File.Exists(fileName)) return null;
+            MeshData m = null;
+
+            try
+            {
+                using (Stream stream = File.OpenRead(fileName))
+                {
+                    m = ReadStlascii(stream);
+
+                }
+            }
+            catch
+            {
+            }
+
+            if (m != null && m.vertices.Count > 0) return m;
+
+
+            try
+            {
+                using (Stream stream = File.OpenRead(fileName))
+                {
+                    using (BinaryReader reader = new BinaryReader(stream, Encoding.ASCII, true))
+                    {
+                        // TODO : Revist this reading logic
+                        var mesh = ReadStlBinary(reader);
+                        m = new MeshData();
+                        m.indexFormat = mesh.indexFormat;
+                        m.vertices = mesh.vertices.ToList();
+                        m.triangles = mesh.triangles.ToList();
+                    }
+                }
+            }
+            catch
+            {
+            }
+
+
+
+            return m;
+        }
+
+        /// <summary>
+        /// Read ASCII stl files.
+        /// </summary>
+        /// <param name="stream">Memory stream</param>
+        /// <returns>Return mesh data.</returns>
+        public static MeshData ReadStlascii(Stream stream)
+        {
+            MeshData output = new MeshData();
+            output.indexFormat = IndexFormat.UInt32;
+            var reader = new StreamReader(stream);
+            List<Vector3> vertices = new List<Vector3>();
+            try
+            {
+                while (!reader.EndOfStream)
+                {
+                    var line = reader.ReadLine();
+                    if (line == null)
+                    {
+                        continue;
+                    }
+
+                    line = line.Trim();
+
+                    if (line.Length == 0 || /*line.StartsWith("\0") ||*/ line.StartsWith("#") || line.StartsWith("!")
+                        || line.StartsWith("$"))
+                    {
+                        continue;
+                    }
+
+                    string id, values;
+                    ParseLine(line, out id, out values);
+                    switch (id)
+                    {
+                        case "solid":
+                            _header = values.Trim();
+                            break;
+                        case "facet":
+                            List<Vector3> pts = ReadFace(reader, values);
+                            foreach (var v in pts) vertices.Add(v);
+                            break;
+                        case "endsolid":
+                            break;
+                    }
+                }
+                output.vertices = vertices;
+            }
+            catch
+            {
+
+            }
+
+            try
+            {
+                List<int> triangles = new List<int>();
+                if (output.vertices.Count > 3)
+                {
+                    for (int i = 0; i < output.vertices.Count; i++)
+                    {
+                        triangles.Add(i);
+                    }
+                    output.triangles = triangles;
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            return output;
+        }
+
+        /// <summary>
+        /// Read the binary stl.
+        /// </summary>
+        /// <param name="reader">Binary reader.</param>
+        /// <returns>Return mesh data.</returns>
+        public static Mesh ReadStlBinary(BinaryReader reader)
+        {
+            if (reader == null)
+                return null;
+
+            Mesh stl = new Mesh();
+
+            try
+            {
+                byte[] buffer = new byte[80];
+
+
+                //Read (and ignore) the header and number of triangles.
+                buffer = reader.ReadBytes(80);
+                int numberoftris = (int)reader.ReadInt32();
+
+                stl.vertices = new Vector3[stl.vertexCount];
+                stl.triangles = new int[stl.triangles.GetLength(3)];
+
+                int count = 0;
+
+                //Read each facet until the end of the stream. Stop when the end of the stream is reached.
+                while ((reader.BaseStream.Position != reader.BaseStream.Length))
+                {
+
+                    float ni = reader.ReadSingle();
+                    float nj = reader.ReadSingle();
+                    float nk = reader.ReadSingle();
+                    float x1 = reader.ReadSingle();
+                    float y1 = reader.ReadSingle();
+                    float z1 = reader.ReadSingle();
+                    float x2 = reader.ReadSingle();
+                    float y2 = reader.ReadSingle();
+                    float z2 = reader.ReadSingle();
+                    float x3 = reader.ReadSingle();
+                    float y3 = reader.ReadSingle();
+                    float z3 = reader.ReadSingle();
+                    byte[] boolbuff = reader.ReadBytes(2);
+
+                    stl.vertices.SetValue(new Vector3(x1, y1, z1), stl.vertices.Rank);
+                    stl.vertices.SetValue(new Vector3(x2, y2, z2), stl.vertices.Rank);
+                    stl.vertices.SetValue(new Vector3(x3, y3, z3), stl.vertices.Rank);
+                    stl.triangles.SetValue(count, stl.triangles.Rank);
+                    stl.triangles.SetValue(count + 1, stl.triangles.Rank);
+                    stl.triangles.SetValue(count + 2, stl.triangles.Rank);
+                    count += 3;
+                }
+            }
+            catch (Exception err)
+            {
+                //  throw new Exception(string.Format("Error reading STL file.\n{0}", err.Message));
+            }
+
+            return stl;
+        }
+
+        /// <summary>
+        /// Parse the file data line by line
+        /// </summary>
+        /// <param name="line">Line to parse.</param>
+        /// <param name="id">Id of the line.</param>
+        /// <param name="values">Parsed line data</param>
+        private static void ParseLine(string line, out string id, out string values)
+        {
+            line = line.Trim();
+            int idx = line.IndexOf(' ');
+            if (idx == -1)
+            {
+                id = line;
+                values = string.Empty;
+            }
+            else
+            {
+                id = line.Substring(0, idx).ToLower();
+                values = line.Substring(idx + 1);
+            }
+        }
+
+        /// <summary>
+        /// Read the face data from the stl data
+        /// </summary>
+        /// <param name="reader">Stream reader</param>
+        /// <param name="normal">Facet normal</param>
+        /// <returns>Face data</returns>
+        private static List<Vector3> ReadFace(StreamReader reader, string normal)
+        {
+
+            List<Vector3> points = new List<Vector3>();
+            ReadLine(reader, "outer");
+            while (true)
+            {
+                var line = reader.ReadLine();
+                Vector3 point;
+                if (TryParseVertex(line, out point))
+                {
+                    points.Add(point);
+                    continue;
+                }
+
+                string id, values;
+                ParseLine(line, out id, out values);
+
+                if (id == "endloop")
+                {
+                    break;
+                }
+            }
+
+            ReadLine(reader, "endfacet");
+
+
+            return points;
+        }
+
+        /// <summary>
+        /// Read the line data from the stl file.
+        /// </summary>
+        /// <param name="reader">Stream reader</param>
+        /// <param name="token">String comparison token</param>
+        private static void ReadLine(StreamReader reader, string token)
+        {
+            if (token == null)
+            {
+                throw new ArgumentNullException("token");
+            }
+
+            var line = reader.ReadLine();
+            string id, values;
+            ParseLine(line, out id, out values);
+
+            if (!string.Equals(token, id, StringComparison.OrdinalIgnoreCase))
+            {
+                //throw new FileFormatException("Unexpected line.");
+                throw new ArgumentNullException("Unexpected line");
+            }
+        }
+
+        /// <summary>
+        /// Parse vertex data.
+        /// </summary>
+        /// <param name="line">Input vertex data</param>
+        /// <param name="point">vertex point.</param>
+        /// <returns>Parse status</returns>
+        private static bool TryParseVertex(string line, out Vector3 point)
+        {
+            var match = VertexRegex.Match(line);
+            if (!match.Success)
+            {
+                point = new Vector3();
+                return false;
+            }
+
+            float x = float.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture);
+            float y = float.Parse(match.Groups[2].Value, CultureInfo.InvariantCulture);
+            float z = float.Parse(match.Groups[3].Value, CultureInfo.InvariantCulture);
+
+            point = new Vector3(x, y, z);
+            return true;
+        }
+
+        /// <summary>
+        /// Calculate the normal for the given facet
+        /// </summary>
+        /// <param name="p0">Facet point</param>
+        /// <param name="p1">Facet point</param>
+        /// <param name="p2">Facet point</param>
+        /// <returns>Normal</returns>
+        public static Vector3 CalculateFacetNormal(Vector3 p0, Vector3 p1, Vector3 p2)
+        {
+            Vector3 u = p1 - p0;
+            Vector3 v = p2 - p0;
+            Vector3 n = Vector3.Cross(u, v);
+            n.Normalize();
+            return n;
+        }
+
+    }
+
+    public class MeshData
+    {
+        public IndexFormat indexFormat;
+        public List<Vector3> vertices;
+        public List<int> triangles;
+        internal List<Vector3> facetNormals;
+        public List<Vector3> normals;
+        public List<Vector2> uv;
+
+        public MeshData()
+        {
+
+        }
+
+        public MeshData(Mesh mesh)
+        {
+            indexFormat = mesh.indexFormat;
+            vertices = mesh.vertices.ToList();
+            triangles = mesh.triangles.ToList();
+            normals = mesh.normals?.ToList();
+            uv = mesh.uv?.ToList();
+        }
+
+        internal void GenerateFacetNormals()
+        {
+            facetNormals = new List<Vector3>(triangles.Count / 3);
+            Vector3 normal;
+            for (int i = 0; i < triangles.Count; i += 3)
+            {
+                normal = MeshGeometryFunctions.CalculateFacetNormal(
+                        vertices[triangles[i]],
+                        vertices[triangles[i + 1]],
+                        vertices[triangles[i + 2]]
+                    );
+                facetNormals.Add(normal);
+            }
+        }
+
+        internal void ConvertToUnityCoordinateSystem()
+        {
+            vertices = vertices.Select(UnityExtensions.ConvertToUnityCoordinate).ToList();
+            if (facetNormals?.Count > 0)
+            {
+                facetNormals.Select(UnityExtensions.ConvertToUnityCoordinate).ToList();
+            }
+            if (normals?.Count > 0)
+            {
+                normals = normals.Select(UnityExtensions.ConvertToUnityCoordinate).ToList();
+            }
+        }
+
+        internal void ConvertToNonUnityCoordinateSystem()
+        {
+            vertices = vertices.Select(UnityExtensions.ConvertToNonUnityCoordinate).ToList();
+            if (facetNormals?.Count > 0)
+            {
+                facetNormals = facetNormals.Select(UnityExtensions.ConvertToNonUnityCoordinate).ToList();
+            }
+            if (normals?.Count > 0)
+            {
+                normals = normals.Select(UnityExtensions.ConvertToNonUnityCoordinate).ToList();
+            }
+
+            for (int i = 0; i < triangles.Count; i += 3)
+            {
+                int index0 = triangles[i];
+                int index1 = triangles[i + 1];
+                int index2 = triangles[i + 2];
+
+                triangles[i] = index2;
+                triangles[i + 2] = index0;
+            }
+        }
+
+        internal void ApplyTransform(Transform transform)
+        {
+            vertices = vertices.Select(transform.TransformPoint).ToList();
+            if (facetNormals?.Count > 0)
+            {
+                facetNormals = facetNormals.Select(transform.TransformVector).ToList();
+            }
+            if (normals?.Count > 0)
+            {
+                normals = normals.Select(transform.TransformVector).ToList();
+            }
+        }
+
+        internal MeshData Clone()
+        {
+            return new MeshData
+            {
+                indexFormat = this.indexFormat,
+                vertices = this.vertices.ToList(),
+                triangles = this.triangles.ToList(),
+                normals = this.normals?.ToList(),
+                uv = this.uv?.ToList()
+            };
+        }
+
+        internal Mesh ToMesh()
+        {
+            var mesh = new Mesh
+            {
+                indexFormat = vertices.Count <= 65536 ? IndexFormat.UInt16 : IndexFormat.UInt32
+            };
+            mesh.vertices = vertices.ToArray();
+            mesh.triangles = triangles.ToArray();
+            mesh.normals = normals?.ToArray();
+            mesh.uv = uv?.ToArray();
+            mesh.RecalculateNormals();
+            return mesh;
         }
     }
 }
