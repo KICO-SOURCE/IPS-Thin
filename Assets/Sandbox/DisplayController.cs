@@ -2,6 +2,7 @@
 
 using Assets.CaseFile;
 using UnityEngine;
+using UnityEngine.UI;
 
 #endregion
 
@@ -25,14 +26,20 @@ namespace Assets.Sandbox
         public Camera Camera;
         public Light Light;
         public GameObject PivotPoint;
+        public GameObject ShowVerticesBtn;
+        public GameObject UIParent;
 
         #endregion
 
         #region Private Methods
 
+        GameObject Mesh;
+
         private void Start()
         {
             DisplaySample();
+            var verticesBtn = ShowVerticesBtn.GetComponent<Button>();
+            verticesBtn.onClick.AddListener(ShowVerticesList);
         }
 
         /// <summary>
@@ -41,8 +48,8 @@ namespace Assets.Sandbox
         private void DisplaySample()
         {
             var path = Application.dataPath + @"\Sandbox\Sample\pelvis.stl";
-            var mesh = LoadStl(path);
-            SetCameraAndLightPosition(mesh);
+            Mesh = LoadStl(path);
+            SetCameraAndLightPosition(Mesh);
         }
 
         /// <summary>
@@ -85,6 +92,12 @@ namespace Assets.Sandbox
             Light.transform.eulerAngles = rotation;
 
             PivotPoint.transform.position = Vector3.zero;
+        }
+
+        private void ShowVerticesList()
+        {
+            MeshPointDataManager meshPointDataManager = new MeshPointDataManager();
+            meshPointDataManager.ShowMeshVerticesList(UIParent, Mesh);
         }
 
         #endregion
