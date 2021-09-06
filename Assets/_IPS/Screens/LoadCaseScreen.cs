@@ -1,6 +1,5 @@
 ﻿using Assets._MUTUAL.Viewport;
 using Assets.CaseFile;
-using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
@@ -39,16 +38,13 @@ namespace Ips.Screens
 
         #region Constructors
 
-        public LoadCaseScreen(Patient patient, Project project,
-                              CaseFileLoader caseFileLoader,
-                              ViewportContainer viewportContainer,
-                              ViewportFactory viewportFactory)
+        public LoadCaseScreen()
         {
-            m_Patient = patient;
-            m_Project = project;
-            m_CaseFileLoader = caseFileLoader;
-            m_ViewportContainer = viewportContainer;
-            m_ViewportFactory = viewportFactory;
+            m_Patient = Patient.Instance;
+            m_Project = Project.Instance;
+            m_CaseFileLoader = CaseFileLoader.Instance;
+            m_ViewportContainer = ViewportContainer.Instance;
+            m_ViewportFactory = ViewportFactory.Instance;
         }
 
         #endregion
@@ -78,7 +74,7 @@ namespace Ips.Screens
                 m_ViewBtn.enabled = false;
                 byte[] file = File.ReadAllBytes(path);
                 m_CaseFileLoader.LoadCaseFile(file);
-                m_CaseFileLoader.LoadComponentData(LoadCompleted);
+                m_CaseFileLoader.LoadComponentData(LoadCompleted, 2);
             }
 
             Debug.Log($"Patient Details: \n");
@@ -142,9 +138,27 @@ namespace Ips.Screens
 		
 		private void OnViewButtonClicked()
         {
-            GameObject.Find(ControlParentName).SetActive(false);
-            m_ViewportFactory.PopulatePlanViewports();
-            m_ViewportContainer.Activate();
+            //GameObject.Find(ControlParentName).SetActive(false);
+            //m_ViewportFactory.PopulatePlanViewports(2);
+            //m_ViewportContainer.Activate();
+
+            var cupAxis = new Vector3(1, 1, 1);
+            cupAxis.Normalize();
+
+            var PelvicCoronal = Vector3.forward;
+            var cupCenter = Vector3.zero + cupAxis * 10;
+            var cupAxisPt = cupCenter + cupAxis * 300;
+            var cupAxisCoronalProjection = Vector3.ProjectOnPlane(cupAxis, PelvicCoronal);
+            var cross = Vector3.Cross(cupAxis, cupAxisCoronalProjection);
+
+            Plane projPlane = new Plane();
+            var projPoint = Vector3.ProjectOnPlane(cupCenter, PelvicCoronal);
+            projPlane.Set3Points(cupAxisPt, cupCenter, projPoint);
+
+            Debug.Log($"Plane normal: {projPlane.normal}, Dot: {Vector3.Dot(projPlane.normal, cross)}");
+
+            var cross1 = Vector3.Cross(cupAxis, PelvicCoronal);
+            Debug.Log($"Cross normal: {cross1.normalized}, Dot: {Vector3.Dot(cross1.normalized, cross)}");
         }
 
         #endregion

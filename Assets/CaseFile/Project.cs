@@ -1,4 +1,5 @@
 using Assets.CaseFile.Components;
+using System;
 using System.Collections.Generic;
 
 namespace Assets.CaseFile
@@ -6,6 +7,19 @@ namespace Assets.CaseFile
     public class Project
     {
         #region Fields
+
+        private static readonly Lazy<Project> _instance = new Lazy<Project>(() => new Project());
+
+        /// <summary>
+        /// Gets the instance.
+        /// </summary>
+        /// <value>
+        /// The instance.
+        /// </value>
+        public static Project Instance
+        {
+            get { return _instance.Value; }
+        }
 
         public List<Dictionary<string, string>> PlanValues { get; set; }
         public List<Measurement> FunctionalValues { get; set; }
@@ -22,12 +36,12 @@ namespace Assets.CaseFile
 
         #endregion
 
-        #region Public Methods
-
-        public Project()
+        private Project()
         {
             InitializeData();
         }
+
+        #region Public Methods
 
         public void InitializeData()
         {

@@ -1,6 +1,5 @@
 ﻿using Ips.Screens;
 using UnityEngine;
-using Zenject;
 
 namespace Ips.Managers
 {
@@ -12,21 +11,16 @@ namespace Ips.Managers
 
         #endregion
 
-        [Inject]
-        public void Construct(ILoadCaseScreen loadCaseScreen)
-        {
-            m_LoadCaseScreen = loadCaseScreen;
-            DontDestroyOnLoad(this);
-
-            AppStarter();
-        }
-
         #region Private Functions
 
-        
-        private void AppStarter()
+        private void Awake()
         {
-            Debug.Log("Constructed");
+            m_LoadCaseScreen = new LoadCaseScreen();
+        }
+
+        private void Start()
+        {
+            Debug.Log("Started");
             m_LoadCaseScreen.ActivateScreen();
         }
 

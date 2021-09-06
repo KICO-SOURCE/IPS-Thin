@@ -1,5 +1,6 @@
 ﻿#region Usings
 
+using System;
 using System.Collections.Generic;
 
 #endregion
@@ -11,9 +12,10 @@ namespace Assets._MUTUAL.Viewport
     /// </summary>
     public class ViewportManager
     {
+
         #region Private Members
 
-        private List<IViewport> viewports;
+        private static readonly Lazy<ViewportManager> _instance = new Lazy<ViewportManager>(() => new ViewportManager());
         private readonly ViewportFactory viewportFactory;
 
         #endregion
@@ -21,15 +23,20 @@ namespace Assets._MUTUAL.Viewport
         #region Public Properties
 
         /// <summary>
+        /// Gets the instance.
+        /// </summary>
+        /// <value>
+        /// The instance.
+        /// </value>
+        public static ViewportManager Instance
+        {
+            get { return _instance.Value; }
+        }
+
+        /// <summary>
         /// Gets the list of viewports.
         /// </summary>
-        public List<IViewport> Viewports
-        {
-            get
-            {
-                return viewports;
-            }
-        }
+        public List<IViewport> Viewports { get; }
 
         #endregion
 
@@ -38,10 +45,10 @@ namespace Assets._MUTUAL.Viewport
         /// <summary>
         /// Creates new instance of viewport manager.
         /// </summary>
-        public ViewportManager(ViewportFactory viewportFactory)
+        private ViewportManager()
         {
-            this.viewportFactory = viewportFactory;
-            viewports = new List<IViewport>();
+            viewportFactory = ViewportFactory.Instance;
+            Viewports = new List<IViewport>();
             PopulateViewports();
         }
 
@@ -55,7 +62,7 @@ namespace Assets._MUTUAL.Viewport
         /// <param name="viewport"></param>
         public void HandleViewportSelected(string viewport)
         {
-            viewports.ForEach(v => {
+            Viewports.ForEach(v => {
                 if (v.Title == viewport)
                 {
                     v.Activate();
@@ -72,16 +79,16 @@ namespace Assets._MUTUAL.Viewport
         /// </summary>
         public void PopulateViewports()
         {
-            viewports.ForEach(v => v.Deactivate());
-            viewports.Clear();
+            Viewports.ForEach(v => v.Deactivate());
+            Viewports.Clear();
 
-            viewports.AddRange(viewportFactory.Viewports);
+            Viewports.AddRange(viewportFactory.Viewports);
         }
 
         public void CreateViewports()
         {
             // TODO : Dummy viewports for testing
-            foreach (var viewport in viewports)
+            foreach (var viewport in Viewports)
             {
                 viewport.CreateViews();
             }

@@ -7,6 +7,19 @@ namespace Assets.CaseFile
 {
     public class Patient
     {
+        private static readonly Lazy<Patient> _instance = new Lazy<Patient>(() => new Patient());
+
+        /// <summary>
+        /// Gets the instance.
+        /// </summary>
+        /// <value>
+        /// The instance.
+        /// </value>
+        public static Patient Instance
+        {
+            get { return _instance.Value; }
+        }
+
         public int PatientId { get; set; }
 
         public int SurgeryId { get; set; }
@@ -47,7 +60,7 @@ namespace Assets.CaseFile
 
         public List<Landmark> Landmarks { get; set; }
 
-        public Patient()
+        private Patient()
         {
             InitializeData();
         }

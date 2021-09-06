@@ -28,26 +28,31 @@ namespace Assets._MUTUAL.Viewport.Tab
 
         #region Private Memebers
 
+        private static readonly Lazy<TabGroup> _instance = new Lazy<TabGroup>(() => new TabGroup());
+
         private GameObject tabGroupPrefab;
         private GameObject tabGroup;
         private GameObject parent;
-
-        private List<ITabItem> tabs;
 
         #endregion
 
         #region Public Properties
 
         /// <summary>
+        /// Gets the instance.
+        /// </summary>
+        /// <value>
+        /// The instance.
+        /// </value>
+        public static TabGroup Instance
+        {
+            get { return _instance.Value; }
+        }
+
+        /// <summary>
         /// Gets the list of tabs.
         /// </summary>
-        public List<ITabItem> Tabs
-        {
-            get
-            {
-                return tabs;
-            }
-        }
+        public List<ITabItem> Tabs { get; }
 
         /// <summary>
         /// Gets the parent object.
@@ -73,9 +78,9 @@ namespace Assets._MUTUAL.Viewport.Tab
         /// <summary>
         /// Creates new instance of tab group.
         /// </summary>
-        public TabGroup()
+        private TabGroup()
         {
-            tabs = new List<ITabItem>();
+            Tabs = new List<ITabItem>();
             tabGroupPrefab = Resources.Load<GameObject>(prefabPath);
         }
 
@@ -89,7 +94,7 @@ namespace Assets._MUTUAL.Viewport.Tab
         /// <param name="tabItem"></param>
         public void Add(ITabItem tabItem)
         {
-            tabs.Add(tabItem);
+            Tabs.Add(tabItem);
             tabItem.TabSelected += HandleTabSelected;
         }
 
@@ -139,7 +144,7 @@ namespace Assets._MUTUAL.Viewport.Tab
         /// </summary>
         private void SetTabStyle()
         {
-            foreach (var tab in tabs)
+            foreach (var tab in Tabs)
             {
                 if (tab == selectedTab)
                 {

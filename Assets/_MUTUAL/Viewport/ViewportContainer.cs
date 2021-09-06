@@ -1,6 +1,7 @@
 ﻿#region Usings
 
 using Assets._MUTUAL.Viewport.Tab;
+using System;
 using System.Linq;
 using UnityEngine;
 
@@ -23,6 +24,7 @@ namespace Assets._MUTUAL.Viewport
 
         #region Private Members
 
+        private static readonly Lazy<ViewportContainer> _instance = new Lazy<ViewportContainer>(() => new ViewportContainer());
         private GameObject containerPrefab;
         private GameObject mainContainer;
         private GameObject parent;
@@ -32,6 +34,17 @@ namespace Assets._MUTUAL.Viewport
         #endregion
 
         #region Public Properties
+
+        /// <summary>
+        /// Gets the instance.
+        /// </summary>
+        /// <value>
+        /// The instance.
+        /// </value>
+        public static ViewportContainer Instance
+        {
+            get { return _instance.Value; }
+        }
 
         /// <summary>
         /// Gets the parent.
@@ -53,12 +66,12 @@ namespace Assets._MUTUAL.Viewport
         /// </summary>
         /// <param name="tabGroup"></param>
         /// <param name="viewportManager"></param>
-        public ViewportContainer(TabGroup tabGroup, ViewportManager viewportManager)
+        private ViewportContainer()
         {
             containerPrefab = Resources.Load<GameObject>(prefabPath);
             parent = GameObject.FindGameObjectWithTag(parentTag);
-            this.tabGroup = tabGroup;
-            this.viewportManager = viewportManager;
+            tabGroup = TabGroup.Instance;
+            viewportManager = ViewportManager.Instance;
         }
 
         #endregion
