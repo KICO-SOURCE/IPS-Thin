@@ -164,7 +164,6 @@ GameObject:
   - component: {fileID: 422904906}
   - component: {fileID: 422904905}
   - component: {fileID: 422904907}
-  - component: {fileID: 422904908}
   - component: {fileID: 422904909}
   m_Layer: 8
   m_Name: ThreeDCamera
@@ -259,20 +258,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 117e0f95679c7ab48bc79bf8a301146e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &422904908
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 422904903}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e0acb2728971bf54d8fa6b31a05495e4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  minLimit: 20
-  maxLimit: 3000
 --- !u!114 &422904909
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -285,7 +270,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 804aa97bd5c02d943a2f2530ce2526fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ViewCamera: {fileID: 0}
+  MouseButton: 0
+  IsActive: 0
   pivotTarget: {fileID: 813229419}
+  _offset: {x: 0, y: 0, z: 0}
 --- !u!1 &577567732
 GameObject:
   m_ObjectHideFlags: 0
