@@ -138,27 +138,9 @@ namespace Ips.Screens
 		
 		private void OnViewButtonClicked()
         {
-            //GameObject.Find(ControlParentName).SetActive(false);
-            //m_ViewportFactory.PopulatePlanViewports(2);
-            //m_ViewportContainer.Activate();
-
-            var cupAxis = new Vector3(1, 1, 1);
-            cupAxis.Normalize();
-
-            var PelvicCoronal = Vector3.forward;
-            var cupCenter = Vector3.zero + cupAxis * 10;
-            var cupAxisPt = cupCenter + cupAxis * 300;
-            var cupAxisCoronalProjection = Vector3.ProjectOnPlane(cupAxis, PelvicCoronal);
-            var cross = Vector3.Cross(cupAxis, cupAxisCoronalProjection);
-
-            Plane projPlane = new Plane();
-            var projPoint = Vector3.ProjectOnPlane(cupCenter, PelvicCoronal);
-            projPlane.Set3Points(cupAxisPt, cupCenter, projPoint);
-
-            Debug.Log($"Plane normal: {projPlane.normal}, Dot: {Vector3.Dot(projPlane.normal, cross)}");
-
-            var cross1 = Vector3.Cross(cupAxis, PelvicCoronal);
-            Debug.Log($"Cross normal: {cross1.normalized}, Dot: {Vector3.Dot(cross1.normalized, cross)}");
+            GameObject.Find(ControlParentName).SetActive(false);
+            m_ViewportFactory.PopulatePlanViewports();
+            m_ViewportContainer.Activate();
         }
 
         #endregion
