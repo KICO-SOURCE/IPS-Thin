@@ -3,23 +3,18 @@ using UnityEngine.UI;
 using UnityEditor;
 using System.Linq;
 using Assets.Geometries;
-using TMPro;
-using Assets.CaseFile;
+using UnityEngine.SceneManagement;
 
 public class ImportTransformScreen : MonoBehaviour
 {
     #region Private Members
 
-    private const string buttonPrefabPath = "Prefabs/Button";
-    private const string parentTag = "ListParent";
     private const string importButtonName = "ImportTransform";
+    private const string viewButtonName = "View";
 
-    private GameObject parent;
-    private GameObject buttonPrefab;
     private GeometryManager geometryManager;
     private Button importTransformBtn;
-
-    private string selectedTag = string.Empty;
+    private Button viewBtn;
 
     #endregion
 
@@ -42,7 +37,7 @@ public class ImportTransformScreen : MonoBehaviour
 
     private void ImportTransform()
     {
-        if (string.IsNullOrEmpty(selectedTag)) return;
+        if (string.IsNullOrEmpty(geometryManager.SelectedTag)) return;
 
         string path = EditorUtility.OpenFilePanel("Select the transform file.", "", "csv, CSV");
 
@@ -57,11 +52,7 @@ public class ImportTransformScreen : MonoBehaviour
         }
         else
         {
-            var selected = geometryManager.Geometries.FirstOrDefault(c => c.Tag == selectedTag);
-            if (selected != null)
-            {
-                selected.EulerTransform = new PositionalData(transformString);
-            }
+            geometryManager.SetSelectedTransform(transformString);
         }
     }
 
@@ -69,27 +60,10 @@ public class ImportTransformScreen : MonoBehaviour
     {
         importTransformBtn = GameObject.Find(importButtonName).GetComponent<Button>();
         importTransformBtn.onClick.AddListener(ImportTransform);
-
-        buttonPrefab = Resources.Load<GameObject>(buttonPrefabPath);
-        parent = GameObject.FindGameObjectWithTag(parentTag);
+        viewBtn = GameObject.Find(viewButtonName).GetComponent<Button>();
+        viewBtn.onClick.AddListener(ViewButtonClicked);
         geometryManager = new GeometryManager();
-
-        foreach (var data in geometryManager.Geometries)
-        {
-            GameObject goButton = (GameObject)Instantiate(buttonPrefab);
-            goButton.transform.SetParent(parent.transform, false);
-
-            goButton.GetComponentInChildren<TextMeshProUGUI>().text = data.Tag;
-
-            Button tempButton = goButton.GetComponent<Button>();
-            tempButton.onClick.AddListener(() => OnContentSelected(data.Tag));
-        }
-    }
-
-    private void OnContentSelected(string tag)
-    {
-        Debug.Log($"Selected : {tag}");
-        selectedTag = tag;
+        geometryManager.DisplayList();
     }
 
     private static string ParseTransformString(string transformString)
@@ -102,6 +76,11 @@ public class ImportTransformScreen : MonoBehaviour
 
         result = string.Join(",", splitInput);
         return result;
+    }
+
+    private void ViewButtonClicked()
+    {
+        //SceneManager.LoadScene("Sandbox");
     }
 
     #endregion
