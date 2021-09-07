@@ -16,6 +16,7 @@ TagManager:
   - ViewportAreaGeneric
   - GeneralContent
   - 3DContent
+  - ListParent
   layers:
   - Default
   - TransparentFX
