@@ -62,7 +62,7 @@ public class ImportTransformScreen : MonoBehaviour
         importTransformBtn.onClick.AddListener(ImportTransform);
         viewBtn = GameObject.Find(viewButtonName).GetComponent<Button>();
         viewBtn.onClick.AddListener(ViewButtonClicked);
-        geometryManager = new GeometryManager();
+        geometryManager = GeometryManager.Instance;
         geometryManager.DisplayList();
     }
 
@@ -80,7 +80,7 @@ public class ImportTransformScreen : MonoBehaviour
 
     private void ViewButtonClicked()
     {
-        //SceneManager.LoadScene("Sandbox");
+        SceneManager.LoadScene("Sandbox");
     }
 
     #endregion

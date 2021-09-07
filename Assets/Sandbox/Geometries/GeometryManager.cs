@@ -1,4 +1,5 @@
 ﻿using Assets.CaseFile;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -11,6 +12,8 @@ namespace Assets.Geometries
     {
         #region Private Members
 
+        private static readonly Lazy<GeometryManager> _instance = new Lazy<GeometryManager>(() => new GeometryManager());
+
         private const string buttonPrefabPath = "Prefabs/Button";
         private const string parentTag = "ListParent";
 
@@ -22,6 +25,11 @@ namespace Assets.Geometries
 
         #region Properties
 
+        public static GeometryManager Instance
+        {
+            get { return _instance.Value; }
+        }
+
         public List<Geometry> Geometries { get; private set; }
         public string SelectedTag { get; private set; }
 
@@ -32,7 +40,7 @@ namespace Assets.Geometries
 
         #region Constructor
 
-        public GeometryManager()
+        private GeometryManager()
         {
             Geometries = new List<Geometry>();
             AddContents();
