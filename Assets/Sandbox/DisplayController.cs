@@ -38,6 +38,7 @@ namespace Assets.Sandbox
         private void Start()
         {
             DisplaySample();
+            ShowVerticesBtn.SetActive(false);
             var verticesBtn = ShowVerticesBtn.GetComponent<Button>();
             verticesBtn.onClick.AddListener(ShowVerticesList);
         }

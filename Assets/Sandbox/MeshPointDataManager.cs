@@ -12,17 +12,186 @@ using UnityEngine.UI;
 
 namespace Assets.Sandbox
 {
+    /// <summary>
+    /// Mesh vertices population manager
+    /// </summary>
     public class MeshPointDataManager : MonoBehaviour
     {
+        #region Private Fields
+        int Index = 0;
+
+        #endregion
+
+        #region Public Fields
 
         public GameObject PointList;
         public GameObject PointListTemplate;
         public GameObject viewPrefab;
         public GameObject row;
-        public List<GameObject> rowList = new List<GameObject>();
-        private const string parentTag = "ViewportArea";
+
+        #endregion
+
+        #region Private Methods
+
+        /// <summary>
+        /// Sort mesh vertices by x
+        /// </summary>
+        /// <param name="mesh">Loaded mesh</param>
+        /// <param name="meshPoints">sorted mesh vertices</param>
+        private void GetMeshVerticesSortByX(Mesh mesh, Dictionary<int, Vector3> meshPoints)
+        {
+            List<Vector3> points = new List<Vector3>();
+            points = mesh.vertices.OrderBy(p => p.x).ToList();
+            Index = 0;
+            foreach (var point in points)
+            {
+                meshPoints.Add(Index, point);
+                Index++;
+            }
+        }
 
 
+        /// <summary>
+        /// Sort mesh vertices by y
+        /// </summary>
+        /// <param name="mesh">Loaded mesh</param>
+        /// <param name="meshPoints">sorted mesh vertices</param>
+        private void GetMeshVerticesSortByY(Mesh mesh, Dictionary<int, Vector3> meshPoints)
+        {
+            List<Vector3> points = new List<Vector3>();
+            points = mesh.vertices.OrderBy(p => p.y).ToList();
+            Index = 0;
+            foreach (var point in points)
+            {
+                meshPoints.Add(Index, point);
+                Index++;
+            }
+        }
+
+
+        /// <summary>
+        /// Sort mesh vertices by z
+        /// </summary>
+        /// <param name="mesh">Loaded mesh</param>
+        /// <param name="meshPoints">sorted mesh vertices</param>
+        private void GetMeshVerticesSortByZ(Mesh mesh, Dictionary<int, Vector3> meshPoints)
+        {
+            List<Vector3> points = new List<Vector3>();
+            points = mesh.vertices.OrderBy(p => p.z).ToList();
+            Index = 0;
+            foreach (var point in points)
+            {
+                meshPoints.Add(Index, point);
+                Index++;
+            }
+        }
+
+
+        /// <summary>
+        /// First 100 mesh vertices
+        /// </summary>
+        /// <param name="mesh">Loaded mesh</param>
+        /// <param name="meshPoints">sorted mesh vertices</param>
+        private void GetFirst100MeshVerticesList(Mesh mesh, Dictionary<int, Vector3> meshPoints)
+        {
+            List<Vector3> points = new List<Vector3>();
+            points = mesh.vertices.ToList();
+            Index = 0;
+            foreach (var point in points)
+            {
+                meshPoints.Add(Index, point);
+                Index++;
+                if (Index == 100) break;
+            }
+        }
+
+
+        /// <summary>
+        /// First N mesh vertices
+        /// </summary>
+        /// <param name="mesh">Loaded mesh</param>
+        /// <param name="meshPoints">sorted mesh vertices</param>
+        private void GetFirstNMeshVerticesList(Mesh mesh, Dictionary<int, Vector3> meshPoints)
+        {
+            int n = 250;
+            List<Vector3> points = new List<Vector3>();
+            points = mesh.vertices.ToList();
+            Index = 0;
+            foreach (var point in points)
+            {
+                meshPoints.Add(Index, point);
+                Index++;
+                if (Index == n) break;
+            }
+        }
+
+
+        /// <summary>
+        /// Loaded bone vertices list
+        /// </summary>
+        /// <param name="mesh">Loaded mesh</param>
+        /// <param name="meshPoints">sorted mesh vertices</param>
+        private void GetLoadedBoneMeshVerticesList(Mesh mesh, Dictionary<int, Vector3> meshPoints)
+        {
+            List<Vector3> points = new List<Vector3>();
+            points = mesh.vertices.ToList();
+            int Index = 0;
+            foreach (var point in points)
+            {
+                meshPoints.Add(Index, point);
+                Index++;
+            }
+        }
+
+
+        /// <summary>
+        /// Optional bone vertices list
+        /// </summary>
+        /// <param name="mesh">optional bone mesh</param>
+        /// <param name="meshPoints">sorted mesh vertices</param>
+        private void GetOptionalBoneMeshVerticesList(Mesh mesh, Dictionary<int, Vector3> meshPoints)
+        {
+            List<Vector3> points = new List<Vector3>();
+            points = mesh.vertices.ToList();
+            Index = 0;
+            foreach (var point in points)
+            {
+                meshPoints.Add(Index, point);
+                Index++;
+            }
+        }
+
+
+        /// <summary>
+        /// Filter the mesh vertices
+        /// </summary>
+        /// <param name="mesh">Loaded mesh</param>
+        /// <param name="meshPoints">sorted mesh vertices</param>
+        private void GetFilteredMeshVerticesList(Mesh mesh, Dictionary<int, Vector3> meshPoints)
+        {
+            int startIndx = 100;
+            int endIndx = 200;
+            List<Vector3> points = new List<Vector3>();
+            points = mesh.vertices.ToList();
+            Index = 0;
+            foreach (var point in points)
+            {
+                if (Index > startIndx && Index < endIndx)
+                {
+                    meshPoints.Add(Index, point);
+                }
+                Index++;
+            }
+        }
+
+        #endregion
+
+
+        /// <summary>
+        /// Display the mesh vertices list in SAndBox UI
+        /// </summary>
+        /// <param name="mesh">Loaded mesh</param>
+        /// <param name="meshPoints">sorted mesh vertices</param>
         public void ShowMeshVerticesList(GameObject uiParent, GameObject mesh)
         {
             var prefab = Resources.Load<GameObject>("Prefabs/MeshVertexList");
@@ -71,11 +240,10 @@ namespace Assets.Sandbox
                 text3.text = sampleMesh.vertices[i].z.ToString();
                 text3.color = Color.black;
                 text3.fontSize = 15;
-                rowList.Add(row);
 
                 row.SetActive(true);
             }
-            
+
         }
 
     }
