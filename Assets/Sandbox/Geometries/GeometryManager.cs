@@ -53,10 +53,15 @@ namespace Assets.Geometries
         //Dummy data
         private void AddContents()
         {
-            Geometries.Add(new Geometry() { Tag = "DistalFemur" });
-            Geometries.Add(new Geometry() { Tag = "DistalTibia" });
-            Geometries.Add(new Geometry() { Tag = "FemurComponent" });
-            Geometries.Add(new Geometry() { Tag = "PatellaComponent" });
+            Geometries.Add(new Geometry() { Tag = "Pelvis Sample" });
+            //Geometries.Add(new Geometry() { Tag = "DistalTibia" });
+            //Geometries.Add(new Geometry() { Tag = "FemurComponent" });
+            //Geometries.Add(new Geometry() { Tag = "PatellaComponent" });
+        }
+
+        public void AddContent(Geometry content)
+        {
+            Geometries.Add(content);
         }
 
         private void OnContentSelected(string tag)
