@@ -89,14 +89,17 @@ namespace Assets.Sandbox
             var bound = renderer.bounds;
             var center = bound.center;
 
-            var pos = new Vector3(center.x, center.y + bound.size.y, center.z);
-            var rotation = new Vector3(90, 0, 0);
-            Camera.transform.position = pos;
-            Camera.transform.eulerAngles = rotation;
-            Camera.transform.LookAt(center, Vector3.up);
+            var direction = mesh.transform.TransformVector(Vector3.down);
+            var pos = center + direction * bound.size.y;
 
-            Light.transform.position = pos;
-            Light.transform.eulerAngles = rotation;
+            Camera.transform.position = pos;
+            Camera.transform.LookAt(center, direction);
+
+            //var axis = Camera.transform.TransformVector(Vector3.forward);
+            //Camera.transform.RotateAround(center, axis, 45);
+
+            Light.transform.position = Camera.transform.position;
+            Light.transform.eulerAngles = Camera.transform.eulerAngles;
 
             PivotPoint.transform.position = Vector3.zero;
         }
