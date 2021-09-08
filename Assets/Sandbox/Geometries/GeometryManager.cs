@@ -1,4 +1,4 @@
-﻿using Assets.CaseFile;
+using Assets.CaseFile;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -54,9 +54,6 @@ namespace Assets.Geometries
         private void AddContents()
         {
             Geometries.Add(new Geometry() { Tag = "Pelvis Sample" });
-            //Geometries.Add(new Geometry() { Tag = "DistalTibia" });
-            //Geometries.Add(new Geometry() { Tag = "FemurComponent" });
-            //Geometries.Add(new Geometry() { Tag = "PatellaComponent" });
         }
 
         public void AddContent(Geometry content)

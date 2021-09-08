@@ -1,6 +1,7 @@
-﻿#region Usings
+#region Usings
 
 using Assets.CaseFile;
+using Assets.Geometries;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -33,24 +34,29 @@ namespace Assets.Sandbox
 
         #region Private Methods
 
-        GameObject Mesh;
+        GameObject Mesh => GeometryManager.Instance.SelectedGeometry?.Object;
 
         private void Start()
         {
-            DisplaySample();
+            DisplayMesh();
             ShowVerticesBtn.SetActive(false);
             var verticesBtn = ShowVerticesBtn.GetComponent<Button>();
             verticesBtn.onClick.AddListener(ShowVerticesList);
         }
 
         /// <summary>
-        /// Display a sample stl in UI
+        /// Display a mesh in UI
         /// </summary>
-        private void DisplaySample()
+        private void DisplayMesh()
         {
-            var path = Application.dataPath + @"\Sandbox\Sample\pelvis.stl";
-            Mesh = LoadStl(path);
-            SetCameraAndLightPosition(Mesh);
+            //var path = Application.dataPath + @"\Sandbox\Sample\pelvis.stl";
+            //Mesh = LoadStl(path);
+
+            var selectedGeometry = GeometryManager.Instance.SelectedGeometry;
+
+            selectedGeometry.DisplayObjects(Parent.transform,
+                                LayerMask.NameToLayer(layer));
+            SetCameraAndLightPosition(selectedGeometry.Object);
         }
 
         /// <summary>
@@ -97,6 +103,8 @@ namespace Assets.Sandbox
 
         private void ShowVerticesList()
         {
+            if (null == Mesh) return;
+
             MeshPointDataManager meshPointDataManager = new MeshPointDataManager();
             meshPointDataManager.ShowMeshVerticesList(UIParent, Mesh);
         }

@@ -1,6 +1,7 @@
 ﻿using Assets.CaseFile;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 namespace Assets.Geometries
 {
@@ -21,6 +22,7 @@ namespace Assets.Geometries
         public Mesh Mesh { get; set; }
         public List<Landmark> Landmarks { get; set; }
         public PositionalData EulerTransform { get; set; }
+        public GameObject Object => objects.FirstOrDefault();
 
         #endregion
 
@@ -54,7 +56,7 @@ namespace Assets.Geometries
 
         #region Public Methods
 
-        public void DisplayObjects(Transform parent)
+        public void DisplayObjects(Transform parent, int layer)
         {
             DestroyObjects();
 
@@ -72,6 +74,7 @@ namespace Assets.Geometries
 
                 go.transform.localPosition = transform.position;
                 go.transform.localEulerAngles = transform.eulerAngles;
+                go.layer = layer;
 
                 go.SetActive(true);
                 objects.Add(go);
@@ -80,16 +83,17 @@ namespace Assets.Geometries
             if (Landmarks == null) return;
 
             buttonPrefab = Resources.Load<GameObject>(buttonPrefabPath);
-            material.color = Color.blue;
             foreach(var lm in Landmarks)
             {
                 GameObject go = GameObject.Instantiate(buttonPrefab);
                 go.name = $"{Tag}_{lm.Type}";
                 go.transform.parent = parent;
                 go.GetComponent<MeshRenderer>().material = material;
+                go.GetComponent<MeshRenderer>().material.color = Color.blue;
 
                 var position = transform.TransformPoint(lm.Position);
                 go.transform.localPosition = position;
+                go.layer = layer;
 
                 go.SetActive(true);
                 objects.Add(go);
