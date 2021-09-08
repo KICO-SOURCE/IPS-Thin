@@ -95,8 +95,19 @@ namespace Assets.Sandbox
             Camera.transform.position = pos;
             Camera.transform.LookAt(center, direction);
 
-            //var axis = Camera.transform.TransformVector(Vector3.forward);
-            //Camera.transform.RotateAround(center, axis, 45);
+            var camAxis = Camera.transform.TransformVector(Vector3.up);
+            camAxis.Normalize();
+
+            var meshAxis = mesh.transform.TransformVector(Vector3.forward);
+            meshAxis.Normalize();
+
+            var axis = Camera.transform.TransformVector(Vector3.forward);
+            axis.Normalize();
+
+            var angle = Vector3.SignedAngle(camAxis, meshAxis, axis);
+            Debug.Log($"Angle : {angle}");
+
+            Camera.transform.RotateAround(center, axis, angle);
 
             Light.transform.position = Camera.transform.position;
             Light.transform.eulerAngles = Camera.transform.eulerAngles;
