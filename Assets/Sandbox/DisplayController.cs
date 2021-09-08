@@ -2,6 +2,7 @@
 
 using Assets.CaseFile;
 using Assets.Geometries;
+using Assets.Sandbox.MouseActions;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -111,6 +112,12 @@ namespace Assets.Sandbox
 
             Light.transform.position = Camera.transform.position;
             Light.transform.eulerAngles = Camera.transform.eulerAngles;
+            Light.transform.parent = Camera.transform;
+
+            GameObject position = new GameObject();
+            position.transform.position = center;
+            Camera.gameObject.GetComponent<OrbitalMouseController>().target = position.transform;
+            Camera.gameObject.GetComponent<OrbitalMouseController>().SetDefault();
 
             PivotPoint.transform.position = Vector3.zero;
         }

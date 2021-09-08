@@ -255,9 +255,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 422904903}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 117e0f95679c7ab48bc79bf8a301146e, type: 3}
+  m_Script: {fileID: 11500000, guid: e0acb2728971bf54d8fa6b31a05495e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  minLimit: 20
+  maxLimit: 3000
 --- !u!114 &422904909
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -267,9 +269,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 422904903}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 804aa97bd5c02d943a2f2530ce2526fb, type: 3}
+  m_Script: {fileID: 11500000, guid: 7ec8c6076d1284245871ed06a0716310, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  xSpeed: 1
+  ySpeed: 1
+  target: {fileID: 0}
+  distance: 400
 --- !u!1 &577567732
 GameObject:
   m_ObjectHideFlags: 0
