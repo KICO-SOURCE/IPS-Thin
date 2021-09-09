@@ -127,7 +127,7 @@ namespace Assets.Sandbox
             GameObject position = new GameObject();
             position.transform.position = center;
             Camera.gameObject.GetComponent<OrbitalMouseController>().target = position.transform;
-            Camera.gameObject.GetComponent<OrbitalMouseController>().SetDefault();
+            Camera.gameObject.GetComponent<OrbitalMousePanHelper>().pivotTarget = position.transform;
 
             PivotPoint.transform.position = Vector3.zero;
         }
