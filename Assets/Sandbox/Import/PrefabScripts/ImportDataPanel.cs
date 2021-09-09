@@ -75,12 +75,14 @@ namespace Assets.Import.PrefabScripts
         /// <param name="position"></param>
         public void SetLandmarkData(string type,Vector3 position)
         {
-            var bone = GetActiveToggle();
+            if(landmarksData == null)
+            {
+                landmarksData = new List<Landmark>();
+            }
             landmarksData.Add(new Landmark
             {
-                Bone = bone.name,
-                Type=type,
-                Position=position
+                Type = type,
+                Position = position
             });
         }
 
@@ -104,9 +106,10 @@ namespace Assets.Import.PrefabScripts
                 stlContent.Mesh = meshData.ToMesh();
                 meshData = null;
             }
-            else
+            else if(null != landmarksData)
             {
-                stlContent.Landmarks = landmarksData;
+                stlContent.UpdateLandmarks(activeToggle.name, landmarksData);
+                landmarksData = null;
             }
 
             // stlContent.ObjectType = ;

@@ -20,7 +20,7 @@ namespace Assets.Geometries
 
         public string Tag { get; set; }
         public Mesh Mesh { get; set; }
-        public List<Landmark> Landmarks { get; set; }
+        public List<Landmark> Landmarks { get; private set; }
         public PositionalData EulerTransform { get; set; }
         public GameObject Object => objects.FirstOrDefault();
 
@@ -88,8 +88,7 @@ namespace Assets.Geometries
                 GameObject go = GameObject.Instantiate(buttonPrefab);
                 go.name = $"{Tag}_{lm.Type}";
                 go.transform.parent = parent;
-                go.GetComponent<MeshRenderer>().material = material;
-                go.GetComponent<MeshRenderer>().material.color = Color.blue;
+                go.GetComponent<MeshRenderer>().material.color = Color.yellow;
 
                 var position = transform.TransformPoint(lm.Position);
                 go.transform.localPosition = position;
@@ -108,6 +107,16 @@ namespace Assets.Geometries
                 UnityEngine.Object.DestroyImmediate(go);
             }
             objects.Clear();
+        }
+
+        public void UpdateLandmarks(string bone, List<Landmark> landmarks)
+        {
+            Landmarks = new List<Landmark>();
+            foreach(var lm in landmarks)
+            {
+                lm.Bone = bone;
+                Landmarks.Add(lm);
+            }
         }
 
         #endregion
