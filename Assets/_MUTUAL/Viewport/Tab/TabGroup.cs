@@ -21,7 +21,7 @@ namespace Assets._MUTUAL.Viewport.Tab
 
         #region Private Constants
 
-        private const string parentTag = "TabArea";
+        private const string parentTag = "ViewportContainer(Clone)/TabArea";
         private const string prefabPath = "Prefabs/TabGroup";
 
         #endregion
@@ -113,7 +113,7 @@ namespace Assets._MUTUAL.Viewport.Tab
         /// </summary>
         public void Activate()
         {
-            parent = GameObject.FindGameObjectWithTag(parentTag);
+            parent = ViewportContainer.Instance.Parent.transform.Find(parentTag).gameObject;
             tabGroup = UnityEngine.Object.Instantiate(tabGroupPrefab, parent.transform);
         }
 

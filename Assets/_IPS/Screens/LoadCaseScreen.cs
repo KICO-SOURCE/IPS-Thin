@@ -21,10 +21,10 @@ namespace Ips.Screens
 
         #region Private Constants
 
-        private const string LoadCaseBTNName = "LoadCaseBTN";
-        private const string ViewportBTNName = "Viewport";
+        private const string LoadCaseBTNName = "Overlay/LoadCaseParent/LoadCaseBTN";
+        private const string ViewportBTNName = "Overlay/ViewParent/Viewport";
         private const string ControlParentName = "Overlay";
-        private const string ViewBTNName = "View";
+        private const string ViewBTNName = "Overlay/ViewParent/View";
 
         #endregion
 
@@ -131,14 +131,14 @@ namespace Ips.Screens
 
         public void OnViewportButtonClicked()
         {
-            GameObject.Find(ControlParentName).SetActive(false);
+            m_ViewportContainer.Parent.transform.Find(ControlParentName).gameObject.SetActive(false);
             m_ViewportFactory.PopulateReportViewports();
             m_ViewportContainer.Activate();
         }
 		
 		private void OnViewButtonClicked()
         {
-            GameObject.Find(ControlParentName).SetActive(false);
+            m_ViewportContainer.Parent.transform.Find(ControlParentName).gameObject.SetActive(false);
             m_ViewportFactory.PopulatePlanViewports();
             m_ViewportContainer.Activate();
         }
@@ -155,9 +155,9 @@ namespace Ips.Screens
 
         private void PopulateUiElements()
         {
-            m_LoadCaseBtn = GameObject.Find(LoadCaseBTNName).GetComponent<Button>();
-            m_ViewportBtn = GameObject.Find(ViewportBTNName).GetComponent<Button>();
-            m_ViewBtn = GameObject.Find(ViewBTNName).GetComponent<Button>();
+            m_LoadCaseBtn = m_ViewportContainer.Parent.transform.Find(LoadCaseBTNName).GetComponent<Button>();
+            m_ViewportBtn = m_ViewportContainer.Parent.transform.Find(ViewportBTNName).gameObject.GetComponent<Button>();
+            m_ViewBtn = m_ViewportContainer.Parent.transform.Find(ViewBTNName).gameObject.GetComponent<Button>();
         }
 
         private void AttachListeners()

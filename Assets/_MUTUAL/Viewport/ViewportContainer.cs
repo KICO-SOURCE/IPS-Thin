@@ -120,7 +120,7 @@ namespace Assets._MUTUAL.Viewport
         /// </summary>
         private void PopulateViewportTabs()
         {
-            var tabgroup = GameObject.FindGameObjectWithTag("TabGroup").transform;
+            var tabgroup = ViewportContainer.Instance.Parent.transform.Find("ViewportContainer(Clone)/TabArea/TabGroup(Clone)");
             var tabItemPrefab = Resources.Load<GameObject>("Prefabs/TabItem");
             foreach (var vp in viewportManager.Viewports)
             {

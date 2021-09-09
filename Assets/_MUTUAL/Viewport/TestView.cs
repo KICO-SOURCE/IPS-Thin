@@ -14,7 +14,7 @@ namespace Assets._MUTUAL.Viewport
     {
         #region Private Constants
 
-        private const string parentTag = "ViewportArea";
+        private const string parentTag = "ViewportContainer(Clone)/ViewportArea";
         private const string prefabPath = "Prefabs/TestView";
         private static int id = 1;
 
@@ -72,7 +72,7 @@ namespace Assets._MUTUAL.Viewport
         /// </summary>
         public void CreateView()
         {
-            parent = GameObject.FindGameObjectWithTag(parentTag);
+            parent = ViewportContainer.Instance.Parent.transform.Find(parentTag).gameObject;
             testView = UnityEngine.Object.Instantiate(viewPrefab, parent.transform);
             testView.GetComponentInChildren<TMP_Text>().text = "Test Viewport_" + (id++);
             testView.SetActive(false);

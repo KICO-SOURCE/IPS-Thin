@@ -8,7 +8,7 @@ namespace Assets._MUTUAL.Viewport
         #region Private Constants
 
         const string prefabPath = "Prefabs/ImageView";
-        private const string parentTag = "ViewportArea";
+        private const string parentTag = "ViewportContainer(Clone)/ViewportArea";
         private const string sampleImagePath = "Images/ImageDummy";
 
         #endregion
@@ -62,7 +62,7 @@ namespace Assets._MUTUAL.Viewport
         /// </summary>
         public void CreateView()
         {
-            parent = GameObject.FindGameObjectWithTag(parentTag);
+            parent = ViewportContainer.Instance.Parent.transform.Find(parentTag).gameObject;
             m_ImageView = UnityEngine.Object.Instantiate(viewPrefab, parent.transform);
 
             // Positioning the image view

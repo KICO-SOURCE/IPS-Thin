@@ -11,7 +11,7 @@ namespace Assets._MUTUAL.Viewport
         #region Private Constants
 
         private const string ViewportPrefabPath = "Prefabs/TableView";
-        private const string parentTag = "ViewportArea";
+        private const string parentTag = "ViewportContainer(Clone)/ViewportArea";
         private const string headerparentTag = "HeaderArea";
         private const string tableparentTag = "TableArea";
 
@@ -119,7 +119,7 @@ namespace Assets._MUTUAL.Viewport
         private void CreateCoronalAlignmentKneeTable(List<CellData> cellDatas, TableData tableData)
         {
             // Table object creration
-            parent = GameObject.FindGameObjectWithTag(parentTag);
+            parent = ViewportContainer.Instance.Parent.transform.Find(parentTag).gameObject;
             CoronalPlaneDataTable = new GameObject("CoronalPlaneDataTable");
             CoronalPlaneDataTable = UnityEngine.Object.Instantiate(viewPrefab, parent.transform);
 

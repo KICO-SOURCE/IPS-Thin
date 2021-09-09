@@ -11,7 +11,7 @@ namespace Assets._MUTUAL.Viewport
         #region Private Constants
 
         private const string ViewportPrefabPath = "Prefabs/TableView";
-        private const string parentTag = "ViewportArea";
+        private const string parentTag = "ViewportContainer(Clone)/ViewportArea";
         private const string headerparentTag = "HeaderArea";
         private const string tableparentTag = "TableArea";
 
@@ -112,7 +112,7 @@ namespace Assets._MUTUAL.Viewport
         private void CreateAnatomicMeasurementsTable(TableData tableData)
         {
             // Table object creration
-            parent = GameObject.FindGameObjectWithTag(parentTag);
+            parent = ViewportContainer.Instance.Parent.transform.Find(parentTag).gameObject;
             AnatomicalTable = new GameObject("AnatomicalTable");
             AnatomicalTable = UnityEngine.Object.Instantiate(viewPrefab, parent.transform);
 
