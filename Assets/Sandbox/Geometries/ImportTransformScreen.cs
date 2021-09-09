@@ -37,7 +37,7 @@ public class ImportTransformScreen : MonoBehaviour
 
     private void ImportTransform()
     {
-        if (string.IsNullOrEmpty(geometryManager.SelectedTag)) return;
+        if (!geometryManager.EnableLoad) return;
 
         string path = EditorUtility.OpenFilePanel("Select the transform file.", "", "csv, CSV");
 
@@ -52,7 +52,7 @@ public class ImportTransformScreen : MonoBehaviour
         }
         else
         {
-            geometryManager.SetSelectedTransform(transformString);
+            geometryManager.UpdateTransform(transformString);
         }
     }
 

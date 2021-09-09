@@ -20,7 +20,7 @@ namespace Assets.Geometries
 
         public string Tag { get; set; }
         public Mesh Mesh { get; set; }
-        public List<Landmark> Landmarks { get; private set; }
+        public List<Landmark> Landmarks { get; set; }
         public PositionalData EulerTransform { get; set; }
         public GameObject Object => objects.FirstOrDefault();
 

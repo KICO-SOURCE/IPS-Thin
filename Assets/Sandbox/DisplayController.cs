@@ -35,8 +35,6 @@ namespace Assets.Sandbox
 
         #region Private Methods
 
-        GameObject Mesh => GeometryManager.Instance.SelectedGeometry?.Object;
-
         private void Start()
         {
             DisplayMesh();
@@ -53,11 +51,9 @@ namespace Assets.Sandbox
             //var path = Application.dataPath + @"\Sandbox\Sample\pelvis.stl";
             //Mesh = LoadStl(path);
 
-            var selectedGeometry = GeometryManager.Instance.SelectedGeometry;
-
-            selectedGeometry.DisplayObjects(Parent.transform,
-                                LayerMask.NameToLayer(layer));
-            SetCameraAndLightPosition(selectedGeometry.Object);
+            GeometryManager.Instance.DisplaySelectedObjects(Parent.transform,
+                                                LayerMask.NameToLayer(layer));
+            SetCameraAndLightPosition(GeometryManager.Instance.GetMainObject());
         }
 
         /// <summary>
@@ -86,6 +82,7 @@ namespace Assets.Sandbox
         /// <param name="mesh"></param>
         private void SetCameraAndLightPosition(GameObject mesh)
         {
+            if (null == mesh) return;
             var renderer = mesh.GetComponent<MeshRenderer>();
             var bound = renderer.bounds;
             var center = bound.center;
@@ -128,10 +125,11 @@ namespace Assets.Sandbox
 
         private void ShowVerticesList()
         {
-            if (null == Mesh) return;
+            var mesh = GeometryManager.Instance.GetMainObject();
+            if (null == mesh) return;
 
             MeshPointDataManager meshPointDataManager = new MeshPointDataManager();
-            meshPointDataManager.ShowMeshVerticesList(UIParent, Mesh);
+            meshPointDataManager.ShowMeshVerticesList(UIParent, mesh);
         }
 
         #endregion
