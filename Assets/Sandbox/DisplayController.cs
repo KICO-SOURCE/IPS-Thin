@@ -83,19 +83,28 @@ namespace Assets.Sandbox
         private void SetCameraAndLightPosition(GameObject mesh)
         {
             if (null == mesh) return;
-            var renderer = mesh.GetComponent<MeshRenderer>();
-            var bound = renderer.bounds;
+
+            var meshRenderer = mesh.GetComponent<MeshRenderer>();
+            var bound = meshRenderer.bounds;
+
+            var renderers = Parent.GetComponentsInChildren<MeshRenderer>();
+            foreach (var renderer in renderers)
+            {
+                bound.Encapsulate(renderer.bounds);
+            }
+
             var center = bound.center;
 
-            var distance = bound.size.x > bound.size.y ?
+            var distance = 50 + (bound.size.x > bound.size.y ?
                 (bound.size.x > bound.size.z ? bound.size.x : bound.size.z):
-                (bound.size.y > bound.size.z ? bound.size.y : bound.size.z);
+                (bound.size.y > bound.size.z ? bound.size.y : bound.size.z));
 
             var direction = mesh.transform.TransformVector(Vector3.down);
-            var camPosition = center + direction * (distance + 50);
+            var camPosition = center + direction * distance;
 
             Camera.transform.position = camPosition;
             Camera.transform.LookAt(center, direction);
+            Camera.orthographicSize = distance;
 
             var camAxis = Camera.transform.TransformVector(Vector3.up);
             camAxis.Normalize();

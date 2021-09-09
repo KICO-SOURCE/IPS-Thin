@@ -108,7 +108,11 @@ namespace Assets.Import.PrefabScripts
             }
             else if(null != landmarksData)
             {
-                stlContent.UpdateLandmarks(activeToggle.name, landmarksData);
+                foreach (var lm in landmarksData)
+                {
+                    lm.Bone = activeToggle.name;
+                }
+                stlContent.UpdateLandmarks(landmarksData);
                 landmarksData = null;
             }
 

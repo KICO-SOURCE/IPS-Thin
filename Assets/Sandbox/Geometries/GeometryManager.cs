@@ -21,7 +21,6 @@ namespace Assets.Geometries
         private GameObject buttonPrefab;
         private List<Button> objectButtons;
         private Color normalColor;
-        private string mainTag = string.Empty;
 
         #endregion
 
@@ -127,32 +126,20 @@ namespace Assets.Geometries
 
             var selectedGeometry = Geometries.FirstOrDefault(c =>
                                 c.Tag == SelectedTags.FirstOrDefault());
-            if (selectedGeometry != null)
-            {
-                selectedGeometry.EulerTransform = new PositionalData(transformString);
-            }
+            selectedGeometry?.UpdateTransform(transformString);
         }
 
         /// <summary>
         /// Update landmarks for selected geometry
         /// </summary>
-        /// <param name="bone"></param>
         /// <param name="landmarks"></param>
-        public void UpdateLandmarks(string bone, List<Landmark> landmarks)
+        public void UpdateLandmarks(List<Landmark> landmarks)
         {
-            foreach (var lm in landmarks)
-            {
-                lm.Bone = bone;
-            }
-
             if (!EnableLoad) return;
 
             var selectedGeometry = Geometries.FirstOrDefault(c =>
                                 c.Tag == SelectedTags.FirstOrDefault());
-            if (selectedGeometry != null)
-            {
-                selectedGeometry.Landmarks = new List<Landmark>(landmarks);
-            }
+            selectedGeometry?.UpdateLandmarks(landmarks);
         }
 
         /// <summary>
@@ -160,18 +147,13 @@ namespace Assets.Geometries
         /// </summary>
         /// <param name="parent"></param>
         /// <param name="layer"></param>
-        /// <param name="tag"></param>
-        public void DisplaySelectedObjects(Transform parent,
-                                           int layer, string tag = null)
+        public void DisplaySelectedObjects(Transform parent, int layer)
         {
             var selectedItems = Geometries.Where(g =>
                                 SelectedTags.Contains(g.Tag));
 
-            mainTag = string.Empty;
-            if (null == selectedItems || selectedItems.Count() == 0) return;
-
-            mainTag = tag == null || !SelectedTags.Contains(tag) ?
-                            selectedItems.FirstOrDefault().Tag : tag;
+            if (null == selectedItems ||
+                selectedItems.Count() == 0) return;
 
             foreach(var item in selectedItems)
             {
@@ -182,10 +164,28 @@ namespace Assets.Geometries
         /// <summary>
         /// Returns the main geometry object
         /// </summary>
+        /// <param name="mainTag"></param>
         /// <returns></returns>
-        public GameObject GetMainObject()
+        public GameObject GetMainObject(string mainTag = null)
         {
-            return Geometries.FirstOrDefault(c => c.Tag == mainTag)?.Object;
+            GameObject mainObject = null;
+
+            if(!SelectedTags.Contains(mainTag))
+            {
+                mainTag = SelectedTags.FirstOrDefault();
+            }
+
+            mainObject = Geometries.FirstOrDefault(g =>
+                                g.Tag == mainTag)?.Object;
+
+            if(mainObject == null)
+            {
+                mainObject = Geometries.FirstOrDefault(g =>
+                                SelectedTags.Contains(g.Tag) &&
+                                g.Object != null)?.Object;
+            }
+
+            return mainObject;
         }
 
         #endregion

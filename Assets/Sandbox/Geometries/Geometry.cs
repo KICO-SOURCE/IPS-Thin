@@ -20,8 +20,8 @@ namespace Assets.Geometries
 
         public string Tag { get; set; }
         public Mesh Mesh { get; set; }
-        public List<Landmark> Landmarks { get; set; }
-        public PositionalData EulerTransform { get; set; }
+        public List<Landmark> Landmarks { get; private set; }
+        public PositionalData EulerTransform { get; private set; }
         public GameObject Object => objects.FirstOrDefault();
 
         #endregion
@@ -31,6 +31,7 @@ namespace Assets.Geometries
         public Geometry()
         {
             objects = new List<GameObject>();
+            EulerTransform = new PositionalData(null);
         }
 
         #endregion
@@ -109,14 +110,14 @@ namespace Assets.Geometries
             objects.Clear();
         }
 
-        public void UpdateLandmarks(string bone, List<Landmark> landmarks)
+        public void UpdateLandmarks(List<Landmark> landmarks)
         {
-            Landmarks = new List<Landmark>();
-            foreach(var lm in landmarks)
-            {
-                lm.Bone = bone;
-                Landmarks.Add(lm);
-            }
+            Landmarks = new List<Landmark>(landmarks);
+        }
+
+        public void UpdateTransform(string transform)
+        {
+            EulerTransform = new PositionalData(transform);
         }
 
         #endregion
