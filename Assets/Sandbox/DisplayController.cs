@@ -90,10 +90,14 @@ namespace Assets.Sandbox
             var bound = renderer.bounds;
             var center = bound.center;
 
-            var direction = mesh.transform.TransformVector(Vector3.down);
-            var pos = center + direction * bound.size.y;
+            var distance = bound.size.x > bound.size.y ?
+                (bound.size.x > bound.size.z ? bound.size.x : bound.size.z):
+                (bound.size.y > bound.size.z ? bound.size.y : bound.size.z);
 
-            Camera.transform.position = pos;
+            var direction = mesh.transform.TransformVector(Vector3.down);
+            var camPosition = center + direction * (distance + 50);
+
+            Camera.transform.position = camPosition;
             Camera.transform.LookAt(center, direction);
 
             var camAxis = Camera.transform.TransformVector(Vector3.up);
