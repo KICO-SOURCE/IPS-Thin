@@ -30,7 +30,7 @@ namespace Assets.Sandbox
         public Camera Camera;
         public Light Light;
         public GameObject PivotPoint;
-        public GameObject ShowVerticesBtn;
+        public GameObject ShowVerticesButton;
         public GameObject CloseButton;
         public GameObject TransparentButton;
         public GameObject UIParent;
@@ -42,12 +42,12 @@ namespace Assets.Sandbox
         private void Start()
         {
             DisplayMesh();
-            ShowVerticesBtn.SetActive(false);
-            var verticesBtn = ShowVerticesBtn.GetComponent<Button>();
-            verticesBtn.onClick.AddListener(ShowVerticesList);
-            var closeBtn = CloseButton.GetComponent<Button>();
+            ShowVerticesButton.SetActive(false);
+            var showVerticesBtn = ShowVerticesButton.GetComponentInChildren<Button>();
+            showVerticesBtn.onClick.AddListener(ShowVerticesList);
+            var closeBtn = CloseButton.GetComponentInChildren<Button>();
             closeBtn.onClick.AddListener(OnCloseClick);
-            var transparentBtn = TransparentButton.GetComponent<Button>();
+            var transparentBtn = TransparentButton.GetComponentInChildren<Button>();
             transparentBtn.onClick.AddListener(OnTransparentClick);
             normalColor = transparentBtn.GetComponent<Image>().color;
         }
@@ -162,8 +162,7 @@ namespace Assets.Sandbox
             var color = GeometryManager.Instance.Transparent ?
                                     Color.gray : normalColor;
 
-            var button = TransparentButton.GetComponent<Button>();
-            button.GetComponent<Image>().color = color;
+            TransparentButton.GetComponentInChildren<Image>().color = color;
         }
 
         #endregion
