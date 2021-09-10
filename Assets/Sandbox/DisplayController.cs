@@ -19,6 +19,7 @@ namespace Assets.Sandbox
         #region Private Fields
 
         private const string layer = "ThreeDLayer";
+        private Color normalColor;
 
         #endregion
 
@@ -31,6 +32,7 @@ namespace Assets.Sandbox
         public GameObject PivotPoint;
         public GameObject ShowVerticesBtn;
         public GameObject CloseButton;
+        public GameObject TransparentButton;
         public GameObject UIParent;
 
         #endregion
@@ -45,6 +47,9 @@ namespace Assets.Sandbox
             verticesBtn.onClick.AddListener(ShowVerticesList);
             var closeBtn = CloseButton.GetComponent<Button>();
             closeBtn.onClick.AddListener(OnCloseClick);
+            var transparentBtn = TransparentButton.GetComponent<Button>();
+            transparentBtn.onClick.AddListener(OnTransparentClick);
+            normalColor = transparentBtn.GetComponent<Image>().color;
         }
 
         /// <summary>
@@ -149,6 +154,16 @@ namespace Assets.Sandbox
         {
             GeometryManager.Instance.DistroyAllObjects();
             SceneManager.LoadScene("ImportUI");
+        }
+
+        private void OnTransparentClick()
+        {
+            GeometryManager.Instance.ToggleTransparency();
+            var color = GeometryManager.Instance.Transparent ?
+                                    Color.gray : normalColor;
+
+            var button = TransparentButton.GetComponent<Button>();
+            button.GetComponent<Image>().color = color;
         }
 
         #endregion

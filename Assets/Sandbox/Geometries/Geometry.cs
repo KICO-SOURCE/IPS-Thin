@@ -11,9 +11,13 @@ namespace Assets.Geometries
         #region Constants
 
         private const string meshMaterialPath = "Materials/BoneMaterial";
+        private const string transMaterialPath = "Materials/BoneTransparent";
         private const string buttonPrefabPath = "Prefabs/Landmark";
         private GameObject buttonPrefab;
+        private GameObject meshObject;
         private List<GameObject> objects;
+        private Material meshMaterial;
+        private Material transMaterial;
 
         #endregion
 
@@ -23,8 +27,10 @@ namespace Assets.Geometries
         public Mesh Mesh { get; set; }
         public List<Landmark> Landmarks { get; private set; }
         public PositionalData EulerTransform { get; private set; }
-        public GameObject Object => objects.FirstOrDefault();
         public ObjectType ObjectType { get; set; }
+
+        public GameObject Object => meshObject != null ?
+                            meshObject : objects.FirstOrDefault();
 
         #endregion
 
@@ -34,25 +40,8 @@ namespace Assets.Geometries
         {
             objects = new List<GameObject>();
             EulerTransform = new PositionalData(null);
-        }
-
-        #endregion
-
-        #region Private Methods
-
-        private GameObject CreateObject(string tag, Transform parent,
-                   Transform transform, Mesh mesh, Material material)
-        {
-            var go = new GameObject(tag, typeof(MeshFilter), typeof(MeshRenderer));
-            go.transform.parent = parent;
-            go.GetComponent<MeshFilter>().mesh = mesh;
-            go.GetComponent<MeshRenderer>().material = material;
-
-            go.transform.localPosition = transform.position;
-            go.transform.localEulerAngles = transform.eulerAngles;
-
-            go.SetActive(true);
-            return go;
+            meshMaterial = Resources.Load<Material>(meshMaterialPath);
+            transMaterial = Resources.Load<Material>(transMaterialPath);
         }
 
         #endregion
@@ -65,22 +54,21 @@ namespace Assets.Geometries
 
             if (EulerTransform == null) return;
 
-            var material = Resources.Load<Material>(meshMaterialPath);
+            
             var transform = EulerTransform.GetTransfrom();
 
             if (Mesh != null)
             {
-                var go = new GameObject(Tag, typeof(MeshFilter), typeof(MeshRenderer));
-                go.transform.parent = parent;
-                go.GetComponent<MeshFilter>().mesh = Mesh;
-                go.GetComponent<MeshRenderer>().material = material;
+                meshObject = new GameObject(Tag, typeof(MeshFilter), typeof(MeshRenderer));
+                meshObject.transform.parent = parent;
+                meshObject.GetComponent<MeshFilter>().mesh = Mesh;
+                meshObject.GetComponent<MeshRenderer>().material = meshMaterial;
 
-                go.transform.localPosition = transform.position;
-                go.transform.localEulerAngles = transform.eulerAngles;
-                go.layer = layer;
+                meshObject.transform.localPosition = transform.position;
+                meshObject.transform.localEulerAngles = transform.eulerAngles;
+                meshObject.layer = layer;
 
-                go.SetActive(true);
-                objects.Add(go);
+                meshObject.SetActive(true);
             }
 
             if (Landmarks == null) return;
@@ -91,7 +79,7 @@ namespace Assets.Geometries
                 GameObject go = GameObject.Instantiate(buttonPrefab);
                 go.name = $"{Tag}_{lm.Type}";
                 go.transform.parent = parent;
-                go.GetComponent<MeshRenderer>().material.color = Color.yellow;
+                go.GetComponent<MeshRenderer>().material.color = Color.red;
 
                 var position = transform.TransformPoint(lm.Position);
                 go.transform.localPosition = position;
@@ -104,6 +92,13 @@ namespace Assets.Geometries
 
         public void DestroyObjects()
         {
+            if(meshObject != null)
+            {
+                meshObject.SetActive(false);
+                UnityEngine.Object.DestroyImmediate(meshObject);
+                meshObject = null;
+            }
+
             foreach (var go in objects)
             {
                 go.SetActive(false);
@@ -120,6 +115,15 @@ namespace Assets.Geometries
         public void UpdateTransform(string transform)
         {
             EulerTransform = new PositionalData(transform);
+        }
+
+        public void ToggleTransparency(bool transparent)
+        {
+            if(meshObject != null)
+            {
+                var material = transparent ? transMaterial : meshMaterial;
+                meshObject.GetComponent<MeshRenderer>().material = material;
+            }
         }
 
         #endregion

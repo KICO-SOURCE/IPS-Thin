@@ -39,6 +39,8 @@ namespace Assets.Geometries
 
         public bool EnableView => SelectedTags.Count > 0;
 
+        public bool Transparent { get; private set; } = false;
+
         #endregion
 
         #region Constructor
@@ -207,6 +209,16 @@ namespace Assets.Geometries
                 data.DestroyObjects();
             }
             SelectedTags.Clear();
+            Transparent = false;
+        }
+
+        public void ToggleTransparency()
+        {
+            Transparent = !Transparent;
+            foreach (var data in Geometries)
+            {
+                data.ToggleTransparency(Transparent);
+            }
         }
 
         #endregion
