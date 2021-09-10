@@ -4,6 +4,7 @@ using Assets.CaseFile;
 using Assets.Geometries;
 using Assets.Sandbox.MouseActions;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 #endregion
@@ -29,6 +30,7 @@ namespace Assets.Sandbox
         public Light Light;
         public GameObject PivotPoint;
         public GameObject ShowVerticesBtn;
+        public GameObject CloseButton;
         public GameObject UIParent;
 
         #endregion
@@ -41,6 +43,8 @@ namespace Assets.Sandbox
             ShowVerticesBtn.SetActive(false);
             var verticesBtn = ShowVerticesBtn.GetComponent<Button>();
             verticesBtn.onClick.AddListener(ShowVerticesList);
+            var closeBtn = CloseButton.GetComponent<Button>();
+            closeBtn.onClick.AddListener(OnCloseClick);
         }
 
         /// <summary>
@@ -139,6 +143,12 @@ namespace Assets.Sandbox
 
             MeshPointDataManager meshPointDataManager = new MeshPointDataManager();
             meshPointDataManager.ShowMeshVerticesList(UIParent, mesh);
+        }
+
+        private void OnCloseClick()
+        {
+            GeometryManager.Instance.DistroyAllObjects();
+            SceneManager.LoadScene("ImportUI");
         }
 
         #endregion

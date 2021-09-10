@@ -65,9 +65,17 @@ namespace Assets.Geometries
             Geometries.Add(new Geometry() { Tag = "Pelvis Sample" });
         }
 
-        public void AddContent(Geometry content)
+        private void AddToDisplayList(Geometry data)
         {
-            Geometries.Add(content);
+            GameObject goButton = GameObject.Instantiate(buttonPrefab);
+            goButton.transform.SetParent(parent.transform, false);
+
+            goButton.GetComponentInChildren<TextMeshProUGUI>().text = data.Tag;
+
+            Button tempButton = goButton.GetComponent<Button>();
+            tempButton.onClick.AddListener(() => OnContentSelected(data.Tag));
+            tempButton.name = data.Tag;
+            objectButtons.Add(tempButton);
         }
 
         private void OnContentSelected(string tag)
@@ -104,15 +112,7 @@ namespace Assets.Geometries
             objectButtons = new List<Button>();
             foreach (var data in Geometries)
             {
-                GameObject goButton = GameObject.Instantiate(buttonPrefab);
-                goButton.transform.SetParent(parent.transform, false);
-
-                goButton.GetComponentInChildren<TextMeshProUGUI>().text = data.Tag;
-
-                Button tempButton = goButton.GetComponent<Button>();
-                tempButton.onClick.AddListener(() => OnContentSelected(data.Tag));
-                tempButton.name = data.Tag;
-                objectButtons.Add(tempButton);
+                AddToDisplayList(data);
             }
         }
 
@@ -155,7 +155,7 @@ namespace Assets.Geometries
             if (null == selectedItems ||
                 selectedItems.Count() == 0) return;
 
-            foreach(var item in selectedItems)
+            foreach (var item in selectedItems)
             {
                 item.DisplayObjects(parent, layer);
             }
@@ -170,7 +170,7 @@ namespace Assets.Geometries
         {
             GameObject mainObject = null;
 
-            if(!SelectedTags.Contains(mainTag))
+            if (!SelectedTags.Contains(mainTag))
             {
                 mainTag = SelectedTags.FirstOrDefault();
             }
@@ -178,7 +178,7 @@ namespace Assets.Geometries
             mainObject = Geometries.FirstOrDefault(g =>
                                 g.Tag == mainTag)?.Object;
 
-            if(mainObject == null)
+            if (mainObject == null)
             {
                 mainObject = Geometries.FirstOrDefault(g =>
                                 SelectedTags.Contains(g.Tag) &&
@@ -186,6 +186,34 @@ namespace Assets.Geometries
             }
 
             return mainObject;
+        }
+
+        public void UpdateDisplayList(Geometry data)
+        {
+            Geometries.Add(data);
+            AddToDisplayList(data);
+        }
+
+        public void HideList()
+        {
+            parent.SetActive(false);
+        }
+
+        public void ShowList()
+        {
+            parent.SetActive(true);
+        }
+
+        /// <summary>
+        /// Distroy all geometries
+        /// </summary>
+        public void DistroyAllObjects()
+        {
+            foreach (var data in Geometries)
+            {
+                data.DestroyObjects();
+            }
+            SelectedTags.Clear();
         }
 
         #endregion

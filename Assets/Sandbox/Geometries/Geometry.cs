@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using Assets.Sandbox.Import;
 
 namespace Assets.Geometries
 {
@@ -23,6 +24,7 @@ namespace Assets.Geometries
         public List<Landmark> Landmarks { get; private set; }
         public PositionalData EulerTransform { get; private set; }
         public GameObject Object => objects.FirstOrDefault();
+        public ObjectType ObjectType { get; set; }
 
         #endregion
 

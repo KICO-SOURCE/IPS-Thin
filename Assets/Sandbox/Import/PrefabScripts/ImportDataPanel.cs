@@ -1,6 +1,9 @@
 ﻿using Assets.CaseFile;
 using Assets.Geometries;
+using Assets.Sandbox.Import;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -20,24 +23,24 @@ namespace Assets.Import.PrefabScripts
         private Button OpenBTN;
         private Button CancelBTN;
         private TMP_InputField ManualTypeInput;
-        private GameObject ComponentSelctionPanel;
-        private GameObject BoneSelectionPanel;
-        private Toggle[] Components;
-        private Toggle[] Bones;
-        
+        private ToggleGroup ToggleGroup;
+
         #endregion
 
-        public MeshData meshData;
-        public List<Landmark> landmarksData;
+        #region Public Properties
+
+        public MeshData meshData { get; set; }
+        public List<Landmark> landmarksData = new List<Landmark>();
+        public Action DataPanelClosed;
+        #endregion
 
         #region Public Methods
 
         public void Awake()
         {
             FileNameTXT = transform.Find("FileNameTXT").GetComponent<TMP_Text>();
-            ComponentSelctionPanel = transform.Find("ObjectTypeContainer/ComponentSelectionPanel").gameObject;
-            BoneSelectionPanel = transform.Find("ObjectTypeContainer/BoneSelectionPanel").gameObject;
-            OpenBTN= transform.Find("ButtonPanel/OpenBtn").GetComponent<Button>();
+            ToggleGroup = transform.Find("ObjectTypeContainer/ToggleGroup").GetComponent<ToggleGroup>();
+            OpenBTN = transform.Find("ButtonPanel/OpenBtn").GetComponent<Button>();
             CancelBTN= transform.Find("ButtonPanel/CancelBtn").GetComponent<Button>();
             ManualTypeInput = transform.Find("ManualTypeContainer/ManualTypeInput").GetComponent<TMP_InputField>();
         }
@@ -45,8 +48,6 @@ namespace Assets.Import.PrefabScripts
         public void Start()
         {
             AttachListeners();
-            Components = ComponentSelctionPanel.GetComponentsInChildren<Toggle>();
-            Bones = BoneSelectionPanel.GetComponentsInChildren<Toggle>();
         }
 
         /// <summary>
@@ -75,10 +76,6 @@ namespace Assets.Import.PrefabScripts
         /// <param name="position"></param>
         public void SetLandmarkData(string type,Vector3 position)
         {
-            if(landmarksData == null)
-            {
-                landmarksData = new List<Landmark>();
-            }
             landmarksData.Add(new Landmark
             {
                 Type = type,
@@ -98,12 +95,13 @@ namespace Assets.Import.PrefabScripts
             var activeToggle = GetActiveToggle();
             Debug.Log(activeToggle.name);
 
-            Geometry stlContent = new Geometry();
-            stlContent.Tag = ManualTypeInput.text;
+            Geometry geometryContent = new Geometry();
+            Debug.Log("Manual Input : " + ManualTypeInput.text);
+            geometryContent.Tag = ManualTypeInput.text;
 
             if(meshData!=null)
             {
-                stlContent.Mesh = meshData.ToMesh();
+                geometryContent.Mesh = meshData.ToMesh();
                 meshData = null;
             }
             else if(null != landmarksData)
@@ -112,16 +110,19 @@ namespace Assets.Import.PrefabScripts
                 {
                     lm.Bone = activeToggle.name;
                 }
-                stlContent.UpdateLandmarks(landmarksData);
-                landmarksData = null;
+                geometryContent.UpdateLandmarks(landmarksData);
+                landmarksData = new List<Landmark>();
             }
 
-            // stlContent.ObjectType = ;
-            GeometryManager.Instance.AddContent(stlContent);
+            geometryContent.ObjectType = GetObjectType(GetActiveToggle());
+            GeometryManager.Instance.ShowList();
+            GeometryManager.Instance.UpdateDisplayList(geometryContent);
 
-            Debug.Log("Manual Input : " + ManualTypeInput.text);
+            Debug.Log("Tag :" + geometryContent.Tag);
+            Debug.Log("Object Type : " + geometryContent.ObjectType);
 
             this.gameObject.SetActive(false);
+            DataPanelClosed?.Invoke();
             ManualTypeInput.text = null;
             DisableToggle();
         }
@@ -134,33 +135,57 @@ namespace Assets.Import.PrefabScripts
             this.gameObject.SetActive(false);
             ManualTypeInput.text = null;
             DisableToggle();
+            GeometryManager.Instance.ShowList();
+            DataPanelClosed?.Invoke();
         }
 
+        /// <summary>
+        /// Disable active toggles.
+        /// </summary>
         private void DisableToggle()
         {
-            foreach (var comp in Components)
+            var toggles=ToggleGroup.GetComponentsInChildren<Toggle>();
+            foreach(var type in toggles)
             {
-                comp.isOn = false;
-            }
-
-            foreach (var bone in Bones)
-            {
-                bone.isOn = false;
+                type.isOn = false;
             }
         }
 
+        /// <summary>
+        /// Get active toggle.
+        /// </summary>
+        /// <returns></returns>
         private Toggle GetActiveToggle()
         {
-            foreach (var comp in Components)
+            var toggles = ToggleGroup.GetComponentsInChildren<Toggle>();
+            foreach (var type in toggles)
             {
-                if (comp.isOn) return comp;
-            }
-
-            foreach (var bone in Bones)
-            {
-                if (bone.isOn) return bone;
+                if(type.isOn)
+                {
+                    return type;
+                }
             }
             return null;
+        }
+
+        /// <summary>
+        /// Get object type.
+        /// </summary>
+        /// <param name="type"></param>
+        private ObjectType GetObjectType(Toggle type)
+        {
+            var obj=Enum.GetValues(typeof(ObjectType)).Cast<ObjectType>().ToList();
+            if (type != null)
+            {
+                foreach (var item in obj)
+                {
+                    if (type.name == item.ToString())
+                    {
+                        return item;
+                    }
+                }
+            }
+            return ObjectType.Other;
         }
 
         #endregion

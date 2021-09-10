@@ -1,4 +1,5 @@
 ﻿using Assets.CaseFile;
+using Assets.Geometries;
 using Assets.Import.PrefabScripts;
 using System;
 using System.Linq;
@@ -19,7 +20,8 @@ namespace Assets.Import
         public Button MenuBTN;
         public GameObject LoadSTL;
         public GameObject LoadLM;
-        public GameObject LoadTransform;
+        public GameObject ImportTransform;
+        public GameObject View;
 
         #endregion
 
@@ -27,7 +29,8 @@ namespace Assets.Import
 
         private Button LoadSTLBtn;
         private Button LoadLMBtn;
-        private Button LoadTransformBtn;
+        private Button ImportTransformBtn;
+        private Button ViewBtn;
         private ImportDataPanel ImportDataPanel;
 
         #endregion
@@ -36,9 +39,19 @@ namespace Assets.Import
         {
             LoadSTLBtn = LoadSTL.GetComponentInChildren<Button>();
             LoadLMBtn = LoadLM.GetComponentInChildren<Button>();
-            LoadTransformBtn = LoadTransform.GetComponentInChildren<Button>();
+            ImportTransformBtn = ImportTransform.GetComponentInChildren<Button>();
+            ViewBtn = View.GetComponentInChildren<Button>();
             ImportDataPanel = transform.Find("ImportDataPanel").GetComponent<ImportDataPanel>();
+            GeometryManager.Instance.DisplayList();
+            ImportDataPanel.DataPanelClosed += ShowButtons;
             AttachListeners();
+        }
+
+        private void Update()
+        {
+            LoadLMBtn.interactable = GeometryManager.Instance.EnableLoad;
+            ImportTransformBtn.interactable = GeometryManager.Instance.EnableLoad;
+            ViewBtn.interactable = GeometryManager.Instance.EnableView;
         }
 
         #region Private Methods
@@ -51,7 +64,8 @@ namespace Assets.Import
             MenuBTN.onClick.AddListener(OnMenuIconClick);
             LoadSTLBtn.onClick.AddListener(OnLoadStlClick);
             LoadLMBtn.onClick.AddListener(OnLoadLMClick);
-            LoadTransformBtn.onClick.AddListener(OnLoadTransformClick);
+            ImportTransformBtn.onClick.AddListener(OnImportTransformClick);
+            ViewBtn.onClick.AddListener(OnViewClick);
         }
 
         /// <summary>
@@ -60,8 +74,6 @@ namespace Assets.Import
         private void OnMenuIconClick()
         {
             LoadSTL.gameObject.SetActive(true);
-            LoadLM.gameObject.SetActive(true);
-            LoadTransform.gameObject.SetActive(true);
         }
 
         /// <summary>
@@ -71,8 +83,6 @@ namespace Assets.Import
         {
             LoadStl();
             LoadSTL.gameObject.SetActive(false);
-            LoadLM.gameObject.SetActive(false);
-            LoadTransform.gameObject.SetActive(false);
         }
 
         /// <summary>
@@ -83,13 +93,14 @@ namespace Assets.Import
             string path = EditorUtility.OpenFilePanel("Open file", "", "STL");
             if (path!=null)
             {
+                GeometryManager.Instance.HideList();
+                HideButtons();
                 ImportDataPanel.gameObject.SetActive(true);
                 var loadedFile = System.IO.Path.GetFileName(path);
                 ImportDataPanel.meshData = MeshGeometryFunctions.ReadStl(path);
                 ImportDataPanel.SetTitle(loadedFile);
             }
         }
-
 
         /// <summary>
         /// Load landmark button click listener.
@@ -98,20 +109,30 @@ namespace Assets.Import
         {
             LoadLanmarksFromCSV();
             LoadSTL.gameObject.SetActive(false);
-            LoadLM.gameObject.SetActive(false);
-            LoadTransform.gameObject.SetActive(false);
         }
 
         /// <summary>
         /// Load transform button click listener.
         /// </summary>
-        private void OnLoadTransformClick()
+        private void OnImportTransformClick()
         {
-            LoadSTL.gameObject.SetActive(false);
-            LoadLM.gameObject.SetActive(false);
-            LoadTransform.gameObject.SetActive(false);
+            if (!GeometryManager.Instance.EnableLoad) return;
 
-            SceneManager.LoadScene("TransformImportScene");
+            string path = EditorUtility.OpenFilePanel("Select the transform file.", "", "csv, CSV");
+
+            if (string.IsNullOrEmpty(path)) return;
+
+            string transformString = System.IO.File.ReadAllText(path);
+            transformString = ParseTransformString(transformString);
+            Debug.Log(transformString);
+            if (transformString == null)
+            {
+                Debug.Log("Implant transform is not available for the selected component");
+            }
+            else
+            {
+                GeometryManager.Instance.UpdateTransform(transformString);
+            }
         }
 
         /// <summary>
@@ -122,6 +143,8 @@ namespace Assets.Import
             string path = EditorUtility.OpenFilePanel("Open Folder", "", "CSV");
             if (path != null)
             {
+                GeometryManager.Instance.HideList();
+                HideButtons();
                 ImportDataPanel.gameObject.SetActive(true);
                 var loadedFile = System.IO.Path.GetFileName(path);
                 ImportDataPanel.SetTitle(loadedFile);
@@ -152,6 +175,37 @@ namespace Assets.Import
                 {
                 }
             }
+        }
+
+        private static string ParseTransformString(string transformString)
+        {
+            string result = transformString;
+
+            var splitInput = transformString.Split(',');
+            splitInput = splitInput.Where(val => val != splitInput[0] &&
+                                          val != splitInput[7]).ToArray();
+
+            result = string.Join(",", splitInput);
+            return result;
+        }
+
+        private void OnViewClick()
+        {
+            SceneManager.LoadScene("Sandbox");
+        }
+
+        private void ShowButtons()
+        {
+            LoadLM.gameObject.SetActive(true);
+            ImportTransform.gameObject.SetActive(true);
+            View.gameObject.SetActive(true);
+        }
+
+        private void HideButtons()
+        {
+            LoadLM.gameObject.SetActive(false);
+            ImportTransform.gameObject.SetActive(false);
+            View.gameObject.SetActive(false);
         }
 
         #endregion
