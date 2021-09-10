@@ -51,19 +51,11 @@ namespace Assets.Geometries
             buttonPrefab = Resources.Load<GameObject>(buttonPrefabPath);
             Button tempButton = buttonPrefab.GetComponent<Button>();
             normalColor = tempButton.GetComponent<Image>().color;
-
-            AddContents();
         }
 
         #endregion
 
         #region Private Methods
-
-        //Dummy data
-        private void AddContents()
-        {
-            Geometries.Add(new Geometry() { Tag = "Pelvis Sample" });
-        }
 
         private void AddToDisplayList(Geometry data)
         {
@@ -191,6 +183,7 @@ namespace Assets.Geometries
         public void UpdateDisplayList(Geometry data)
         {
             Geometries.Add(data);
+            parent.SetActive(true);
             AddToDisplayList(data);
         }
 

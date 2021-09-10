@@ -2,6 +2,7 @@
 using Assets.Geometries;
 using Assets.Import.PrefabScripts;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -116,8 +117,6 @@ namespace Assets.Import
         /// </summary>
         private void OnImportTransformClick()
         {
-            if (!GeometryManager.Instance.EnableLoad) return;
-
             string path = EditorUtility.OpenFilePanel("Select the transform file.", "", "csv, CSV");
 
             if (string.IsNullOrEmpty(path)) return;
@@ -141,40 +140,40 @@ namespace Assets.Import
         public void LoadLanmarksFromCSV()
         {
             string path = EditorUtility.OpenFilePanel("Open Folder", "", "CSV");
-            if (path != null)
+
+            if (string.IsNullOrEmpty(path)) return;
+
+            var landmarks = new List<Landmark>();
+            var reader = new System.IO.StreamReader(path);
+            try
             {
-                GeometryManager.Instance.HideList();
-                HideButtons();
-                ImportDataPanel.gameObject.SetActive(true);
-                var loadedFile = System.IO.Path.GetFileName(path);
-                ImportDataPanel.SetTitle(loadedFile);
-
-                var reader = new System.IO.StreamReader(path);
-                try
+                while (!reader.EndOfStream)
                 {
-                    while (!reader.EndOfStream)
+                    var line = reader.ReadLine();
+                    var value = line.Split(',');
+
+                    if (!value.Contains("Name") && value.Length > 3)
                     {
-                        var line = reader.ReadLine();
-                        var value = line.Split(',');
+                        string type = value[0];
+                        float x;
+                        float.TryParse(value[1], out x);
+                        float y;
+                        float.TryParse(value[2], out y);
+                        float z;
+                        float.TryParse(value[3], out z);
 
-                        if (!value.Contains("Name") && value.Length > 3)
+                        landmarks.Add(new Landmark
                         {
-                            string str = value[0];
-                            float x;
-                            float.TryParse(value[1], out x);
-                            float y;
-                            float.TryParse(value[2], out y);
-                            float z;
-                            float.TryParse(value[3], out z);
-
-                            ImportDataPanel.SetLandmarkData(str, new Vector3(x, y, z));
-                        }
+                            Type = type,
+                            Position = new Vector3(x, y, z)
+                        });
                     }
                 }
-                catch (Exception ex)
-                {
-                }
             }
+            catch (Exception ex)
+            {
+            }
+            GeometryManager.Instance.UpdateLandmarks(landmarks);
         }
 
         private static string ParseTransformString(string transformString)

@@ -2,7 +2,6 @@
 using Assets.Geometries;
 using Assets.Sandbox.Import;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -30,8 +29,8 @@ namespace Assets.Import.PrefabScripts
         #region Public Properties
 
         public MeshData meshData { get; set; }
-        public List<Landmark> landmarksData = new List<Landmark>();
         public Action DataPanelClosed;
+
         #endregion
 
         #region Public Methods
@@ -69,20 +68,6 @@ namespace Assets.Import.PrefabScripts
             OpenBTN.onClick.AddListener(OnOpenBtnClick);
         }
 
-        /// <summary>
-        /// Set landmark data as list.
-        /// </summary>
-        /// <param name="type"></param>
-        /// <param name="position"></param>
-        public void SetLandmarkData(string type,Vector3 position)
-        {
-            landmarksData.Add(new Landmark
-            {
-                Type = type,
-                Position = position
-            });
-        }
-
         #endregion
 
         #region Private Methods
@@ -99,23 +84,13 @@ namespace Assets.Import.PrefabScripts
             Debug.Log("Manual Input : " + ManualTypeInput.text);
             geometryContent.Tag = ManualTypeInput.text;
 
-            if(meshData!=null)
+            if(meshData != null)
             {
                 geometryContent.Mesh = meshData.ToMesh();
                 meshData = null;
             }
-            else if(null != landmarksData)
-            {
-                foreach (var lm in landmarksData)
-                {
-                    lm.Bone = activeToggle.name;
-                }
-                geometryContent.UpdateLandmarks(landmarksData);
-                landmarksData = new List<Landmark>();
-            }
 
             geometryContent.ObjectType = GetObjectType(GetActiveToggle());
-            GeometryManager.Instance.ShowList();
             GeometryManager.Instance.UpdateDisplayList(geometryContent);
 
             Debug.Log("Tag :" + geometryContent.Tag);
