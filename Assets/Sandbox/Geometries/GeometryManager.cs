@@ -21,6 +21,7 @@ namespace Assets.Geometries
         private GameObject buttonPrefab;
         private List<Button> objectButtons;
         private Color normalColor;
+        private List<int> selectedIndices;
 
         #endregion
 
@@ -33,11 +34,9 @@ namespace Assets.Geometries
 
         public List<Geometry> Geometries { get; private set; }
 
-        public List<string> SelectedTags { get; private set; }
+        public bool EnableLoad => selectedIndices.Count == 1;
 
-        public bool EnableLoad => SelectedTags.Count == 1;
-
-        public bool EnableView => SelectedTags.Count > 0;
+        public bool EnableView => selectedIndices.Count > 0;
 
         public bool Transparent { get; private set; } = false;
 
@@ -48,7 +47,7 @@ namespace Assets.Geometries
         private GeometryManager()
         {
             Geometries = new List<Geometry>();
-            SelectedTags = new List<string>();
+            selectedIndices = new List<int>();
 
             buttonPrefab = Resources.Load<GameObject>(buttonPrefabPath);
             Button tempButton = buttonPrefab.GetComponent<Button>();
@@ -59,34 +58,34 @@ namespace Assets.Geometries
 
         #region Private Methods
 
-        private void AddToDisplayList(Geometry data)
+        private void AddToDisplayList(int index, string tag)
         {
             GameObject goButton = GameObject.Instantiate(buttonPrefab);
             goButton.transform.SetParent(parent.transform, false);
 
-            goButton.GetComponentInChildren<TextMeshProUGUI>().text = data.Tag;
+            goButton.GetComponentInChildren<TextMeshProUGUI>().text = tag;
 
             Button tempButton = goButton.GetComponent<Button>();
-            tempButton.onClick.AddListener(() => OnContentSelected(data.Tag));
-            tempButton.name = data.Tag;
+            tempButton.onClick.AddListener(() => OnContentSelected(index));
+            tempButton.name = tag;
             objectButtons.Add(tempButton);
         }
 
-        private void OnContentSelected(string tag)
+        private void OnContentSelected(int index)
         {
-            Debug.Log($"Selected : {tag}");
+            Debug.Log($"Selected : {index}");
 
-            var clicked = objectButtons.FirstOrDefault(b => b.name == tag);
+            var clicked = objectButtons[index];
 
-            if (SelectedTags.Contains(tag))
+            if (selectedIndices.Contains(index))
             {
-                SelectedTags.Remove(tag);
+                selectedIndices.Remove(index);
                 if (clicked == null) return;
                 clicked.GetComponent<Image>().color = normalColor;
             }
             else
             {
-                SelectedTags.Add(tag);
+                selectedIndices.Add(index);
                 if (clicked == null) return;
                 clicked.GetComponent<Image>().color = Color.gray;
             }
@@ -104,9 +103,9 @@ namespace Assets.Geometries
             parent = GameObject.FindGameObjectWithTag(parentTag);
 
             objectButtons = new List<Button>();
-            foreach (var data in Geometries)
+            for (int index = 0; index < Geometries.Count; index++)
             {
-                AddToDisplayList(data);
+                AddToDisplayList(index, Geometries[index].Tag);
             }
         }
 
@@ -118,8 +117,7 @@ namespace Assets.Geometries
         {
             if (!EnableLoad) return;
 
-            var selectedGeometry = Geometries.FirstOrDefault(c =>
-                                c.Tag == SelectedTags.FirstOrDefault());
+            var selectedGeometry = Geometries[selectedIndices.First()];
             selectedGeometry?.UpdateTransform(transformString);
         }
 
@@ -131,8 +129,7 @@ namespace Assets.Geometries
         {
             if (!EnableLoad) return;
 
-            var selectedGeometry = Geometries.FirstOrDefault(c =>
-                                c.Tag == SelectedTags.FirstOrDefault());
+            var selectedGeometry = Geometries[selectedIndices.First()];
             selectedGeometry?.UpdateLandmarks(landmarks);
         }
 
@@ -143,15 +140,12 @@ namespace Assets.Geometries
         /// <param name="layer"></param>
         public void DisplaySelectedObjects(Transform parent, int layer)
         {
-            var selectedItems = Geometries.Where(g =>
-                                SelectedTags.Contains(g.Tag));
-
-            if (null == selectedItems ||
-                selectedItems.Count() == 0) return;
-
-            foreach (var item in selectedItems)
+            for(int index = 0; index < Geometries.Count; index++)
             {
-                item.DisplayObjects(parent, layer);
+                if(selectedIndices.Contains(index))
+                {
+                    Geometries[index]?.DisplayObjects(parent, layer);
+                }
             }
         }
 
@@ -160,33 +154,19 @@ namespace Assets.Geometries
         /// </summary>
         /// <param name="mainTag"></param>
         /// <returns></returns>
-        public GameObject GetMainObject(string mainTag = null)
+        public GameObject GetMainObject(int index = -1)
         {
-            GameObject mainObject = null;
-
-            if (!SelectedTags.Contains(mainTag))
-            {
-                mainTag = SelectedTags.FirstOrDefault();
-            }
-
-            mainObject = Geometries.FirstOrDefault(g =>
-                                g.Tag == mainTag)?.Object;
-
-            if (mainObject == null)
-            {
-                mainObject = Geometries.FirstOrDefault(g =>
-                                SelectedTags.Contains(g.Tag) &&
-                                g.Object != null)?.Object;
-            }
-
-            return mainObject;
+            index = selectedIndices.Contains(index) ?
+                index : selectedIndices.FirstOrDefault();
+            return Geometries[index].Object;
         }
 
         public void UpdateDisplayList(Geometry data)
         {
+            var index = Geometries.Count;
             Geometries.Add(data);
             parent.SetActive(true);
-            AddToDisplayList(data);
+            AddToDisplayList(index, data.Tag);
         }
 
         public void HideList()
@@ -208,7 +188,7 @@ namespace Assets.Geometries
             {
                 data.DestroyObjects();
             }
-            SelectedTags.Clear();
+            selectedIndices.Clear();
             Transparent = false;
         }
 
