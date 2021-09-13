@@ -101,12 +101,14 @@ namespace Assets.Geometries
         public void DisplayList()
         {
             parent = GameObject.FindGameObjectWithTag(parentTag);
-
             objectButtons = new List<Button>();
             for (int index = 0; index < Geometries.Count; index++)
             {
                 AddToDisplayList(index, Geometries[index].Tag);
             }
+
+            var active = objectButtons.Count > 0;
+            parent.SetActive(active);
         }
 
         /// <summary>
@@ -176,7 +178,8 @@ namespace Assets.Geometries
 
         public void ShowList()
         {
-            parent.SetActive(true);
+            var active = objectButtons.Count > 0;
+            parent.SetActive(active);
         }
 
         /// <summary>
