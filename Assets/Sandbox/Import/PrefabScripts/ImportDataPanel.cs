@@ -40,13 +40,20 @@ namespace Assets.Import.PrefabScripts
             FileNameTXT = transform.Find("FileNameTXT").GetComponent<TMP_Text>();
             ToggleGroup = transform.Find("ObjectTypeContainer/ToggleGroup").GetComponent<ToggleGroup>();
             OpenBTN = transform.Find("ButtonPanel/OpenBtn").GetComponent<Button>();
-            CancelBTN= transform.Find("ButtonPanel/CancelBtn").GetComponent<Button>();
+            CancelBTN = transform.Find("ButtonPanel/CancelBtn").GetComponent<Button>();
             ManualTypeInput = transform.Find("ManualTypeContainer/ManualTypeInput").GetComponent<TMP_InputField>();
         }
 
         public void Start()
         {
             AttachListeners();
+            OpenBTN.interactable = false;
+        }
+
+        public void Update()
+        {
+            OpenBTN.interactable =  null != GetActiveToggle() ||
+                !string.IsNullOrWhiteSpace(ManualTypeInput.text);
         }
 
         /// <summary>
@@ -78,28 +85,32 @@ namespace Assets.Import.PrefabScripts
         private void OnOpenBtnClick()
         {
             var activeToggle = GetActiveToggle();
-            Debug.Log(activeToggle.name);
+            var tag = string.IsNullOrWhiteSpace(ManualTypeInput.text) ?
+                            activeToggle?.name : ManualTypeInput.text;
+
+            if (string.IsNullOrWhiteSpace(tag)) return;
 
             Geometry geometryContent = new Geometry();
-            Debug.Log("Manual Input : " + ManualTypeInput.text);
-            geometryContent.Tag = ManualTypeInput.text;
+            geometryContent.Tag = tag;
 
-            if(meshData != null)
+            if (meshData != null)
             {
                 geometryContent.Mesh = meshData.ToMesh();
                 meshData = null;
             }
 
-            geometryContent.ObjectType = GetObjectType(GetActiveToggle());
+            geometryContent.ObjectType = GetObjectType(tag);
             GeometryManager.Instance.UpdateDisplayList(geometryContent);
 
+            Debug.Log("Active Toggle Name: " + activeToggle?.name);
+            Debug.Log("Manual Input : " + ManualTypeInput.text);
             Debug.Log("Tag :" + geometryContent.Tag);
             Debug.Log("Object Type : " + geometryContent.ObjectType);
 
-            this.gameObject.SetActive(false);
-            DataPanelClosed?.Invoke();
             ManualTypeInput.text = null;
             DisableToggle();
+            this.gameObject.SetActive(false);
+            DataPanelClosed?.Invoke();
         }
 
         /// <summary>
@@ -119,8 +130,8 @@ namespace Assets.Import.PrefabScripts
         /// </summary>
         private void DisableToggle()
         {
-            var toggles=ToggleGroup.GetComponentsInChildren<Toggle>();
-            foreach(var type in toggles)
+            var toggles = ToggleGroup.GetComponentsInChildren<Toggle>();
+            foreach (var type in toggles)
             {
                 type.isOn = false;
             }
@@ -135,7 +146,7 @@ namespace Assets.Import.PrefabScripts
             var toggles = ToggleGroup.GetComponentsInChildren<Toggle>();
             foreach (var type in toggles)
             {
-                if(type.isOn)
+                if (type.isOn)
                 {
                     return type;
                 }
@@ -147,20 +158,14 @@ namespace Assets.Import.PrefabScripts
         /// Get object type.
         /// </summary>
         /// <param name="type"></param>
-        private ObjectType GetObjectType(Toggle type)
+        private ObjectType GetObjectType(string typeName)
         {
-            var obj=Enum.GetValues(typeof(ObjectType)).Cast<ObjectType>().ToList();
-            if (type != null)
-            {
-                foreach (var item in obj)
-                {
-                    if (type.name == item.ToString())
-                    {
-                        return item;
-                    }
-                }
-            }
-            return ObjectType.Other;
+            var objectTypes = Enum.GetValues(typeof(ObjectType)).Cast<ObjectType>();
+
+            var type = objectTypes.FirstOrDefault(ob =>
+                            ob.ToString().ToLower() == typeName.ToLower());
+
+            return type;
         }
 
         #endregion

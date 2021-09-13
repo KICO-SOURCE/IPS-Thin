@@ -92,15 +92,16 @@ namespace Assets.Import
         private void LoadStl()
         {
             string path = EditorUtility.OpenFilePanel("Open file", "", "STL");
-            if (path!=null)
-            {
-                GeometryManager.Instance.HideList();
-                HideButtons();
-                ImportDataPanel.gameObject.SetActive(true);
-                var loadedFile = System.IO.Path.GetFileName(path);
-                ImportDataPanel.meshData = MeshGeometryFunctions.ReadStl(path);
-                ImportDataPanel.SetTitle(loadedFile);
-            }
+
+            if (string.IsNullOrEmpty(path)) return;
+
+            GeometryManager.Instance.HideList();
+            HideButtons();
+            ImportDataPanel.gameObject.SetActive(true);
+            var loadedFile = System.IO.Path.GetFileName(path);
+            ImportDataPanel.meshData = MeshGeometryFunctions.ReadStl(path);
+            ImportDataPanel.SetTitle(loadedFile);
+
         }
 
         /// <summary>
@@ -108,7 +109,7 @@ namespace Assets.Import
         /// </summary>
         private void OnLoadLMClick()
         {
-            LoadLanmarksFromCSV();
+            LoadLandmarksFromCSV();
             LoadSTL.gameObject.SetActive(false);
         }
 
@@ -137,7 +138,7 @@ namespace Assets.Import
         /// <summary>
         /// Load landmarks from csv.
         /// </summary>
-        public void LoadLanmarksFromCSV()
+        private void LoadLandmarksFromCSV()
         {
             string path = EditorUtility.OpenFilePanel("Open Folder", "", "CSV");
 
@@ -152,7 +153,7 @@ namespace Assets.Import
                     var line = reader.ReadLine();
                     var value = line.Split(',');
 
-                    if (!value.Contains("Name") && value.Length > 3)
+                    if (!(value.Length > 4) && !value.Contains("Name") && CheckFormat(value))
                     {
                         string type = value[0];
                         float x;
@@ -176,6 +177,11 @@ namespace Assets.Import
             GeometryManager.Instance.UpdateLandmarks(landmarks);
         }
 
+        /// <summary>
+        /// Parse transform from string data.
+        /// </summary>
+        /// <param name="transformString"></param>
+        /// <returns></returns>
         private static string ParseTransformString(string transformString)
         {
             string result = transformString;
@@ -188,11 +194,17 @@ namespace Assets.Import
             return result;
         }
 
+        /// <summary>
+        /// View button click listener.
+        /// </summary>
         private void OnViewClick()
         {
             SceneManager.LoadScene("Sandbox");
         }
 
+        /// <summary>
+        /// Show buttons.
+        /// </summary>
         private void ShowButtons()
         {
             LoadLM.gameObject.SetActive(true);
@@ -200,11 +212,56 @@ namespace Assets.Import
             View.gameObject.SetActive(true);
         }
 
+        /// <summary>
+        /// Hide buttons.
+        /// </summary>
         private void HideButtons()
         {
             LoadLM.gameObject.SetActive(false);
             ImportTransform.gameObject.SetActive(false);
             View.gameObject.SetActive(false);
+        }
+
+        /// <summary>
+        /// validate landmark data format.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        private bool CheckFormat(string[] value)
+        {
+            if (IsChar(value[0]) && IsNumeric(value[1]) && IsNumeric(value[2]) && IsNumeric(value[3]))
+                return true;
+            return false;
+        }
+
+        /// <summary>
+        /// Checks the string contains numeric value.
+        /// </summary>
+        /// <param name="val"></param>
+        /// <returns></returns>
+        private bool IsNumeric(string val)
+        {
+            foreach (var str in val)
+            {
+                if (Char.IsDigit(str))
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Check the string contains char data.
+        /// </summary>
+        /// <param name="val"></param>
+        /// <returns></returns>
+        private bool IsChar(string val)
+        {
+            foreach (var str in val)
+            {
+                if (!(Char.IsDigit(str)))
+                    return true;
+            }
+            return false;
         }
 
         #endregion

@@ -6,6 +6,7 @@ namespace Assets.Sandbox.Import
 {
     public enum ObjectType
     {
+        Other,
         Femur_Bone,
         Tibia_Bone,
         Patella_Bone,
@@ -17,7 +18,6 @@ namespace Assets.Sandbox.Import
         PelvisCup_Component,
         PelvisLiner_Component,
         FemurHead_Component,
-        FemurStem_Component,
-        Other
+        FemurStem_Component
     }
 }
