@@ -2,6 +2,8 @@
 
 using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
 
 #endregion
 
@@ -15,10 +17,10 @@ namespace Assets.Sandbox.MouseActions
         #region Protected Members
 
         protected Camera ViewCamera;
-        protected byte MouseButton = 0; // 0 = Left, 1 = Right, 2 = Middle, 3 = Wheel
         protected bool IsActive = false;
         protected Vector2? PrevPoint = null;
         protected DateTime LastSynchedOn { get; set; }
+        protected virtual ButtonControl MouseButton { get; }
 
         #endregion
 
@@ -37,17 +39,18 @@ namespace Assets.Sandbox.MouseActions
         /// </summary>
         protected virtual void LateUpdate()
         {
-            if (Input.GetMouseButtonDown(MouseButton))
+            if (MouseButton.wasPressedThisFrame)
             {
                 if (IsMouseInViewArea())
                 {
-                    PrevPoint = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+                    var mousePosition = Mouse.current.position.ReadValue();
+                    PrevPoint = new Vector2(mousePosition.x, mousePosition.y);
                     IsActive = true;
                     return;
                 }
                 IsActive = false;
             }
-            if (Input.GetMouseButtonUp(MouseButton))
+            if (MouseButton.wasReleasedThisFrame)
             {
                 PrevPoint = null;
                 IsActive = false;
@@ -60,7 +63,8 @@ namespace Assets.Sandbox.MouseActions
         /// <returns>True if the mouse position within the view area, otherwise returns false</returns>
         protected bool IsMouseInViewArea()
         {
-            var normalizedMousePos = new Vector2(Input.mousePosition.x / Screen.width, Input.mousePosition.y / Screen.height);
+            var mousePosition = Mouse.current.position.ReadValue();
+            var normalizedMousePos = new Vector2(mousePosition.x / Screen.width, mousePosition.y / Screen.height);
             return ViewCamera.rect.Contains(normalizedMousePos);
         }
 

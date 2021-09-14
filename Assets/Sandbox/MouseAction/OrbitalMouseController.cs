@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
 
 namespace Assets.Sandbox.MouseActions
 {
@@ -13,10 +15,12 @@ namespace Assets.Sandbox.MouseActions
         private bool resetPosition = false;
         private float _sensitivityFactor = 0.01f;
 
+        protected override ButtonControl MouseButton =>
+                                    Mouse.current.leftButton;
+
         // Use this for initialization
         protected override void Start()
         {
-            MouseButton = 0;
             base.Start();
         }
 
@@ -35,15 +39,19 @@ namespace Assets.Sandbox.MouseActions
             {
                 return;
             }
-            if (Input.GetMouseButton(MouseButton))
+            if (MouseButton?.isPressed ?? false)
             {
                 if (IsMouseInViewArea())
                 {
                     if (target)
                     {
                         //  get the distance the mouse moved in the respective direction
-                        x += Input.GetAxis("Mouse X") * xSpeed * distance * _sensitivityFactor;
-                        y -= Input.GetAxis("Mouse Y") * ySpeed * distance * _sensitivityFactor;
+
+                        var deltaX = Mouse.current.delta.x.ReadValue();
+                        var deltaY = Mouse.current.delta.y.ReadValue();
+
+                        x += deltaX * xSpeed * distance * _sensitivityFactor;
+                        y -= deltaY * ySpeed * distance * _sensitivityFactor;
                         // when mouse moves left and right we actually rotate around local y axis	
                         transform.RotateAround(target.position, transform.up, x);
                         // when mouse moves up and down we actually rotate around the local x axis	

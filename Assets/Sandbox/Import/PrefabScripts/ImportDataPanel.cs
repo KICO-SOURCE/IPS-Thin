@@ -21,7 +21,7 @@ namespace Assets.Import.PrefabScripts
         private TMP_Text FileNameTXT;
         private Button OpenBTN;
         private Button CancelBTN;
-        private TMP_InputField ManualTypeInput;
+        private InputField ManualTypeInput;
         private ToggleGroup ToggleGroup;
 
         #endregion
@@ -41,7 +41,7 @@ namespace Assets.Import.PrefabScripts
             ToggleGroup = transform.Find("ObjectTypeContainer/ToggleGroup").GetComponent<ToggleGroup>();
             OpenBTN = transform.Find("ButtonPanel/OpenBtn").GetComponent<Button>();
             CancelBTN = transform.Find("ButtonPanel/CancelBtn").GetComponent<Button>();
-            ManualTypeInput = transform.Find("ManualTypeContainer/ManualTypeInput").GetComponent<TMP_InputField>();
+            ManualTypeInput = transform.Find("ManualTypeContainer/ManualTypeInput").GetComponent<InputField>();
         }
 
         public void Start()

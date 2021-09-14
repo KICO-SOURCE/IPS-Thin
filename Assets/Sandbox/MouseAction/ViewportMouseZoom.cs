@@ -1,6 +1,7 @@
 #region Usings
 
-using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
 
 #endregion
 
@@ -19,6 +20,9 @@ namespace Assets.Sandbox.MouseActions
 
         #endregion
 
+        protected override ButtonControl MouseButton =>
+                                    Mouse.current.rightButton;
+
         #region Protected Methods
 
         /// <summary>
@@ -26,7 +30,6 @@ namespace Assets.Sandbox.MouseActions
         /// </summary>
         protected override void Start()
         {
-            MouseButton = 1;
             base.Start();
         }
 
@@ -40,18 +43,19 @@ namespace Assets.Sandbox.MouseActions
             {
                 return;
             }
-            if (Input.GetMouseButton(MouseButton))
+            if (MouseButton.isPressed)
             {
                 if (IsMouseInViewArea())
                 {
-                    offsetY = Input.mousePosition.y;
-                    offsetY = (PrevPoint.Value.y - Input.mousePosition.y) * (ViewCamera.orthographicSize / 100);
+                    var mousePosition = Mouse.current.position.ReadValue();
+                    offsetY = mousePosition.y;
+                    offsetY = (PrevPoint.Value.y - mousePosition.y) * (ViewCamera.orthographicSize / 100);
                     var newSize = ViewCamera.orthographicSize + offsetY;
                     if ((newSize < maxLimit) && (newSize > minLimit))
                     {
                         ViewCamera.orthographicSize = newSize;
                     }
-                    PrevPoint = Input.mousePosition;
+                    PrevPoint = mousePosition;
                     return;
                 }
             }
