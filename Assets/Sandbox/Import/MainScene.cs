@@ -14,7 +14,7 @@ namespace Assets.Import
     /// <summary>
     /// Imposrt STL and Landmarks class.
     /// </summary>
-    public class ImportDataScreen : MonoBehaviour
+    public class MainScene : MonoBehaviour
     {
         #region Public Memebers
 
@@ -199,7 +199,7 @@ namespace Assets.Import
         /// </summary>
         private void OnViewClick()
         {
-            SceneManager.LoadScene("Sandbox");
+            SceneManager.LoadScene("ThreeDScene");
         }
 
         /// <summary>

@@ -12,9 +12,9 @@ using UnityEngine.UI;
 namespace Assets.Sandbox
 {
     /// <summary>
-    /// Display controller for the sandbox 3d models.
+    /// ThreeD Scene for the sandbox 3d models.
     /// </summary>
-    public class DisplayController : MonoBehaviour
+    public class ThreeDScene : MonoBehaviour
     {
         #region Private Fields
 
@@ -153,7 +153,7 @@ namespace Assets.Sandbox
         private void OnCloseClick()
         {
             GeometryManager.Instance.DistroyAllObjects();
-            SceneManager.LoadScene("ImportUI");
+            SceneManager.LoadScene("MainScene");
         }
 
         private void OnTransparentClick()
