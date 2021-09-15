@@ -1,6 +1,6 @@
 ﻿#region Usings
 
-using Assets._MUTUAL.Utils;
+using Assets.Utils;
 using System.Linq;
 using UnityEngine;
 

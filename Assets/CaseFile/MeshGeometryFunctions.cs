@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Globalization;
 using System.Linq;
-using Assets._MUTUAL.Utils;
 
 namespace Assets.CaseFile
 {
@@ -592,42 +591,6 @@ namespace Assets.CaseFile
                         vertices[triangles[i + 2]]
                     );
                 facetNormals.Add(normal);
-            }
-        }
-
-        internal void ConvertToUnityCoordinateSystem()
-        {
-            vertices = vertices.Select(UnityExtensions.ConvertToUnityCoordinate).ToList();
-            if (facetNormals?.Count > 0)
-            {
-                facetNormals.Select(UnityExtensions.ConvertToUnityCoordinate).ToList();
-            }
-            if (normals?.Count > 0)
-            {
-                normals = normals.Select(UnityExtensions.ConvertToUnityCoordinate).ToList();
-            }
-        }
-
-        internal void ConvertToNonUnityCoordinateSystem()
-        {
-            vertices = vertices.Select(UnityExtensions.ConvertToNonUnityCoordinate).ToList();
-            if (facetNormals?.Count > 0)
-            {
-                facetNormals = facetNormals.Select(UnityExtensions.ConvertToNonUnityCoordinate).ToList();
-            }
-            if (normals?.Count > 0)
-            {
-                normals = normals.Select(UnityExtensions.ConvertToNonUnityCoordinate).ToList();
-            }
-
-            for (int i = 0; i < triangles.Count; i += 3)
-            {
-                int index0 = triangles[i];
-                int index1 = triangles[i + 1];
-                int index2 = triangles[i + 2];
-
-                triangles[i] = index2;
-                triangles[i + 2] = index0;
             }
         }
 
