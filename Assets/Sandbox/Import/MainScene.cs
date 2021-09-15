@@ -173,6 +173,7 @@ namespace Assets.Import
             }
             catch (Exception ex)
             {
+                Debug.Log(ex.Message);
             }
             GeometryManager.Instance.UpdateLandmarks(landmarks);
         }

@@ -5,13 +5,19 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Sandbox/Scenes/ImportUI.unity
     guid: 1c5fd432f82aaad4f9ee55c6463cfa08
+  - enabled: 0
+    path: 
+    guid: 00000000000000000000000000000000
+  - enabled: 0
+    path: 
+    guid: 00000000000000000000000000000000
   - enabled: 1
-    path: Assets/Sandbox/Scenes/TransformImportScene.unity
-    guid: 9f38422a57b397c46afdc41c29f6ca17
+    path: Assets/Sandbox/Scenes/MainScene.unity
+    guid: bc6e0eb787b5deb469852ee7c2f2a26a
   - enabled: 1
-    path: Assets/Sandbox/Scenes/Sandbox.unity
-    guid: 7073ccc087ea1ff44a2303a8afa6b97f
+    path: Assets/Sandbox/Scenes/ThreeDScene.unity
+    guid: 830a692e520480d479d350667dbbc3ba
   m_configObjects: {}

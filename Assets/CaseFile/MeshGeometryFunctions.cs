@@ -198,6 +198,7 @@ namespace Assets.CaseFile
                     }
                     catch (Exception ex)
                     {
+                        Debug.Log(ex.Message);
                         throw;
                     }
                     finally
@@ -210,8 +211,9 @@ namespace Assets.CaseFile
                     }
                 }
             }
-            catch (Exception ex2)
+            catch (Exception ex)
             {
+                Debug.Log(ex.Message);
                 return null;
             }
             finally
@@ -367,7 +369,7 @@ namespace Assets.CaseFile
             }
             catch (Exception ex)
             {
-
+                Debug.Log(ex.Message);
             }
 
             return output;
@@ -428,6 +430,7 @@ namespace Assets.CaseFile
             }
             catch (Exception err)
             {
+                Debug.Log(err.Message);
                 //  throw new Exception(string.Format("Error reading STL file.\n{0}", err.Message));
             }
 

@@ -36,8 +36,9 @@ namespace Assets.CaseFile
                 sourceStream.Close();
                 targetStream.Close();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
+                Debug.Write(ex.Message);
                 encryptionProvider.Clear();
                 decryptionStream.Flush();
                 decryptionStream = null;
@@ -264,6 +265,7 @@ namespace Assets.CaseFile
             }
             catch (Exception ex)
             {
+                Debug.Write(ex.Message);
                 return false;
             }
 
