@@ -132,10 +132,8 @@ namespace Assets.Sandbox
 
             Camera.transform.RotateAround(center, axis, angle);
 
-            GameObject position = new GameObject();
-            position.transform.position = center;
-            Camera.gameObject.GetComponent<OrbitalMouseController>().target = position.transform;
-            Camera.gameObject.GetComponent<OrbitalMousePanHelper>().pivotTarget = position.transform;
+            Camera.gameObject.GetComponent<OrbitalMouseController>().target = center;
+            Camera.gameObject.GetComponent<OrbitalMousePanHelper>().pivotTarget = center;
 
             Camera.gameObject.SetActive(true);
         }

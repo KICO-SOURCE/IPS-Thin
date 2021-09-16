@@ -6,7 +6,7 @@ namespace Assets.Sandbox.MouseActions
 {
     public class OrbitalMousePanHelper : MouseActionBase
     {
-        public Transform pivotTarget;
+        public Vector3 pivotTarget;
 
         protected override ButtonControl MouseButton =>
                                     Mouse.current.rightButton;

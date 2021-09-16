@@ -46,10 +46,32 @@ namespace Assets.CaseFile
         public Transform GetTransfrom()
         {
             GameObject obj = new GameObject();
-            Transform finalTransform = obj.transform;
-            finalTransform.SetFromRightHandEuler((float)TranslationX, (float)TranslationY, (float)TranslationZ, (float)Yaw, (float)Roll, (float)Pitch);
+            TransformObject(obj);
             // GameObject.DestroyImmediate(obj);
-            return finalTransform;
+            return obj.transform;
+        }
+
+        /// <summary>
+        /// Transform a game object
+        /// </summary>
+        /// <param name="obj"></param>
+        public void TransformObject(GameObject obj)
+        {
+            obj.transform.SetFromRightHandEuler((float)TranslationX, (float)TranslationY,
+                                (float)TranslationZ, (float)Yaw, (float)Roll, (float)Pitch);
+        }
+
+        /// <summary>
+        /// Transform a point
+        /// </summary>
+        /// <param name="point"></param>
+        /// <returns></returns>
+        public Vector3 TransformPoint(Vector3 point)
+        {
+            var trans = GetTransfrom();
+            var result = trans.TransformPoint(point);
+            GameObject.DestroyImmediate(trans.gameObject);
+            return result;
         }
 
         #endregion

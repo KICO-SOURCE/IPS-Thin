@@ -12,8 +12,8 @@ namespace Assets.Geometries
 
         private const string meshMaterialPath = "Materials/BoneMaterial";
         private const string transMaterialPath = "Materials/BoneTransparent";
-        private const string buttonPrefabPath = "Prefabs/Landmark";
-        private GameObject buttonPrefab;
+        private const string lmPrefabPath = "Prefabs/Landmark";
+        private GameObject lmPrefab;
         private GameObject meshObject;
         private List<GameObject> objects;
         private Material meshMaterial;
@@ -54,9 +54,6 @@ namespace Assets.Geometries
 
             if (EulerTransform == null) return;
 
-            
-            var transform = EulerTransform.GetTransfrom();
-
             if (Mesh != null)
             {
                 meshObject = new GameObject(Tag, typeof(MeshFilter), typeof(MeshRenderer));
@@ -64,8 +61,7 @@ namespace Assets.Geometries
                 meshObject.GetComponent<MeshFilter>().mesh = Mesh;
                 meshObject.GetComponent<MeshRenderer>().material = meshMaterial;
 
-                meshObject.transform.localPosition = transform.position;
-                meshObject.transform.localEulerAngles = transform.eulerAngles;
+                EulerTransform.TransformObject(meshObject);
                 meshObject.layer = layer;
 
                 meshObject.SetActive(true);
@@ -73,21 +69,24 @@ namespace Assets.Geometries
 
             if (Landmarks == null) return;
 
-            buttonPrefab = Resources.Load<GameObject>(buttonPrefabPath);
+            lmPrefab = Resources.Load<GameObject>(lmPrefabPath);
             foreach(var lm in Landmarks)
             {
-                GameObject go = GameObject.Instantiate(buttonPrefab);
+                GameObject go = GameObject.Instantiate(lmPrefab);
                 go.name = $"{Tag}_{lm.Type}";
                 go.transform.parent = parent;
                 go.GetComponent<MeshRenderer>().material.color = Color.red;
 
-                var position = transform.TransformPoint(lm.Position);
+                var position = EulerTransform.TransformPoint(lm.Position);
                 go.transform.localPosition = position;
                 go.layer = layer;
 
                 go.SetActive(true);
                 objects.Add(go);
             }
+
+            lmPrefab.SetActive(false);
+            UnityEngine.Object.DestroyImmediate(lmPrefab);
         }
 
         public void DestroyObjects()
