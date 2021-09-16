@@ -286,12 +286,7 @@ namespace Assets.CaseFile
                 {
                     using (BinaryReader reader = new BinaryReader(stream, Encoding.ASCII, true))
                     {
-                        // TODO : Revist this reading logic
-                        var mesh = ReadStlBinary(reader);
-                        m = new MeshData();
-                        m.indexFormat = mesh.indexFormat;
-                        m.vertices = mesh.vertices.ToList();
-                        m.triangles = mesh.triangles.ToList();
+                        m = ReadStlBinary(reader);
                     }
                 }
             }
@@ -380,12 +375,13 @@ namespace Assets.CaseFile
         /// </summary>
         /// <param name="reader">Binary reader.</param>
         /// <returns>Return mesh data.</returns>
-        public static Mesh ReadStlBinary(BinaryReader reader)
+        public static MeshData ReadStlBinary(BinaryReader reader)
         {
             if (reader == null)
                 return null;
 
-            Mesh stl = new Mesh();
+            MeshData stl = new MeshData();
+            stl.indexFormat = IndexFormat.UInt32;
 
             try
             {
@@ -396,8 +392,8 @@ namespace Assets.CaseFile
                 buffer = reader.ReadBytes(80);
                 int numberoftris = (int)reader.ReadInt32();
 
-                stl.vertices = new Vector3[stl.vertexCount];
-                stl.triangles = new int[stl.triangles.GetLength(3)];
+                stl.vertices = new List<Vector3>();
+                stl.triangles = new List<int>();
 
                 int count = 0;
 
@@ -419,12 +415,12 @@ namespace Assets.CaseFile
                     float z3 = reader.ReadSingle();
                     byte[] boolbuff = reader.ReadBytes(2);
 
-                    stl.vertices.SetValue(new Vector3(x1, y1, z1), stl.vertices.Rank);
-                    stl.vertices.SetValue(new Vector3(x2, y2, z2), stl.vertices.Rank);
-                    stl.vertices.SetValue(new Vector3(x3, y3, z3), stl.vertices.Rank);
-                    stl.triangles.SetValue(count, stl.triangles.Rank);
-                    stl.triangles.SetValue(count + 1, stl.triangles.Rank);
-                    stl.triangles.SetValue(count + 2, stl.triangles.Rank);
+                    stl.vertices.Add(new Vector3(x1, y1, z1));
+                    stl.vertices.Add(new Vector3(x2, y2, z2));
+                    stl.vertices.Add(new Vector3(x3, y3, z3));
+                    stl.triangles.Add(count);
+                    stl.triangles.Add(count + 1);
+                    stl.triangles.Add(count + 2);
                     count += 3;
                 }
             }
