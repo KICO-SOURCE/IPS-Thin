@@ -41,21 +41,21 @@ namespace Assets.Sandbox
 
         private void Start()
         {
-            DisplayMesh();
-            ShowVerticesButton.SetActive(false);
-            var showVerticesBtn = ShowVerticesButton.GetComponentInChildren<Button>();
-            showVerticesBtn.onClick.AddListener(ShowVerticesList);
-            var closeBtn = CloseButton.GetComponentInChildren<Button>();
-            closeBtn.onClick.AddListener(OnCloseClick);
-            var transparentBtn = TransparentButton.GetComponentInChildren<Button>();
-            transparentBtn.onClick.AddListener(OnTransparentClick);
-            normalColor = transparentBtn.GetComponent<Image>().color;
+            //DisplayMesh();
+            //ShowVerticesButton.SetActive(false);
+            //var showVerticesBtn = ShowVerticesButton.GetComponentInChildren<Button>();
+            //showVerticesBtn.onClick.AddListener(ShowVerticesList);
+            //var closeBtn = CloseButton.GetComponentInChildren<Button>();
+            //closeBtn.onClick.AddListener(OnCloseClick);
+            //var transparentBtn = TransparentButton.GetComponentInChildren<Button>();
+            //transparentBtn.onClick.AddListener(OnTransparentClick);
+            //normalColor = transparentBtn.GetComponent<Image>().color;
         }
 
         /// <summary>
         /// Display a mesh in UI
         /// </summary>
-        private void DisplayMesh()
+        public void DisplayMesh()
         {
             //var path = Application.dataPath + @"\Sandbox\Sample\pelvis.stl";
             //Mesh = LoadStl(path);

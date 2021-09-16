@@ -19,7 +19,6 @@ namespace Assets.Geometries
 
         private GameObject parent;
         private GameObject buttonPrefab;
-        private List<Button> objectButtons;
         private Color normalColor;
         private List<int> selectedIndices;
 
@@ -27,6 +26,7 @@ namespace Assets.Geometries
 
         #region Properties
 
+        public List<Button> objectButtons;
         public static GeometryManager Instance
         {
             get { return _instance.Value; }
