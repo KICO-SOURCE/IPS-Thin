@@ -60,6 +60,7 @@ namespace Assets.Sandbox
             //var path = Application.dataPath + @"\Sandbox\Sample\pelvis.stl";
             //Mesh = LoadStl(path);
 
+            this.gameObject.SetActive(true);
             GeometryManager.Instance.DisplaySelectedObjects(Parent.transform,
                                                 LayerMask.NameToLayer(layer));
             SetCameraAndLightPosition(GeometryManager.Instance.GetMainObject());
@@ -111,6 +112,8 @@ namespace Assets.Sandbox
             var direction = mesh.transform.TransformVector(Vector3.down);
             var camPosition = center + direction * distance;
 
+            Camera.gameObject.SetActive(false);
+
             Camera.transform.position = camPosition;
             Camera.transform.LookAt(center, direction);
             Camera.orthographicSize = distance;
@@ -129,16 +132,12 @@ namespace Assets.Sandbox
 
             Camera.transform.RotateAround(center, axis, angle);
 
-            Light.transform.position = Camera.transform.position;
-            Light.transform.eulerAngles = Camera.transform.eulerAngles;
-            Light.transform.parent = Camera.transform;
-
             GameObject position = new GameObject();
             position.transform.position = center;
             Camera.gameObject.GetComponent<OrbitalMouseController>().target = position.transform;
             Camera.gameObject.GetComponent<OrbitalMousePanHelper>().pivotTarget = position.transform;
 
-            PivotPoint.transform.position = Vector3.zero;
+            Camera.gameObject.SetActive(true);
         }
 
         private void ShowVerticesList()

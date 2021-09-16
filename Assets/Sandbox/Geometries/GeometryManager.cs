@@ -142,12 +142,9 @@ namespace Assets.Geometries
         /// <param name="layer"></param>
         public void DisplaySelectedObjects(Transform parent, int layer)
         {
-            for(int index = 0; index < Geometries.Count; index++)
+            foreach(var geometry in Geometries)
             {
-                if(selectedIndices.Contains(index))
-                {
-                    Geometries[index]?.DisplayObjects(parent, layer);
-                }
+                geometry?.DisplayObjects(parent, layer);
             }
         }
 

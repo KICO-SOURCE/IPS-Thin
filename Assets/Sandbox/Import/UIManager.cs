@@ -92,6 +92,7 @@ namespace Assets.Import
 
             if (string.IsNullOrEmpty(path)) return;
 
+            ThreeDScene.gameObject.SetActive(false);
             ImportDataPanel.gameObject.SetActive(true);
             var loadedFile = System.IO.Path.GetFileName(path);
             ImportDataPanel.meshData = MeshGeometryFunctions.ReadStl(path);
