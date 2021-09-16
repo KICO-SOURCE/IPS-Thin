@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 using TMPro;
@@ -24,7 +24,6 @@ namespace Assets.Import.PrefabScripts
         #region Public Members
 
         public Button TransparentBtn;
-        public Button CloseBtn;
 
         #endregion
 
@@ -36,7 +35,6 @@ namespace Assets.Import.PrefabScripts
             SlidingPanelRect = transform.Find("SlidingPanel").GetComponent<RectTransform>();
             SlideLeftBTN = transform.Find("SlideLeftBtnPanel/SlideLeftBtn").GetComponent<Button>();
             TransparentBtn = transform.Find("SlidingPanel/ButtonContainer/TransparentBtn").GetComponentInChildren<Button>();
-            CloseBtn = transform.Find("SlidingPanel/ButtonContainer/CloseBtn").GetComponentInChildren<Button>();
         }
 
         // Start is called before the first frame update

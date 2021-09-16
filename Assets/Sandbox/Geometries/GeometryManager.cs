@@ -76,19 +76,24 @@ namespace Assets.Geometries
             Debug.Log($"Selected : {index}");
 
             var clicked = objectButtons[index];
+            if (clicked == null) return;
+            selectedIndices = new List<int>();
+            selectedIndices.Add(index);
 
-            if (selectedIndices.Contains(index))
-            {
-                selectedIndices.Remove(index);
-                if (clicked == null) return;
-                clicked.GetComponent<Image>().color = normalColor;
-            }
-            else
-            {
-                selectedIndices.Add(index);
-                if (clicked == null) return;
-                clicked.GetComponent<Image>().color = Color.gray;
-            }
+            //var clicked = objectButtons[index];
+
+            //if (selectedIndices.Contains(index))
+            //{
+            //    selectedIndices.Remove(index);
+            //    if (clicked == null) return;
+            //    clicked.GetComponent<Image>().color = normalColor;
+            //}
+            //else
+            //{
+            //    selectedIndices.Add(index);
+            //    if (clicked == null) return;
+            //    clicked.GetComponent<Image>().color = Color.gray;
+            //}
         }
 
         #endregion

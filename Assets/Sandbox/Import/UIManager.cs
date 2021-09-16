@@ -1,4 +1,4 @@
-﻿using Assets.CaseFile;
+using Assets.CaseFile;
 using Assets.Geometries;
 using Assets.Import.PrefabScripts;
 using Assets.Sandbox;
@@ -46,6 +46,12 @@ namespace Assets.Import
             normalColor = RightSidePanel.TransparentBtn.GetComponent<Image>().color;
         }
 
+        private void Update()
+        {
+            LeftSidePanel.LoadLMBtn.interactable = GeometryManager.Instance.EnableLoad;
+            LeftSidePanel.ImportTransformBtn.interactable = GeometryManager.Instance.EnableLoad;
+        }
+
         #endregion
 
         #region Private Methods
@@ -60,7 +66,6 @@ namespace Assets.Import
             LeftSidePanel.ImportTransformBtn.onClick.AddListener(OnImportTransformClick);
 
             RightSidePanel.TransparentBtn.onClick.AddListener(OnTransparentClick);
-            RightSidePanel.CloseBtn.onClick.AddListener(OnCloseClick);
         }
 
         /// <summary>
@@ -231,11 +236,9 @@ namespace Assets.Import
             return false;
         }
 
-        private void OnCloseClick()
-        {
-            GeometryManager.Instance.DistroyAllObjects();
-        }
-
+        /// <summary>
+        /// Transparent button click listener.
+        /// </summary>
         private void OnTransparentClick()
         {
             GeometryManager.Instance.ToggleTransparency();
