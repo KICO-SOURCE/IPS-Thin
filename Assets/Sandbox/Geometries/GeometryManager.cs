@@ -170,13 +170,18 @@ namespace Assets.Geometries
         /// <summary>
         /// Returns the main geometry object
         /// </summary>
-        /// <param name="mainTag"></param>
+        /// <param name="index"></param>
         /// <returns></returns>
         public GameObject GetMainObject(int index = -1)
         {
-            index = selectedIndices.Contains(index) ?
-                index : selectedIndices.FirstOrDefault();
-            return Geometries[index].Object;
+            if(index > 0 && index < Geometries.Count)
+            {
+                return Geometries[index]?.Object;
+            }
+            else
+            {
+                return Geometries.FirstOrDefault()?.Object;
+            }
         }
 
         public void UpdateDisplayList(Geometry data)
