@@ -80,7 +80,6 @@ namespace Assets.Import.PrefabScripts
                 HideLeftSlidingPanel();
                 IsSlide = true;
             }
-            PanelToggled?.Invoke();
         }
 
         /// <summary>
@@ -89,7 +88,9 @@ namespace Assets.Import.PrefabScripts
         /// <param name="delay"></param>
         private void ShowLeftSlidingPanel(float delay = 0f)
         {
-            LeftButtonPanel.DOAnchorPosX(LeftButtonPanel.rect.width*0.005f, 0.5f).SetDelay(delay);
+            var tweener = LeftButtonPanel.DOAnchorPosX(LeftButtonPanel.rect.width*0.005f, 0.5f)
+                                         .SetDelay(delay);
+            tweener.OnPlay(AnimationCompleted);
         }
 
         /// <summary>
@@ -98,7 +99,14 @@ namespace Assets.Import.PrefabScripts
         /// <param name="delay"></param>
         private void HideLeftSlidingPanel(float delay = 0f)
         {
-            LeftButtonPanel.DOAnchorPosX(LeftButtonPanel.rect.width*-1, 0.5f).SetDelay(delay);
+            var tweener = LeftButtonPanel.DOAnchorPosX(LeftButtonPanel.rect.width*-1, 0.5f)
+                                         .SetDelay(delay);
+            tweener.OnComplete(AnimationCompleted);
+        }
+
+        private void AnimationCompleted()
+        {
+            PanelToggled?.Invoke();
         }
 
         #endregion

@@ -73,7 +73,6 @@ namespace Assets.Import.PrefabScripts
                 SlideLeftBTN.GetComponentInChildren<TMP_Text>().text = "<";
                 IsSlide = true;
             }
-            PanelToggled?.Invoke();
         }
 
         /// <summary>
@@ -100,7 +99,9 @@ namespace Assets.Import.PrefabScripts
         /// <param name="delay"></param>
         private void ShowSlidingPanel(float delay = 0f)
         {
-            SlidingPanelRect.DOAnchorPosX(SlidingPanelRect.rect.width * 0.008f, 0.5f).SetDelay(delay);
+            var tweener = SlidingPanelRect.DOAnchorPosX(SlidingPanelRect.rect.width * 0.008f, 0.5f)
+                                          .SetDelay(delay);
+            tweener.OnPlay(AnimationCompleted);
         }
 
         /// <summary>
@@ -109,7 +110,14 @@ namespace Assets.Import.PrefabScripts
         /// <param name="delay"></param>
         private void HideSlidingPanel(float delay = 0f)
         {
-            SlidingPanelRect.DOAnchorPosX(SlidingPanelRect.rect.width, 0.5f).SetDelay(delay);
+            var tweener = SlidingPanelRect.DOAnchorPosX(SlidingPanelRect.rect.width, 0.5f)
+                                          .SetDelay(delay);
+            tweener.OnComplete(AnimationCompleted);
+        }
+
+        private void AnimationCompleted()
+        {
+            PanelToggled?.Invoke();
         }
 
         #endregion
