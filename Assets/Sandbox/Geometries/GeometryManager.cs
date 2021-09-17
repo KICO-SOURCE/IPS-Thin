@@ -81,6 +81,7 @@ namespace Assets.Geometries
             {
                 selectedIndices.Clear();
                 clicked.GetComponent<Image>().color = normalColor;
+                RemoveHighlight();
             }
             else
             {
@@ -92,6 +93,7 @@ namespace Assets.Geometries
                 selectedIndices.Clear();
                 selectedIndices.Add(index);
                 clicked.GetComponent<Image>().color = Color.gray;
+                HighlightMesh(index);
             }
 
 
@@ -219,9 +221,39 @@ namespace Assets.Geometries
         public void ToggleTransparency()
         {
             Transparent = !Transparent;
-            foreach (var data in Geometries)
+            if (selectedIndices.Count == 0)
             {
-                data.ToggleTransparency(Transparent);
+                RemoveHighlight();
+            }
+            else
+            {
+                foreach (var selectedIndex in selectedIndices)
+                {
+                    HighlightMesh(selectedIndex);
+                }
+            }
+        }
+
+        private void HighlightMesh(int index)
+        {
+            for (int i = 0; i < Geometries.Count; i++)
+            {
+                if (i == index)
+                {
+                    Geometries[i].UpdateMeshMaterial(true);
+                }
+                else
+                {
+                    Geometries[i].UpdateMeshMaterial(false);
+                }
+            }
+        }
+
+        private void RemoveHighlight()
+        {
+            foreach (var geom in Geometries)
+            {
+                geom.UpdateMeshMaterial(false);
             }
         }
 

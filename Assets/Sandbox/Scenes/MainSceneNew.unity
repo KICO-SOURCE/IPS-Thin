@@ -238,9 +238,9 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1182413580}
-  - {fileID: 872844003}
   - {fileID: 507838116}
   - {fileID: 279847708}
+  - {fileID: 872844003}
   m_Father: {fileID: 1295609882}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -335,7 +335,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 127215341}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 1}
@@ -538,7 +538,7 @@ PrefabInstance:
     - target: {fileID: 367661998055629260, guid: 7dda920fd8d7e4943af1463b3c759d0c,
         type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 367661998055629260, guid: 7dda920fd8d7e4943af1463b3c759d0c,
         type: 3}
@@ -1010,28 +1010,35 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1237345585407178884, guid: dae0f8ada6a31e24cb4254a05e6fbfd4,
         type: 3}
+      propertyPath: m_text
+      value: 'Import Transform
+
+'
+      objectReference: {fileID: 0}
+    - target: {fileID: 1237345585407178884, guid: dae0f8ada6a31e24cb4254a05e6fbfd4,
+        type: 3}
       propertyPath: m_textInfo.lineCount
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1237345585407178884, guid: dae0f8ada6a31e24cb4254a05e6fbfd4,
         type: 3}
       propertyPath: m_textInfo.pageCount
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1237345585407178884, guid: dae0f8ada6a31e24cb4254a05e6fbfd4,
         type: 3}
       propertyPath: m_textInfo.wordCount
-      value: 0
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1237345585407178884, guid: dae0f8ada6a31e24cb4254a05e6fbfd4,
         type: 3}
       propertyPath: m_textInfo.spaceCount
-      value: 0
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1237345585407178884, guid: dae0f8ada6a31e24cb4254a05e6fbfd4,
         type: 3}
       propertyPath: m_textInfo.characterCount
-      value: 0
+      value: 17
       objectReference: {fileID: 0}
     - target: {fileID: 1237345585907527362, guid: dae0f8ada6a31e24cb4254a05e6fbfd4,
         type: 3}
@@ -1457,7 +1464,7 @@ PrefabInstance:
     - target: {fileID: 4147486740208917263, guid: 33a11d6e3e8394a438186f2c48ec3fc0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4147486740208917263, guid: 33a11d6e3e8394a438186f2c48ec3fc0,
         type: 3}

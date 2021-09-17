@@ -12,12 +12,16 @@ namespace Assets.Geometries
 
         private const string meshMaterialPath = "Materials/BoneMaterial";
         private const string transMaterialPath = "Materials/BoneTransparent";
+        private const string opaqueSelectedMaterialPath = "Materials/OpaqueSelectedColor";
+        private const string transSelectedMaterialPath = "Materials/TransparentSelectedColor";
         private const string lmPrefabPath = "Prefabs/Landmark";
         private GameObject lmPrefab;
         private GameObject meshObject;
         private List<GameObject> objects;
         private Material meshMaterial;
         private Material transMaterial;
+        private Material opaqueSelectedMaterial;
+        private Material transSelectedMaterial;
 
         #endregion
 
@@ -42,6 +46,8 @@ namespace Assets.Geometries
             EulerTransform = new PositionalData(null);
             meshMaterial = Resources.Load<Material>(meshMaterialPath);
             transMaterial = Resources.Load<Material>(transMaterialPath);
+            opaqueSelectedMaterial = Resources.Load<Material>(opaqueSelectedMaterialPath);
+            transSelectedMaterial = Resources.Load<Material>(transSelectedMaterialPath);
         }
 
         #endregion
@@ -113,11 +119,20 @@ namespace Assets.Geometries
             EulerTransform = new PositionalData(transform);
         }
 
-        public void ToggleTransparency(bool transparent)
+        public void UpdateMeshMaterial(bool isSelected)
         {
-            if(meshObject != null)
+            if (meshObject != null)
             {
-                var material = transparent ? transMaterial : meshMaterial;
+                Material material = null;
+
+                if (GeometryManager.Instance.Transparent)
+                {
+                    material = isSelected ? transSelectedMaterial : transMaterial;
+                }
+                else
+                {
+                    material = isSelected ? opaqueSelectedMaterial : meshMaterial;
+                }
                 meshObject.GetComponent<MeshRenderer>().material = material;
             }
         }
