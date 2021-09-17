@@ -49,9 +49,6 @@ namespace Assets.Sandbox.MouseActions
                         var deltaX = Mouse.current.delta.x.ReadValue() / 20;
                         var deltaY = Mouse.current.delta.y.ReadValue() / 20;
 
-                        Debug.Log($"X old: {Input.GetAxis("Mouse X")} new: {deltaX}");
-                        Debug.Log($"Y old: {Input.GetAxis("Mouse Y")} new: {deltaY}");
-
                         x += deltaX * xSpeed * distance * _sensitivityFactor;
                         y -= deltaY * ySpeed * distance * _sensitivityFactor;
                         // when mouse moves left and right we actually rotate around local y axis	
