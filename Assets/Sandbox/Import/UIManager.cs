@@ -133,6 +133,7 @@ namespace Assets.Import
             {
                 GeometryManager.Instance.UpdateTransform(transformString);
             }
+            ThreeDScene.DisplayMesh();
         }
 
         /// <summary>
@@ -175,6 +176,7 @@ namespace Assets.Import
             {
             }
             GeometryManager.Instance.UpdateLandmarks(landmarks);
+            ThreeDScene.DisplayMesh();
         }
 
         /// <summary>

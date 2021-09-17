@@ -84,9 +84,6 @@ namespace Assets.Geometries
                 go.SetActive(true);
                 objects.Add(go);
             }
-
-            lmPrefab.SetActive(false);
-            UnityEngine.Object.DestroyImmediate(lmPrefab);
         }
 
         public void DestroyObjects()
