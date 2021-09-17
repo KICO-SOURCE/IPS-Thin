@@ -48,6 +48,7 @@ namespace Assets.Import.PrefabScripts
         {
             AttachListeners();
             OpenBTN.interactable = false;
+            DisableToggle();
         }
 
         public void Update()
