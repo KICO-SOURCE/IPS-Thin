@@ -3,6 +3,7 @@
 using Assets.CaseFile;
 using Assets.Geometries;
 using Assets.Sandbox.MouseActions;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -68,7 +69,7 @@ namespace Assets.Sandbox
                 width -= 0.2f;
             }
 
-            Camera.rect = new Rect(x, y, width, height);
+            Camera.DORect(new Rect(x, y, width, height), 0.5f);
         }
 
         #endregion
