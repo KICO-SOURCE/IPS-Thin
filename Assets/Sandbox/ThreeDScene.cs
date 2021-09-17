@@ -37,20 +37,7 @@ namespace Assets.Sandbox
 
         #endregion
 
-        #region Private Methods
-
-        private void Start()
-        {
-            //DisplayMesh();
-            //ShowVerticesButton.SetActive(false);
-            //var showVerticesBtn = ShowVerticesButton.GetComponentInChildren<Button>();
-            //showVerticesBtn.onClick.AddListener(ShowVerticesList);
-            //var closeBtn = CloseButton.GetComponentInChildren<Button>();
-            //closeBtn.onClick.AddListener(OnCloseClick);
-            //var transparentBtn = TransparentButton.GetComponentInChildren<Button>();
-            //transparentBtn.onClick.AddListener(OnTransparentClick);
-            //normalColor = transparentBtn.GetComponent<Image>().color;
-        }
+        #region Public Methods
 
         /// <summary>
         /// Display a mesh in UI
@@ -64,6 +51,41 @@ namespace Assets.Sandbox
             GeometryManager.Instance.DisplaySelectedObjects(Parent.transform,
                                                 LayerMask.NameToLayer(layer));
             SetCameraAndLightPosition(GeometryManager.Instance.GetMainObject());
+        }
+
+        public void AdjustViewportSize(bool leftPanelOpen, bool rightPanelOpen)
+        {
+            float x = 0, y = 0, width = 0.95f, height = 0.9f;
+
+            if(leftPanelOpen)
+            {
+                x = 0.22f;
+                width -= x;
+            }
+
+            if (rightPanelOpen)
+            {
+                width -= 0.2f;
+            }
+
+            Camera.rect = new Rect(x, y, width, height);
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private void Start()
+        {
+            //DisplayMesh();
+            //ShowVerticesButton.SetActive(false);
+            //var showVerticesBtn = ShowVerticesButton.GetComponentInChildren<Button>();
+            //showVerticesBtn.onClick.AddListener(ShowVerticesList);
+            //var closeBtn = CloseButton.GetComponentInChildren<Button>();
+            //closeBtn.onClick.AddListener(OnCloseClick);
+            //var transparentBtn = TransparentButton.GetComponentInChildren<Button>();
+            //transparentBtn.onClick.AddListener(OnTransparentClick);
+            //normalColor = transparentBtn.GetComponent<Image>().color;
         }
 
         /// <summary>

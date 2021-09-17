@@ -44,6 +44,10 @@ namespace Assets.Import
             AttachListeners();
             ImportDataPanel.DataPanelClosed += AddButton;
             normalColor = RightSidePanel.TransparentBtn.GetComponent<Image>().color;
+
+            HandlePanelToggled();
+            LeftSidePanel.PanelToggled += HandlePanelToggled;
+            RightSidePanel.PanelToggled += HandlePanelToggled;
         }
 
         private void Update()
@@ -55,6 +59,12 @@ namespace Assets.Import
         #endregion
 
         #region Private Methods
+
+        private void HandlePanelToggled()
+        {
+            ThreeDScene.AdjustViewportSize(LeftSidePanel.IsPanelOpen,
+                                           RightSidePanel.IsPanelOpen);
+        }
 
         /// <summary>
         /// Attach listeners.

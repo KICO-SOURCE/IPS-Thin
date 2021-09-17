@@ -1645,6 +1645,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1243742185562914694, guid: 6e36d78e1bea0194aa206bd81c902379,
+        type: 3}
+      propertyPath: m_NormalizedViewPortRect.width
+      value: 0.8
+      objectReference: {fileID: 0}
     - target: {fileID: 1243742185686089784, guid: 6e36d78e1bea0194aa206bd81c902379,
         type: 3}
       propertyPath: m_Name

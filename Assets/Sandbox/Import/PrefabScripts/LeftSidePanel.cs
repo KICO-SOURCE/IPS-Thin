@@ -1,4 +1,5 @@
 ﻿using DG.Tweening;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -25,6 +26,9 @@ namespace Assets.Import.PrefabScripts
         public Button LoadSTLBtn;
         public Button LoadLMBtn;
         public Button ImportTransformBtn;
+        public Action PanelToggled;
+
+        public bool IsPanelOpen => !IsSlide;
 
         #endregion
 
@@ -76,6 +80,7 @@ namespace Assets.Import.PrefabScripts
                 HideLeftSlidingPanel();
                 IsSlide = true;
             }
+            PanelToggled?.Invoke();
         }
 
         /// <summary>

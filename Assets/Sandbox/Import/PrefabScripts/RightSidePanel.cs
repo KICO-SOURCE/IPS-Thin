@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 using TMPro;
+using System;
 
 namespace Assets.Import.PrefabScripts
 {
@@ -24,6 +25,9 @@ namespace Assets.Import.PrefabScripts
         #region Public Members
 
         public Button TransparentBtn;
+        public Action PanelToggled;
+
+        public bool IsPanelOpen => !IsSlide;
 
         #endregion
 
@@ -69,6 +73,7 @@ namespace Assets.Import.PrefabScripts
                 SlideLeftBTN.GetComponentInChildren<TMP_Text>().text = "<";
                 IsSlide = true;
             }
+            PanelToggled?.Invoke();
         }
 
         /// <summary>
