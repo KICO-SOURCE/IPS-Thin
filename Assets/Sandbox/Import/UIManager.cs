@@ -91,7 +91,7 @@ namespace Assets.Import
         /// </summary>
         private void AddButton()
         {
-            var parent = GameObject.FindGameObjectWithTag("ListParent");
+            var parent = GameObject.FindGameObjectWithTag("ListContainer");
             LeftSidePanel.LoadSTLBtn.transform.SetParent(parent.transform, false);
             LeftSidePanel.LoadSTLBtn.transform.SetAsLastSibling();
 

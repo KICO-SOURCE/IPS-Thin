@@ -17,6 +17,7 @@ TagManager:
   - GeneralContent
   - 3DContent
   - ListParent
+  - ListContainer
   layers:
   - Default
   - TransparentFX

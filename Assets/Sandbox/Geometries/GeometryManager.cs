@@ -16,8 +16,10 @@ namespace Assets.Geometries
 
         private const string buttonPrefabPath = "Prefabs/Button";
         private const string parentTag = "ListParent";
+        private const string containerTag = "ListContainer";
 
         private GameObject parent;
+        private GameObject container;
         private GameObject buttonPrefab;
         private Color normalColor;
         private List<int> selectedIndices;
@@ -61,7 +63,7 @@ namespace Assets.Geometries
         private void AddToDisplayList(int index, string tag)
         {
             GameObject goButton = GameObject.Instantiate(buttonPrefab);
-            goButton.transform.SetParent(parent.transform, false);
+            goButton.transform.SetParent(container.transform, false);
 
             goButton.GetComponentInChildren<TextMeshProUGUI>().text = tag;
 
@@ -81,7 +83,6 @@ namespace Assets.Geometries
             {
                 selectedIndices.Clear();
                 clicked.GetComponent<Image>().color = normalColor;
-                RemoveHighlight();
             }
             else
             {
@@ -93,7 +94,6 @@ namespace Assets.Geometries
                 selectedIndices.Clear();
                 selectedIndices.Add(index);
                 clicked.GetComponent<Image>().color = Color.gray;
-                HighlightMesh(index);
             }
 
 
@@ -110,6 +110,16 @@ namespace Assets.Geometries
             //    selectedIndices.Add(index);
             //    clicked.GetComponent<Image>().color = Color.gray;
             //}
+            UpdateHighlights();
+        }
+
+        private void UpdateHighlights()
+        {
+            for (int index = 0; index < Geometries.Count; index++)
+            {
+                var selected = selectedIndices.Contains(index);
+                Geometries[index].UpdateMeshMaterial(Transparent, selected);
+            }
         }
 
         #endregion
@@ -122,6 +132,7 @@ namespace Assets.Geometries
         public void DisplayList()
         {
             parent = GameObject.FindGameObjectWithTag(parentTag);
+            container = GameObject.FindGameObjectWithTag(containerTag);
             objectButtons = new List<Button>();
             for (int index = 0; index < Geometries.Count; index++)
             {
@@ -221,40 +232,7 @@ namespace Assets.Geometries
         public void ToggleTransparency()
         {
             Transparent = !Transparent;
-            if (selectedIndices.Count == 0)
-            {
-                RemoveHighlight();
-            }
-            else
-            {
-                foreach (var selectedIndex in selectedIndices)
-                {
-                    HighlightMesh(selectedIndex);
-                }
-            }
-        }
-
-        private void HighlightMesh(int index)
-        {
-            for (int i = 0; i < Geometries.Count; i++)
-            {
-                if (i == index)
-                {
-                    Geometries[i].UpdateMeshMaterial(true);
-                }
-                else
-                {
-                    Geometries[i].UpdateMeshMaterial(false);
-                }
-            }
-        }
-
-        private void RemoveHighlight()
-        {
-            foreach (var geom in Geometries)
-            {
-                geom.UpdateMeshMaterial(false);
-            }
+            UpdateHighlights();
         }
 
         #endregion

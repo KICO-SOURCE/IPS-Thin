@@ -119,13 +119,13 @@ namespace Assets.Geometries
             EulerTransform = new PositionalData(transform);
         }
 
-        public void UpdateMeshMaterial(bool isSelected)
+        public void UpdateMeshMaterial(bool transparent, bool isSelected)
         {
             if (meshObject != null)
             {
                 Material material = null;
 
-                if (GeometryManager.Instance.Transparent)
+                if (transparent)
                 {
                     material = isSelected ? transSelectedMaterial : transMaterial;
                 }
