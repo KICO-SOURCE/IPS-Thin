@@ -1,4 +1,5 @@
 using Assets.CaseFile;
+using Assets.Sandbox.Import;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +24,7 @@ namespace Assets.Geometries
         private GameObject buttonPrefab;
         private Color normalColor;
         private List<int> selectedIndices;
+        private List<Geometry> geometries;
 
         #endregion
 
@@ -33,8 +35,6 @@ namespace Assets.Geometries
         {
             get { return _instance.Value; }
         }
-
-        public List<Geometry> Geometries { get; private set; }
 
         public bool EnableLoad => selectedIndices.Count == 1;
 
@@ -48,7 +48,7 @@ namespace Assets.Geometries
 
         private GeometryManager()
         {
-            Geometries = new List<Geometry>();
+            geometries = new List<Geometry>();
             selectedIndices = new List<int>();
 
             buttonPrefab = Resources.Load<GameObject>(buttonPrefabPath);
@@ -60,6 +60,11 @@ namespace Assets.Geometries
 
         #region Private Methods
 
+        /// <summary>
+        /// Add item to the display list
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="tag"></param>
         private void AddToDisplayList(int index, string tag)
         {
             GameObject goButton = GameObject.Instantiate(buttonPrefab);
@@ -73,6 +78,10 @@ namespace Assets.Geometries
             objectButtons.Add(tempButton);
         }
 
+        /// <summary>
+        /// Handle content selected
+        /// </summary>
+        /// <param name="index"></param>
         private void OnContentSelected(int index)
         {
             Debug.Log($"Selected : {index}");
@@ -113,13 +122,90 @@ namespace Assets.Geometries
             UpdateHighlights();
         }
 
+        /// <summary>
+        /// Update the highlights of the mesh
+        /// </summary>
         private void UpdateHighlights()
         {
-            for (int index = 0; index < Geometries.Count; index++)
+            for (int index = 0; index < geometries.Count; index++)
             {
                 var selected = selectedIndices.Contains(index);
-                Geometries[index].UpdateMeshMaterial(Transparent, selected);
+                geometries[index].UpdateMeshMaterial(Transparent, selected);
             }
+        }
+
+        /// <summary>
+        /// validate landmark data format.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        private bool CheckFormat(string[] value)
+        {
+            if (IsChar(value[0]) && IsNumeric(value[1]) &&
+                IsNumeric(value[2]) && IsNumeric(value[3]))
+                return true;
+            return false;
+        }
+
+        /// <summary>
+        /// Checks the string contains numeric value.
+        /// </summary>
+        /// <param name="val"></param>
+        /// <returns></returns>
+        private bool IsNumeric(string val)
+        {
+            foreach (var str in val)
+            {
+                if (Char.IsDigit(str))
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Check the string contains char data.
+        /// </summary>
+        /// <param name="val"></param>
+        /// <returns></returns>
+        private bool IsChar(string val)
+        {
+            foreach (var str in val)
+            {
+                if (!(Char.IsDigit(str)))
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Parse transform from string data.
+        /// </summary>
+        /// <param name="transformString"></param>
+        /// <returns></returns>
+        private string ParseTransformString(string transformString)
+        {
+            string result = transformString;
+
+            var splitInput = transformString.Split(',');
+            splitInput = splitInput.Where(val => val != splitInput[0] &&
+                                          val != splitInput[7]).ToArray();
+
+            result = string.Join(",", splitInput);
+            return result;
+        }
+
+        /// <summary>
+        /// Get object type.
+        /// </summary>
+        /// <param name="type"></param>
+        private ObjectType GetObjectType(string typeName)
+        {
+            var objectTypes = Enum.GetValues(typeof(ObjectType)).Cast<ObjectType>();
+
+            var type = objectTypes.FirstOrDefault(ob =>
+                            ob.ToString().ToLower() == typeName.ToLower());
+
+            return type;
         }
 
         #endregion
@@ -134,9 +220,9 @@ namespace Assets.Geometries
             parent = GameObject.FindGameObjectWithTag(parentTag);
             container = GameObject.FindGameObjectWithTag(containerTag);
             objectButtons = new List<Button>();
-            for (int index = 0; index < Geometries.Count; index++)
+            for (int index = 0; index < geometries.Count; index++)
             {
-                AddToDisplayList(index, Geometries[index].Tag);
+                AddToDisplayList(index, geometries[index].Tag);
             }
 
             var active = objectButtons.Count > 0;
@@ -144,26 +230,91 @@ namespace Assets.Geometries
         }
 
         /// <summary>
-        /// Update transform for selected geometry
+        /// Load mesh and add to geometry list
         /// </summary>
-        /// <param name="transformString"></param>
-        public void UpdateTransform(string transformString)
+        /// <param name="tag"></param>
+        /// <param name="filePath"></param>
+        public void LoadMesh(string tag, string filePath)
+        {
+            var mesh = MeshGeometryFunctions.ReadStl(filePath);
+
+            Geometry geometry = new Geometry()
+            {
+                Tag = tag,
+                ObjectType = GetObjectType(tag),
+                Mesh = mesh?.ToMesh()
+            };
+
+            Debug.Log("Tag :" + geometry.Tag);
+            Debug.Log("Object Type : " + geometry.ObjectType);
+
+            var index = geometries.Count;
+            geometries.Add(geometry);
+            parent.SetActive(true);
+            AddToDisplayList(index, tag);
+        }
+
+        /// <summary>
+        /// Load transform for selected geometry
+        /// </summary>
+        /// <param name="transformFile"></param>
+        public void LoadTransform(string transformFile)
         {
             if (!EnableLoad) return;
 
-            var selectedGeometry = Geometries[selectedIndices.First()];
+            string transformString = System.IO.File.ReadAllText(transformFile);
+            transformString = ParseTransformString(transformString);
+
+            var log = transformString == null ? "Invalid Transform" : transformString;
+            Debug.Log(log);
+
+            var selectedGeometry = geometries[selectedIndices.First()];
             selectedGeometry?.UpdateTransform(transformString);
         }
 
         /// <summary>
-        /// Update landmarks for selected geometry
+        /// Load landmarks for selected geometry
         /// </summary>
-        /// <param name="landmarks"></param>
-        public void UpdateLandmarks(List<Landmark> landmarks)
+        /// <param name="landmarks file"></param>
+        public void LoadLandmarks(string landmarksFile)
         {
             if (!EnableLoad) return;
 
-            var selectedGeometry = Geometries[selectedIndices.First()];
+            var landmarks = new List<Landmark>();
+            var reader = new System.IO.StreamReader(landmarksFile);
+            try
+            {
+                while (!reader.EndOfStream)
+                {
+                    var line = reader.ReadLine();
+                    var value = line.Split(',');
+
+                    if (!(value.Length > 4) &&
+                        !value.Contains("Name") &&
+                        CheckFormat(value))
+                    {
+                        string type = value[0];
+                        float x;
+                        float.TryParse(value[1], out x);
+                        float y;
+                        float.TryParse(value[2], out y);
+                        float z;
+                        float.TryParse(value[3], out z);
+
+                        landmarks.Add(new Landmark
+                        {
+                            Type = type,
+                            Position = new Vector3(x, y, z)
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.Log(ex.Message);
+            }
+
+            var selectedGeometry = geometries[selectedIndices.First()];
             selectedGeometry?.UpdateLandmarks(landmarks);
         }
 
@@ -174,7 +325,7 @@ namespace Assets.Geometries
         /// <param name="layer"></param>
         public void DisplaySelectedObjects(Transform parent, int layer)
         {
-            foreach(var geometry in Geometries)
+            foreach(var geometry in geometries)
             {
                 geometry?.DisplayObjects(parent, layer);
             }
@@ -187,29 +338,27 @@ namespace Assets.Geometries
         /// <returns></returns>
         public GameObject GetMainObject(int index = -1)
         {
-            if(index > 0 && index < Geometries.Count)
+            if(index > 0 && index < geometries.Count)
             {
-                return Geometries[index]?.Object;
+                return geometries[index]?.Object;
             }
             else
             {
-                return Geometries.FirstOrDefault()?.Object;
+                return geometries.FirstOrDefault()?.Object;
             }
         }
 
-        public void UpdateDisplayList(Geometry data)
-        {
-            var index = Geometries.Count;
-            Geometries.Add(data);
-            parent.SetActive(true);
-            AddToDisplayList(index, data.Tag);
-        }
-
+        /// <summary>
+        /// Hide the list
+        /// </summary>
         public void HideList()
         {
             parent.SetActive(false);
         }
 
+        /// <summary>
+        /// Show the list
+        /// </summary>
         public void ShowList()
         {
             var active = objectButtons.Count > 0;
@@ -221,7 +370,7 @@ namespace Assets.Geometries
         /// </summary>
         public void DistroyAllObjects()
         {
-            foreach (var data in Geometries)
+            foreach (var data in geometries)
             {
                 data.DestroyObjects();
             }
@@ -229,10 +378,23 @@ namespace Assets.Geometries
             Transparent = false;
         }
 
+        /// <summary>
+        /// Toggle Mesh transparency
+        /// </summary>
         public void ToggleTransparency()
         {
             Transparent = !Transparent;
             UpdateHighlights();
+        }
+
+        /// <summary>
+        /// Check if tag is existing
+        /// </summary>
+        /// <param name="tag"></param>
+        /// <returns></returns>
+        public bool IsExistingTag(string tag)
+        {
+            return geometries.Any(g => g.Tag == tag);
         }
 
         #endregion

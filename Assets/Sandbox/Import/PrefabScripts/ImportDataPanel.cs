@@ -1,8 +1,5 @@
-﻿using Assets.CaseFile;
-using Assets.Geometries;
-using Assets.Sandbox.Import;
+﻿using Assets.Geometries;
 using System;
-using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -24,12 +21,12 @@ namespace Assets.Import.PrefabScripts
         private InputField ManualTypeInput;
         private ToggleGroup ToggleGroup;
         private TMP_Text WarningTXT;
+        private string meshFilePath;
 
         #endregion
 
         #region Public Properties
 
-        public MeshData meshData { get; set; }
         public Action DataPanelClosed;
 
         #endregion
@@ -57,7 +54,7 @@ namespace Assets.Import.PrefabScripts
         {
             var tag = GetTag();
             var warning = string.Empty;
-            if (GeometryManager.Instance.Geometries.Any(g => g.Tag == tag))
+            if (GeometryManager.Instance.IsExistingTag(tag))
             {
                 warning = tag + " is already added. " +
                         "Please change the stl type to be loaded.";
@@ -70,10 +67,13 @@ namespace Assets.Import.PrefabScripts
         /// <summary>
         /// Set the loaded filename as title.
         /// </summary>
-        /// <param name="text"></param>
-        public void SetTitle(string text)
+        /// <param name="file path"></param>
+        public void SetFileTitle(string filePath)
         {
-            FileNameTXT.text = text + " loaded.";
+            meshFilePath = filePath;
+            var loadedFile = System.IO.Path.GetFileName(filePath);
+
+            FileNameTXT.text = loadedFile + " loaded.";
             Debug.Log("File Name:" + FileNameTXT.text);
             WarningTXT.text = "";
         }
@@ -99,22 +99,11 @@ namespace Assets.Import.PrefabScripts
             var tag = GetTag();
             if (string.IsNullOrWhiteSpace(tag)) return;
 
-            Geometry geometryContent = new Geometry();
-            geometryContent.Tag = tag;
-
-            if (meshData != null)
-            {
-                geometryContent.Mesh = meshData.ToMesh();
-                meshData = null;
-            }
-
-            geometryContent.ObjectType = GetObjectType(tag);
-            GeometryManager.Instance.UpdateDisplayList(geometryContent);
+            GeometryManager.Instance.LoadMesh(tag, meshFilePath);
+            meshFilePath = string.Empty;
 
             Debug.Log("Active Toggle Name: " + GetActiveToggle()?.name);
             Debug.Log("Manual Input : " + ManualTypeInput.text);
-            Debug.Log("Tag :" + geometryContent.Tag);
-            Debug.Log("Object Type : " + geometryContent.ObjectType);
 
             ManualTypeInput.text = null;
             DisableToggle();
@@ -173,20 +162,6 @@ namespace Assets.Import.PrefabScripts
                 }
             }
             return null;
-        }
-
-        /// <summary>
-        /// Get object type.
-        /// </summary>
-        /// <param name="type"></param>
-        private ObjectType GetObjectType(string typeName)
-        {
-            var objectTypes = Enum.GetValues(typeof(ObjectType)).Cast<ObjectType>();
-
-            var type = objectTypes.FirstOrDefault(ob =>
-                            ob.ToString().ToLower() == typeName.ToLower());
-
-            return type;
         }
 
         #endregion

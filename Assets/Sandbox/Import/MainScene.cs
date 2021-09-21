@@ -98,9 +98,7 @@ namespace Assets.Import
             GeometryManager.Instance.HideList();
             HideButtons();
             ImportDataPanel.gameObject.SetActive(true);
-            var loadedFile = System.IO.Path.GetFileName(path);
-            ImportDataPanel.meshData = MeshGeometryFunctions.ReadStl(path);
-            ImportDataPanel.SetTitle(loadedFile);
+            ImportDataPanel.SetFileTitle(path);
 
         }
 
@@ -131,7 +129,7 @@ namespace Assets.Import
             }
             else
             {
-                GeometryManager.Instance.UpdateTransform(transformString);
+                GeometryManager.Instance.LoadTransform(transformString);
             }
         }
 
@@ -143,39 +141,7 @@ namespace Assets.Import
             string path = EditorUtility.OpenFilePanel("Open Folder", "", "CSV");
 
             if (string.IsNullOrEmpty(path)) return;
-
-            var landmarks = new List<Landmark>();
-            var reader = new System.IO.StreamReader(path);
-            try
-            {
-                while (!reader.EndOfStream)
-                {
-                    var line = reader.ReadLine();
-                    var value = line.Split(',');
-
-                    if (!(value.Length > 4) && !value.Contains("Name") && CheckFormat(value))
-                    {
-                        string type = value[0];
-                        float x;
-                        float.TryParse(value[1], out x);
-                        float y;
-                        float.TryParse(value[2], out y);
-                        float z;
-                        float.TryParse(value[3], out z);
-
-                        landmarks.Add(new Landmark
-                        {
-                            Type = type,
-                            Position = new Vector3(x, y, z)
-                        });
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.Log(ex.Message);
-            }
-            GeometryManager.Instance.UpdateLandmarks(landmarks);
+            GeometryManager.Instance.LoadLandmarks(path);
         }
 
         /// <summary>

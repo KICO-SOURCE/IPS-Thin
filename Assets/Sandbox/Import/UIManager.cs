@@ -1,10 +1,6 @@
-using Assets.CaseFile;
 using Assets.Geometries;
 using Assets.Import.PrefabScripts;
 using Assets.Sandbox;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
@@ -83,7 +79,14 @@ namespace Assets.Import
         /// </summary>
         private void OnLoadStlClick()
         {
-            LoadStl();
+            string path = EditorUtility.OpenFilePanel("Select the " +
+                   "STL file.", "", "stl, STL");
+
+            if (string.IsNullOrEmpty(path)) return;
+
+            ThreeDScene.gameObject.SetActive(false);
+            ImportDataPanel.gameObject.SetActive(true);
+            ImportDataPanel.SetFileTitle(path);
         }
 
         /// <summary>
@@ -99,28 +102,16 @@ namespace Assets.Import
         }
 
         /// <summary>
-        /// Load Stl.
-        /// </summary>
-        private void LoadStl()
-        {
-            string path = EditorUtility.OpenFilePanel("Open file", "", "STL");
-
-            if (string.IsNullOrEmpty(path)) return;
-
-            ThreeDScene.gameObject.SetActive(false);
-            ImportDataPanel.gameObject.SetActive(true);
-            var loadedFile = System.IO.Path.GetFileName(path);
-            ImportDataPanel.meshData = MeshGeometryFunctions.ReadStl(path);
-            ImportDataPanel.SetTitle(loadedFile);
-
-        }
-
-        /// <summary>
         /// Load landmark button click listener.
         /// </summary>
         private void OnLoadLMClick()
         {
-            LoadLandmarksFromCSV();
+            string path = EditorUtility.OpenFilePanel("Select the " +
+                "landmark file.", "", "csv, CSV");
+            if (string.IsNullOrEmpty(path)) return;
+
+            GeometryManager.Instance.LoadLandmarks(path);
+            ThreeDScene.DisplayMesh();
         }
 
         /// <summary>
@@ -128,124 +119,12 @@ namespace Assets.Import
         /// </summary>
         private void OnImportTransformClick()
         {
-            string path = EditorUtility.OpenFilePanel("Select the transform file.", "", "csv, CSV");
-
+            string path = EditorUtility.OpenFilePanel("Select the " +
+                "transform file.", "", "csv, CSV");
             if (string.IsNullOrEmpty(path)) return;
 
-            string transformString = System.IO.File.ReadAllText(path);
-            transformString = ParseTransformString(transformString);
-            Debug.Log(transformString);
-            if (transformString == null)
-            {
-                Debug.Log("Implant transform is not available for the selected component");
-            }
-            else
-            {
-                GeometryManager.Instance.UpdateTransform(transformString);
-            }
+            GeometryManager.Instance.LoadTransform(path);
             ThreeDScene.DisplayMesh();
-        }
-
-        /// <summary>
-        /// Load landmarks from csv.
-        /// </summary>
-        private void LoadLandmarksFromCSV()
-        {
-            string path = EditorUtility.OpenFilePanel("Open Folder", "", "CSV");
-
-            if (string.IsNullOrEmpty(path)) return;
-
-            var landmarks = new List<Landmark>();
-            var reader = new System.IO.StreamReader(path);
-            try
-            {
-                while (!reader.EndOfStream)
-                {
-                    var line = reader.ReadLine();
-                    var value = line.Split(',');
-
-                    if (!(value.Length > 4) && !value.Contains("Name") && CheckFormat(value))
-                    {
-                        string type = value[0];
-                        float x;
-                        float.TryParse(value[1], out x);
-                        float y;
-                        float.TryParse(value[2], out y);
-                        float z;
-                        float.TryParse(value[3], out z);
-
-                        landmarks.Add(new Landmark
-                        {
-                            Type = type,
-                            Position = new Vector3(x, y, z)
-                        });
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-            }
-            GeometryManager.Instance.UpdateLandmarks(landmarks);
-            ThreeDScene.DisplayMesh();
-        }
-
-        /// <summary>
-        /// Parse transform from string data.
-        /// </summary>
-        /// <param name="transformString"></param>
-        /// <returns></returns>
-        private static string ParseTransformString(string transformString)
-        {
-            string result = transformString;
-
-            var splitInput = transformString.Split(',');
-            splitInput = splitInput.Where(val => val != splitInput[0] &&
-                                          val != splitInput[7]).ToArray();
-
-            result = string.Join(",", splitInput);
-            return result;
-        }
-
-        /// <summary>
-        /// validate landmark data format.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        private bool CheckFormat(string[] value)
-        {
-            if (IsChar(value[0]) && IsNumeric(value[1]) && IsNumeric(value[2]) && IsNumeric(value[3]))
-                return true;
-            return false;
-        }
-
-        /// <summary>
-        /// Checks the string contains numeric value.
-        /// </summary>
-        /// <param name="val"></param>
-        /// <returns></returns>
-        private bool IsNumeric(string val)
-        {
-            foreach (var str in val)
-            {
-                if (Char.IsDigit(str))
-                    return true;
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// Check the string contains char data.
-        /// </summary>
-        /// <param name="val"></param>
-        /// <returns></returns>
-        private bool IsChar(string val)
-        {
-            foreach (var str in val)
-            {
-                if (!(Char.IsDigit(str)))
-                    return true;
-            }
-            return false;
         }
 
         /// <summary>
@@ -259,6 +138,7 @@ namespace Assets.Import
 
             RightSidePanel.TransparentBtn.GetComponentInChildren<Image>().color = color;
         }
+
         #endregion
     }
 }
