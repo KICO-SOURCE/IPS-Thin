@@ -17,6 +17,13 @@ namespace Assets.Geometries
 
         #endregion
 
+        #region Materials
+
+        private Material opaqueMaterial;
+        private Material transMaterial;
+
+        #endregion
+
         #region Properties
 
         public string Tag { get; set; }
@@ -43,7 +50,7 @@ namespace Assets.Geometries
         #region Public Methods
 
         public void DisplayObjects(Transform parent, int layer,
-                                   Material material)
+                                   bool isTransparent, bool isSelected)
         {
             DestroyObjects();
 
@@ -51,6 +58,7 @@ namespace Assets.Geometries
 
             if (Mesh != null)
             {
+                var material = GetMaterial(isTransparent, isSelected);
                 meshObject = new GameObject(Tag, typeof(MeshFilter), typeof(MeshRenderer));
                 meshObject.transform.parent = parent;
                 meshObject.GetComponent<MeshFilter>().mesh = Mesh;
@@ -108,10 +116,34 @@ namespace Assets.Geometries
             EulerTransform = new PositionalData(transform);
         }
 
-        public void UpdateMeshMaterial(Material material)
+        public void UpdateHighlight(bool isTransparent, bool isSelected)
         {
             if (meshObject == null) return;
+
+            var material = GetMaterial(isTransparent, isSelected);
             meshObject.GetComponent<MeshRenderer>().material = material;
+        }
+
+        public void UpdateMaterials(Material opaqueMaterial, Material transMaterial)
+        {
+            this.opaqueMaterial = Material.Instantiate(opaqueMaterial);
+            this.transMaterial = Material.Instantiate(transMaterial);
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private Material GetMaterial(bool isTransparent, bool isSelected)
+        {
+            var material = isTransparent ? transMaterial : opaqueMaterial;
+
+            var color = isSelected ? new Color(0.943f, 0.805f, 0.805f) :
+                                     new Color(1.000f, 1.000f, 1.000f);
+            color.a = material.color.a;
+
+            material.color = color;
+            return material;
         }
 
         #endregion

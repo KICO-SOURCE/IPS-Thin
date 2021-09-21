@@ -19,8 +19,6 @@ namespace Assets.Geometries
         private const string containerTag = "ListContainer";
         private const string meshMaterialPath = "Materials/BoneMaterial";
         private const string transMaterialPath = "Materials/BoneTransparent";
-        private const string opaqueSelectedMaterialPath = "Materials/OpaqueSelectedColor";
-        private const string transSelectedMaterialPath = "Materials/TransparentSelectedColor";
 
         private GameObject container;
         private GameObject buttonPrefab;
@@ -32,8 +30,6 @@ namespace Assets.Geometries
 
         private Material opaqueMaterial;
         private Material transMaterial;
-        private Material opaqueSelectedMaterial;
-        private Material transSelectedMaterial;
 
         #endregion
 
@@ -68,8 +64,6 @@ namespace Assets.Geometries
 
             opaqueMaterial = Resources.Load<Material>(meshMaterialPath);
             transMaterial = Resources.Load<Material>(transMaterialPath);
-            opaqueSelectedMaterial = Resources.Load<Material>(opaqueSelectedMaterialPath);
-            transSelectedMaterial = Resources.Load<Material>(transSelectedMaterialPath);
         }
 
         #endregion
@@ -145,7 +139,7 @@ namespace Assets.Geometries
             for (int index = 0; index < geometries.Count; index++)
             {
                 var selected = selectedIndices.Contains(index);
-                geometries[index].UpdateMeshMaterial(GetMaterial(selected));
+                geometries[index].UpdateHighlight(Transparent, selected);
             }
         }
 
@@ -223,14 +217,6 @@ namespace Assets.Geometries
             return type;
         }
 
-        private Material GetMaterial(bool isSelected)
-        {
-            var material = Transparent ?
-                isSelected ? transSelectedMaterial : transMaterial :
-                isSelected ? opaqueSelectedMaterial : opaqueMaterial;
-            return material;
-        }
-
         #endregion
 
         #region Public Methods
@@ -267,6 +253,8 @@ namespace Assets.Geometries
 
             Debug.Log("Tag :" + geometry.Tag);
             Debug.Log("Object Type : " + geometry.ObjectType);
+
+            geometry.UpdateMaterials(opaqueMaterial, transMaterial);
 
             var index = geometries.Count;
             geometries.Add(geometry);
@@ -348,7 +336,7 @@ namespace Assets.Geometries
             {
                 var selected = selectedIndices.Contains(index);
                 geometries[index].DisplayObjects(parent, layer,
-                                        GetMaterial(selected));
+                                        Transparent, selected);
             }
         }
 
