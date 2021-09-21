@@ -166,10 +166,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Parent: {fileID: 1243742187229954209}
-  BoneMaterial: {fileID: 2100000, guid: e7cbe30475fc0684192cc0dfd5ac0c8a, type: 2}
   Camera: {fileID: 1243742185562914694}
-  Light: {fileID: 1243742187138103705}
-  PivotPoint: {fileID: 0}
   ShowVerticesButton: {fileID: 0}
   CloseButton: {fileID: 0}
   TransparentButton: {fileID: 0}

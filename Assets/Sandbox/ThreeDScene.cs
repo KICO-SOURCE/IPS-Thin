@@ -20,7 +20,6 @@ namespace Assets.Sandbox
         #region Private Fields
 
         private const string layer = "ThreeDLayer";
-        private Color normalColor;
 
         #endregion
 
@@ -80,7 +79,6 @@ namespace Assets.Sandbox
             //closeBtn.onClick.AddListener(OnCloseClick);
             //var transparentBtn = TransparentButton.GetComponentInChildren<Button>();
             //transparentBtn.onClick.AddListener(OnTransparentClick);
-            //normalColor = transparentBtn.GetComponent<Image>().color;
         }
 
         /// <summary>
@@ -153,8 +151,11 @@ namespace Assets.Sandbox
         private void OnTransparentClick()
         {
             GeometryManager.Instance.ToggleTransparency();
+
+            if (null == TransparentButton) return;
+
             var color = GeometryManager.Instance.Transparent ?
-                                    Color.gray : normalColor;
+                        Color.gray : new Color(1.0f, 0.981f, 0.981f, 1.0f);
 
             TransparentButton.GetComponentInChildren<Image>().color = color;
         }
