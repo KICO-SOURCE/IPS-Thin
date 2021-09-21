@@ -346,11 +346,11 @@ namespace Assets.Geometries
         }
 
         /// <summary>
-        /// Display all selected geometries
+        /// Display all geometries
         /// </summary>
         /// <param name="parent"></param>
         /// <param name="layer"></param>
-        public void DisplaySelectedObjects(Transform parent, int layer)
+        public void DisplayAllObjects(Transform parent, int layer)
         {
             for (int index = 0; index < geometries.Count; index++)
             {

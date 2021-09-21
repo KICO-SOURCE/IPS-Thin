@@ -1,12 +1,9 @@
 #region Usings
 
-using Assets.CaseFile;
 using Assets.Geometries;
 using Assets.Sandbox.MouseActions;
 using DG.Tweening;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 #endregion
 
@@ -27,10 +24,6 @@ namespace Assets.Sandbox
 
         public GameObject Parent;
         public Camera Camera;
-        public GameObject ShowVerticesButton;
-        public GameObject CloseButton;
-        public GameObject TransparentButton;
-        public GameObject UIParent;
 
         #endregion
 
@@ -42,16 +35,21 @@ namespace Assets.Sandbox
         public void DisplayMesh()
         {
             this.gameObject.SetActive(true);
-            GeometryManager.Instance.DisplaySelectedObjects(Parent.transform,
+            GeometryManager.Instance.DisplayAllObjects(Parent.transform,
                                                 LayerMask.NameToLayer(layer));
             SetCameraAndLightPosition(GeometryManager.Instance.GetMainObject());
         }
 
+        /// <summary>
+        /// Adjust viewport size of camera based on panel open/close status
+        /// </summary>
+        /// <param name="leftPanelOpen"></param>
+        /// <param name="rightPanelOpen"></param>
         public void AdjustViewportSize(bool leftPanelOpen, bool rightPanelOpen)
         {
             float x = 0, y = 0, width = 0.95f, height = 0.9f;
 
-            if(leftPanelOpen)
+            if (leftPanelOpen)
             {
                 x = 0.22f;
                 width -= x;
@@ -71,14 +69,7 @@ namespace Assets.Sandbox
 
         private void Start()
         {
-            //DisplayMesh();
-            //ShowVerticesButton.SetActive(false);
-            //var showVerticesBtn = ShowVerticesButton.GetComponentInChildren<Button>();
-            //showVerticesBtn.onClick.AddListener(ShowVerticesList);
-            //var closeBtn = CloseButton.GetComponentInChildren<Button>();
-            //closeBtn.onClick.AddListener(OnCloseClick);
-            //var transparentBtn = TransparentButton.GetComponentInChildren<Button>();
-            //transparentBtn.onClick.AddListener(OnTransparentClick);
+            DisplayMesh();
         }
 
         /// <summary>
@@ -131,33 +122,6 @@ namespace Assets.Sandbox
             Camera.gameObject.GetComponent<OrbitalMousePanHelper>().pivotTarget = center;
 
             Camera.gameObject.SetActive(true);
-        }
-
-        private void ShowVerticesList()
-        {
-            var mesh = GeometryManager.Instance.GetMainObject();
-            if (null == mesh) return;
-
-            MeshPointDataManager meshPointDataManager = new MeshPointDataManager();
-            meshPointDataManager.ShowMeshVerticesList(UIParent, mesh);
-        }
-
-        private void OnCloseClick()
-        {
-            GeometryManager.Instance.DistroyAllObjects();
-            SceneManager.LoadScene("MainScene");
-        }
-
-        private void OnTransparentClick()
-        {
-            GeometryManager.Instance.ToggleTransparency();
-
-            if (null == TransparentButton) return;
-
-            var color = GeometryManager.Instance.Transparent ?
-                        Color.gray : new Color(1.0f, 0.981f, 0.981f, 1.0f);
-
-            TransparentButton.GetComponentInChildren<Image>().color = color;
         }
 
         #endregion
