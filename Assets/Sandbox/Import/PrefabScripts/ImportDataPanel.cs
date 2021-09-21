@@ -99,10 +99,11 @@ namespace Assets.Import.PrefabScripts
             var tag = GetTag();
             if (string.IsNullOrWhiteSpace(tag)) return;
 
-            GeometryManager.Instance.LoadMesh(tag, meshFilePath);
+            var type = GetActiveToggle()?.name;
+            GeometryManager.Instance.LoadMesh(tag, type, meshFilePath);
             meshFilePath = string.Empty;
 
-            Debug.Log("Active Toggle Name: " + GetActiveToggle()?.name);
+            Debug.Log("Active Toggle Name: " + type);
             Debug.Log("Manual Input : " + ManualTypeInput.text);
 
             ManualTypeInput.text = null;

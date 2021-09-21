@@ -10,18 +10,10 @@ namespace Assets.Geometries
     {
         #region Constants
 
-        private const string meshMaterialPath = "Materials/BoneMaterial";
-        private const string transMaterialPath = "Materials/BoneTransparent";
-        private const string opaqueSelectedMaterialPath = "Materials/OpaqueSelectedColor";
-        private const string transSelectedMaterialPath = "Materials/TransparentSelectedColor";
         private const string lmPrefabPath = "Prefabs/Landmark";
         private GameObject lmPrefab;
         private GameObject meshObject;
         private List<GameObject> objects;
-        private Material meshMaterial;
-        private Material transMaterial;
-        private Material opaqueSelectedMaterial;
-        private Material transSelectedMaterial;
 
         #endregion
 
@@ -44,17 +36,14 @@ namespace Assets.Geometries
         {
             objects = new List<GameObject>();
             EulerTransform = new PositionalData(null);
-            meshMaterial = Resources.Load<Material>(meshMaterialPath);
-            transMaterial = Resources.Load<Material>(transMaterialPath);
-            opaqueSelectedMaterial = Resources.Load<Material>(opaqueSelectedMaterialPath);
-            transSelectedMaterial = Resources.Load<Material>(transSelectedMaterialPath);
         }
 
         #endregion
 
         #region Public Methods
 
-        public void DisplayObjects(Transform parent, int layer)
+        public void DisplayObjects(Transform parent, int layer,
+                                   Material material)
         {
             DestroyObjects();
 
@@ -65,7 +54,7 @@ namespace Assets.Geometries
                 meshObject = new GameObject(Tag, typeof(MeshFilter), typeof(MeshRenderer));
                 meshObject.transform.parent = parent;
                 meshObject.GetComponent<MeshFilter>().mesh = Mesh;
-                meshObject.GetComponent<MeshRenderer>().material = meshMaterial;
+                meshObject.GetComponent<MeshRenderer>().material = material;
 
                 EulerTransform.TransformObject(meshObject);
                 meshObject.layer = layer;
@@ -119,22 +108,10 @@ namespace Assets.Geometries
             EulerTransform = new PositionalData(transform);
         }
 
-        public void UpdateMeshMaterial(bool transparent, bool isSelected)
+        public void UpdateMeshMaterial(Material material)
         {
-            if (meshObject != null)
-            {
-                Material material = null;
-
-                if (transparent)
-                {
-                    material = isSelected ? transSelectedMaterial : transMaterial;
-                }
-                else
-                {
-                    material = isSelected ? opaqueSelectedMaterial : meshMaterial;
-                }
-                meshObject.GetComponent<MeshRenderer>().material = material;
-            }
+            if (meshObject == null) return;
+            meshObject.GetComponent<MeshRenderer>().material = material;
         }
 
         #endregion

@@ -27,10 +27,7 @@ namespace Assets.Sandbox
         #region Public Fields
 
         public GameObject Parent;
-        public Material BoneMaterial;
         public Camera Camera;
-        public Light Light;
-        public GameObject PivotPoint;
         public GameObject ShowVerticesButton;
         public GameObject CloseButton;
         public GameObject TransparentButton;
@@ -45,9 +42,6 @@ namespace Assets.Sandbox
         /// </summary>
         public void DisplayMesh()
         {
-            //var path = Application.dataPath + @"\Sandbox\Sample\pelvis.stl";
-            //Mesh = LoadStl(path);
-
             this.gameObject.SetActive(true);
             GeometryManager.Instance.DisplaySelectedObjects(Parent.transform,
                                                 LayerMask.NameToLayer(layer));
@@ -87,26 +81,6 @@ namespace Assets.Sandbox
             //var transparentBtn = TransparentButton.GetComponentInChildren<Button>();
             //transparentBtn.onClick.AddListener(OnTransparentClick);
             //normalColor = transparentBtn.GetComponent<Image>().color;
-        }
-
-        /// <summary>
-        /// Load stl file from the given path
-        /// </summary>
-        /// <param name="path">File path</param>
-        /// <returns>Return mesh game object created for the stl</returns>
-        private GameObject LoadStl(string path)
-        {
-            MeshData output = MeshGeometryFunctions.ReadStl(path);
-            GameObject mesh = new GameObject("Meshdata");
-            mesh.transform.SetParent(Parent.transform);
-            var meshFilter = mesh.AddComponent<MeshFilter>();
-            meshFilter.sharedMesh = output.ToMesh();
-
-            var renderer = mesh.AddComponent<MeshRenderer>();
-            renderer.material = BoneMaterial;
-            mesh.layer = LayerMask.NameToLayer(layer);
-
-            return mesh;
         }
 
         /// <summary>

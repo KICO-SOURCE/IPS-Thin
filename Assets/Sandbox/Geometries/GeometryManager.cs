@@ -18,6 +18,10 @@ namespace Assets.Geometries
         private const string buttonPrefabPath = "Prefabs/Button";
         private const string parentTag = "ListParent";
         private const string containerTag = "ListContainer";
+        private const string meshMaterialPath = "Materials/BoneMaterial";
+        private const string transMaterialPath = "Materials/BoneTransparent";
+        private const string opaqueSelectedMaterialPath = "Materials/OpaqueSelectedColor";
+        private const string transSelectedMaterialPath = "Materials/TransparentSelectedColor";
 
         private GameObject parent;
         private GameObject container;
@@ -25,6 +29,15 @@ namespace Assets.Geometries
         private Color normalColor;
         private List<int> selectedIndices;
         private List<Geometry> geometries;
+
+        #region Materials
+
+        private Material opaqueMaterial;
+        private Material transMaterial;
+        private Material opaqueSelectedMaterial;
+        private Material transSelectedMaterial;
+
+        #endregion
 
         #endregion
 
@@ -54,6 +67,11 @@ namespace Assets.Geometries
             buttonPrefab = Resources.Load<GameObject>(buttonPrefabPath);
             Button tempButton = buttonPrefab.GetComponent<Button>();
             normalColor = tempButton.GetComponent<Image>().color;
+
+            opaqueMaterial = Resources.Load<Material>(meshMaterialPath);
+            transMaterial = Resources.Load<Material>(transMaterialPath);
+            opaqueSelectedMaterial = Resources.Load<Material>(opaqueSelectedMaterialPath);
+            transSelectedMaterial = Resources.Load<Material>(transSelectedMaterialPath);
         }
 
         #endregion
@@ -130,7 +148,7 @@ namespace Assets.Geometries
             for (int index = 0; index < geometries.Count; index++)
             {
                 var selected = selectedIndices.Contains(index);
-                geometries[index].UpdateMeshMaterial(Transparent, selected);
+                geometries[index].UpdateMeshMaterial(GetMaterial(selected));
             }
         }
 
@@ -208,6 +226,14 @@ namespace Assets.Geometries
             return type;
         }
 
+        private Material GetMaterial(bool isSelected)
+        {
+            var material = Transparent ?
+                isSelected ? transSelectedMaterial : transMaterial :
+                isSelected ? opaqueSelectedMaterial : opaqueMaterial;
+            return material;
+        }
+
         #endregion
 
         #region Public Methods
@@ -233,15 +259,16 @@ namespace Assets.Geometries
         /// Load mesh and add to geometry list
         /// </summary>
         /// <param name="tag"></param>
+        /// <param name="type"></param>
         /// <param name="filePath"></param>
-        public void LoadMesh(string tag, string filePath)
+        public void LoadMesh(string tag, string type, string filePath)
         {
             var mesh = MeshGeometryFunctions.ReadStl(filePath);
 
             Geometry geometry = new Geometry()
             {
                 Tag = tag,
-                ObjectType = GetObjectType(tag),
+                ObjectType = GetObjectType(type),
                 Mesh = mesh?.ToMesh()
             };
 
@@ -325,9 +352,11 @@ namespace Assets.Geometries
         /// <param name="layer"></param>
         public void DisplaySelectedObjects(Transform parent, int layer)
         {
-            foreach(var geometry in geometries)
+            for (int index = 0; index < geometries.Count; index++)
             {
-                geometry?.DisplayObjects(parent, layer);
+                var selected = selectedIndices.Contains(index);
+                geometries[index].DisplayObjects(parent, layer,
+                                        GetMaterial(selected));
             }
         }
 
