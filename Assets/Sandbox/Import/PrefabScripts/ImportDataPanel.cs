@@ -23,6 +23,7 @@ namespace Assets.Import.PrefabScripts
         private Button CancelBTN;
         private InputField ManualTypeInput;
         private ToggleGroup ToggleGroup;
+        private TMP_Text WarningTXT;
 
         #endregion
 
@@ -42,6 +43,7 @@ namespace Assets.Import.PrefabScripts
             OpenBTN = transform.Find("ButtonPanel/OpenBtn").GetComponent<Button>();
             CancelBTN = transform.Find("ButtonPanel/CancelBtn").GetComponent<Button>();
             ManualTypeInput = transform.Find("ManualTypeContainer/ManualTypeInput").GetComponent<InputField>();
+            WarningTXT = transform.Find("WarningTXT").GetComponent<TMP_Text>();
         }
 
         public void Start()
@@ -53,8 +55,16 @@ namespace Assets.Import.PrefabScripts
 
         public void Update()
         {
-            OpenBTN.interactable =  null != GetActiveToggle() ||
-                !string.IsNullOrWhiteSpace(ManualTypeInput.text);
+            var tag = GetTag();
+            var warning = string.Empty;
+            if (GeometryManager.Instance.Geometries.Any(g => g.Tag == tag))
+            {
+                warning = tag + " is already added. " +
+                        "Please change the stl type to be loaded.";
+                tag = string.Empty;
+            }
+            WarningTXT.text = warning;
+            OpenBTN.interactable = !string.IsNullOrWhiteSpace(tag);
         }
 
         /// <summary>
@@ -65,6 +75,7 @@ namespace Assets.Import.PrefabScripts
         {
             FileNameTXT.text = text + " loaded.";
             Debug.Log("File Name:" + FileNameTXT.text);
+            WarningTXT.text = "";
         }
 
         /// <summary>
@@ -85,10 +96,7 @@ namespace Assets.Import.PrefabScripts
         /// </summary>
         private void OnOpenBtnClick()
         {
-            var activeToggle = GetActiveToggle();
-            var tag = string.IsNullOrWhiteSpace(ManualTypeInput.text) ?
-                            activeToggle?.name : ManualTypeInput.text;
-
+            var tag = GetTag();
             if (string.IsNullOrWhiteSpace(tag)) return;
 
             Geometry geometryContent = new Geometry();
@@ -103,7 +111,7 @@ namespace Assets.Import.PrefabScripts
             geometryContent.ObjectType = GetObjectType(tag);
             GeometryManager.Instance.UpdateDisplayList(geometryContent);
 
-            Debug.Log("Active Toggle Name: " + activeToggle?.name);
+            Debug.Log("Active Toggle Name: " + GetActiveToggle()?.name);
             Debug.Log("Manual Input : " + ManualTypeInput.text);
             Debug.Log("Tag :" + geometryContent.Tag);
             Debug.Log("Object Type : " + geometryContent.ObjectType);
@@ -124,6 +132,18 @@ namespace Assets.Import.PrefabScripts
             DisableToggle();
             GeometryManager.Instance.ShowList();
             DataPanelClosed?.Invoke();
+        }
+
+        /// <summary>
+        /// Get the object tag
+        /// </summary>
+        /// <returns></returns>
+        private string GetTag()
+        {
+            var activeToggle = GetActiveToggle();
+            var tag = string.IsNullOrWhiteSpace(ManualTypeInput.text) ?
+                            activeToggle?.name : ManualTypeInput.text;
+            return tag;
         }
 
         /// <summary>
