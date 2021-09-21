@@ -16,14 +16,12 @@ namespace Assets.Geometries
         private static readonly Lazy<GeometryManager> _instance = new Lazy<GeometryManager>(() => new GeometryManager());
 
         private const string buttonPrefabPath = "Prefabs/Button";
-        private const string parentTag = "ListParent";
         private const string containerTag = "ListContainer";
         private const string meshMaterialPath = "Materials/BoneMaterial";
         private const string transMaterialPath = "Materials/BoneTransparent";
         private const string opaqueSelectedMaterialPath = "Materials/OpaqueSelectedColor";
         private const string transSelectedMaterialPath = "Materials/TransparentSelectedColor";
 
-        private GameObject parent;
         private GameObject container;
         private GameObject buttonPrefab;
         private Color normalColor;
@@ -122,7 +120,6 @@ namespace Assets.Geometries
                 selectedIndices.Add(index);
                 clicked.GetComponent<Image>().color = Color.gray;
             }
-
 
             //Multiple selection
             //var clicked = objectButtons[index];
@@ -243,16 +240,12 @@ namespace Assets.Geometries
         /// </summary>
         public void DisplayList()
         {
-            parent = GameObject.FindGameObjectWithTag(parentTag);
             container = GameObject.FindGameObjectWithTag(containerTag);
             objectButtons = new List<Button>();
             for (int index = 0; index < geometries.Count; index++)
             {
                 AddToDisplayList(index, geometries[index].Tag);
             }
-
-            var active = objectButtons.Count > 0;
-            parent.SetActive(active);
         }
 
         /// <summary>
@@ -277,7 +270,6 @@ namespace Assets.Geometries
 
             var index = geometries.Count;
             geometries.Add(geometry);
-            parent.SetActive(true);
             AddToDisplayList(index, tag);
         }
 
@@ -375,36 +367,6 @@ namespace Assets.Geometries
             {
                 return geometries.FirstOrDefault()?.Object;
             }
-        }
-
-        /// <summary>
-        /// Hide the list
-        /// </summary>
-        public void HideList()
-        {
-            parent.SetActive(false);
-        }
-
-        /// <summary>
-        /// Show the list
-        /// </summary>
-        public void ShowList()
-        {
-            var active = objectButtons.Count > 0;
-            parent.SetActive(active);
-        }
-
-        /// <summary>
-        /// Distroy all geometries
-        /// </summary>
-        public void DistroyAllObjects()
-        {
-            foreach (var data in geometries)
-            {
-                data.DestroyObjects();
-            }
-            selectedIndices.Clear();
-            Transparent = false;
         }
 
         /// <summary>

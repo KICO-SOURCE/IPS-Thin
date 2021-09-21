@@ -110,7 +110,6 @@ namespace Assets.Import.PrefabScripts
             this.gameObject.SetActive(false);
             ManualTypeInput.text = null;
             DisableToggle();
-            GeometryManager.Instance.ShowList();
             DataPanelClosed?.Invoke();
         }
 

@@ -7,8 +7,5 @@ EditorBuildSettings:
   m_Scenes:
   - enabled: 1
     path: Assets/Sandbox/Scenes/MainScene.unity
-    guid: bc6e0eb787b5deb469852ee7c2f2a26a
-  - enabled: 1
-    path: Assets/Sandbox/Scenes/ThreeDScene.unity
-    guid: 830a692e520480d479d350667dbbc3ba
+    guid: 72b2cd48a194cf449aae833e2860b318
   m_configObjects: {}
