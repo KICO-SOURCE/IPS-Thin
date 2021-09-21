@@ -92,6 +92,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bfaa7c201e0b26e4594a3cf387dcfcfc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  FileNameTXT: {fileID: 367661999184841023}
+  OpenBTN: {fileID: 367661999175553493}
+  CancelBTN: {fileID: 367661998423800479}
+  ManualTypeInput: {fileID: 7644079526172731825}
+  ToggleGroup: {fileID: 367661998209731361}
+  WarningTXT: {fileID: 7420646879022600188}
 --- !u!1 &367661998190435769
 GameObject:
   m_ObjectHideFlags: 0

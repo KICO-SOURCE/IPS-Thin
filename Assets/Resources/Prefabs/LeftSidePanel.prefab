@@ -1150,9 +1150,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc83daa0ad399034c9e794d83f0b265e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  LoadSTLBtn: {fileID: 0}
-  LoadLMBtn: {fileID: 0}
-  ImportTransformBtn: {fileID: 0}
+  MenuBtnPanelRect: {fileID: 1237345586169678735}
+  LeftButtonPanel: {fileID: 1237345587011629419}
+  MenuBtn: {fileID: 1237345586731778790}
+  LoadSTLBtn: {fileID: 1237345586167407517}
+  LoadLMBtn: {fileID: 1237345586993402905}
+  ImportTransformBtn: {fileID: 1237345585150162374}
 --- !u!1 &1237345586731778788
 GameObject:
   m_ObjectHideFlags: 0

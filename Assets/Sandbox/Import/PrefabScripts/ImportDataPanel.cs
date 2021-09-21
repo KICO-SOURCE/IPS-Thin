@@ -15,33 +15,23 @@ namespace Assets.Import.PrefabScripts
 
         #region Private Members
 
-        private TMP_Text FileNameTXT;
-        private Button OpenBTN;
-        private Button CancelBTN;
-        private InputField ManualTypeInput;
-        private ToggleGroup ToggleGroup;
-        private TMP_Text WarningTXT;
         private string meshFilePath;
 
         #endregion
 
         #region Public Properties
 
+        public TMP_Text FileNameTXT;
+        public Button OpenBTN;
+        public Button CancelBTN;
+        public InputField ManualTypeInput;
+        public ToggleGroup ToggleGroup;
+        public TMP_Text WarningTXT;
         public Action DataPanelClosed;
 
         #endregion
 
         #region Public Methods
-
-        public void Awake()
-        {
-            FileNameTXT = transform.Find("FileNameTXT").GetComponent<TMP_Text>();
-            ToggleGroup = transform.Find("ObjectTypeContainer/ToggleGroup").GetComponent<ToggleGroup>();
-            OpenBTN = transform.Find("ButtonPanel/OpenBtn").GetComponent<Button>();
-            CancelBTN = transform.Find("ButtonPanel/CancelBtn").GetComponent<Button>();
-            ManualTypeInput = transform.Find("ManualTypeContainer/ManualTypeInput").GetComponent<InputField>();
-            WarningTXT = transform.Find("WarningTXT").GetComponent<TMP_Text>();
-        }
 
         public void Start()
         {

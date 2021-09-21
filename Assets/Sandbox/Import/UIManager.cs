@@ -1,9 +1,7 @@
 using Assets.Geometries;
 using Assets.Import.PrefabScripts;
 using Assets.Sandbox;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Assets.Import
 {
@@ -14,17 +12,11 @@ namespace Assets.Import
     {
         #region Public Members
 
+        public LeftSidePanel LeftSidePanel;
+        public ImportDataPanel ImportDataPanel;
+        public RightSidePanel RightSidePanel;
+        public ThreeDScene ThreeDScene;
         public GameObject ViewPort;
-
-        #endregion
-
-        #region Private Members
-
-        private LeftSidePanel LeftSidePanel;
-        private ImportDataPanel ImportDataPanel;
-        private RightSidePanel RightSidePanel;
-        private Color normalColor;
-        private ThreeDScene ThreeDScene;
 
         #endregion
 
@@ -32,24 +24,14 @@ namespace Assets.Import
 
         public void Start()
         {
-            LeftSidePanel= transform.Find("LeftSidePanel").GetComponent<LeftSidePanel>();
-            ImportDataPanel = transform.Find("ImportDataPanel").GetComponent<ImportDataPanel>();
-            ThreeDScene = GameObject.Find("ThreeDContainer").GetComponent<ThreeDScene>();
-            RightSidePanel = transform.Find("RightSidePanel").GetComponent<RightSidePanel>();
             GeometryManager.Instance.DisplayList();
-            AttachListeners();
             ImportDataPanel.DataPanelClosed += AddButton;
-            normalColor = RightSidePanel.TransparentBtn.GetComponent<Image>().color;
 
             HandlePanelToggled();
             LeftSidePanel.PanelToggled += HandlePanelToggled;
             RightSidePanel.PanelToggled += HandlePanelToggled;
-        }
-
-        private void Update()
-        {
-            LeftSidePanel.LoadLMBtn.interactable = GeometryManager.Instance.EnableLoad;
-            LeftSidePanel.ImportTransformBtn.interactable = GeometryManager.Instance.EnableLoad;
+            LeftSidePanel.LoadCompleted += HandleLoadCompleted;
+            LeftSidePanel.LoadStlClicked += HandleLoadStlClicked;
         }
 
         #endregion
@@ -62,28 +44,13 @@ namespace Assets.Import
                                            RightSidePanel.IsPanelOpen);
         }
 
-        /// <summary>
-        /// Attach listeners.
-        /// </summary>
-        private void AttachListeners()
+        private void HandleLoadCompleted()
         {
-            LeftSidePanel.LoadLMBtn.onClick.AddListener(OnLoadLMClick);
-            LeftSidePanel.LoadSTLBtn.onClick.AddListener(OnLoadStlClick);
-            LeftSidePanel.ImportTransformBtn.onClick.AddListener(OnImportTransformClick);
-
-            RightSidePanel.TransparentBtn.onClick.AddListener(OnTransparentClick);
+            ThreeDScene.DisplayMesh();
         }
 
-        /// <summary>
-        /// Load STL button click listener.
-        /// </summary>
-        private void OnLoadStlClick()
+        private void HandleLoadStlClicked(string path)
         {
-            string path = EditorUtility.OpenFilePanel("Select the " +
-                   "STL file.", "", "stl, STL");
-
-            if (string.IsNullOrEmpty(path)) return;
-
             ThreeDScene.gameObject.SetActive(false);
             ImportDataPanel.gameObject.SetActive(true);
             ImportDataPanel.SetFileTitle(path);
@@ -94,49 +61,8 @@ namespace Assets.Import
         /// </summary>
         private void AddButton()
         {
-            var parent = GameObject.FindGameObjectWithTag("ListContainer");
-            LeftSidePanel.LoadSTLBtn.transform.SetParent(parent.transform, false);
-            LeftSidePanel.LoadSTLBtn.transform.SetAsLastSibling();
-
+            LeftSidePanel.AddButton();
             ThreeDScene.DisplayMesh();
-        }
-
-        /// <summary>
-        /// Load landmark button click listener.
-        /// </summary>
-        private void OnLoadLMClick()
-        {
-            string path = EditorUtility.OpenFilePanel("Select the " +
-                "landmark file.", "", "csv, CSV");
-            if (string.IsNullOrEmpty(path)) return;
-
-            GeometryManager.Instance.LoadLandmarks(path);
-            ThreeDScene.DisplayMesh();
-        }
-
-        /// <summary>
-        /// Load transform button click listener.
-        /// </summary>
-        private void OnImportTransformClick()
-        {
-            string path = EditorUtility.OpenFilePanel("Select the " +
-                "transform file.", "", "csv, CSV");
-            if (string.IsNullOrEmpty(path)) return;
-
-            GeometryManager.Instance.LoadTransform(path);
-            ThreeDScene.DisplayMesh();
-        }
-
-        /// <summary>
-        /// Transparent button click listener.
-        /// </summary>
-        private void OnTransparentClick()
-        {
-            GeometryManager.Instance.ToggleTransparency();
-            var color = GeometryManager.Instance.Transparent ?
-                                    Color.gray : normalColor;
-
-            RightSidePanel.TransparentBtn.GetComponentInChildren<Image>().color = color;
         }
 
         #endregion

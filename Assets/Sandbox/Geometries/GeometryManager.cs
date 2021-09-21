@@ -221,7 +221,7 @@ namespace Assets.Geometries
             var objectTypes = Enum.GetValues(typeof(ObjectType)).Cast<ObjectType>();
 
             var type = objectTypes.FirstOrDefault(ob =>
-                            ob.ToString().ToLower() == typeName.ToLower());
+                            ob.ToString().ToLower() == typeName?.ToLower());
 
             return type;
         }

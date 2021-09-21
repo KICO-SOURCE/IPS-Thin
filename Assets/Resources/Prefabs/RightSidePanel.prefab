@@ -441,7 +441,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3467ff82a352e8a45b1a5708a5374ef1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TransparentBtn: {fileID: 0}
+  ButtonPanelRect: {fileID: 4147486740677247883}
+  SlidingPanelRect: {fileID: 4147486740982301614}
+  SlideLeftBTN: {fileID: 4147486739676337846}
+  TransparentBtn: {fileID: 4147486740564885935}
 --- !u!1 &4147486740564885929
 GameObject:
   m_ObjectHideFlags: 0

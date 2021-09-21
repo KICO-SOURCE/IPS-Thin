@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using DG.Tweening;
 using TMPro;
 using System;
+using Assets.Geometries;
 
 namespace Assets.Import.PrefabScripts
 {
@@ -15,15 +16,15 @@ namespace Assets.Import.PrefabScripts
 
         #region Private Members
 
-        private RectTransform ButtonPanelRect;
-        private RectTransform SlidingPanelRect;
-        private Button SlideLeftBTN;
         private bool IsSlide;
 
         #endregion
 
         #region Public Members
 
+        public RectTransform ButtonPanelRect;
+        public RectTransform SlidingPanelRect;
+        public Button SlideLeftBTN;
         public Button TransparentBtn;
         public Action PanelToggled;
 
@@ -33,26 +34,39 @@ namespace Assets.Import.PrefabScripts
 
         #region Public Methods
 
-        public void Awake()
-        {
-            ButtonPanelRect = transform.Find("SlideLeftBtnPanel").GetComponent<RectTransform>();
-            SlidingPanelRect = transform.Find("SlidingPanel").GetComponent<RectTransform>();
-            SlideLeftBTN = transform.Find("SlideLeftBtnPanel/SlideLeftBtn").GetComponent<Button>();
-            TransparentBtn = transform.Find("SlidingPanel/ButtonContainer/TransparentBtn").GetComponentInChildren<Button>();
-        }
-
         // Start is called before the first frame update
         public void Start()
         {
             ButtonPanelRect.DOAnchorPosX(0f, 0f);
             SlidingPanelRect.DOAnchorPosX(SlidingPanelRect.rect.width, 0f);
             IsSlide = true;
-            SlideLeftBTN.onClick.AddListener(OnSlideLeftClick);
+            AttachListeners();
         }
 
         #endregion
 
         #region Private Methods
+
+        /// <summary>
+        /// Attach listeners.
+        /// </summary>
+        private void AttachListeners()
+        {
+            SlideLeftBTN.onClick.AddListener(OnSlideLeftClick);
+            TransparentBtn.onClick.AddListener(OnTransparentClick);
+        }
+
+        /// <summary>
+        /// Transparent button click listener.
+        /// </summary>
+        private void OnTransparentClick()
+        {
+            GeometryManager.Instance.ToggleTransparency();
+            var color = GeometryManager.Instance.Transparent ?
+                                    Color.gray : Color.white;
+
+            TransparentBtn.GetComponentInChildren<Image>().color = color;
+        }
 
         /// <summary>
         /// Slide left button click listener.

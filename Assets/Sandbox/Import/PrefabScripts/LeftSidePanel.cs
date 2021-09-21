@@ -1,5 +1,7 @@
-﻿using DG.Tweening;
+﻿using Assets.Geometries;
+using DG.Tweening;
 using System;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,35 +16,27 @@ namespace Assets.Import.PrefabScripts
 
         #region Private Members
 
-        private RectTransform MenuBtnPanelRect;
-        private RectTransform LeftButtonPanel;
-        private Button MenuBtn;
         private bool IsSlide;
 
         #endregion
 
         #region Public Members
 
+        public RectTransform MenuBtnPanelRect;
+        public RectTransform LeftButtonPanel;
+        public Button MenuBtn;
         public Button LoadSTLBtn;
         public Button LoadLMBtn;
         public Button ImportTransformBtn;
         public Action PanelToggled;
+        public Action LoadCompleted;
+        public Action<string> LoadStlClicked;
 
         public bool IsPanelOpen => !IsSlide;
 
         #endregion
 
         #region Public Methods
-
-        public void Awake()
-        {
-            MenuBtnPanelRect = transform.Find("MenuBtnPanel").GetComponent<RectTransform>();
-            MenuBtn = transform.Find("MenuBtnPanel").GetComponentInChildren<Button>();
-            LeftButtonPanel = transform.Find("LeftButtonPanel").GetComponent<RectTransform>();
-            LoadSTLBtn = transform.Find("LeftButtonPanel/LoadStlContainer").GetComponentInChildren<Button>();
-            LoadLMBtn = transform.Find("LeftButtonPanel/LoadLM").GetComponentInChildren<Button>();
-            ImportTransformBtn = transform.Find("LeftButtonPanel/ImportTransform").GetComponentInChildren<Button>();
-        }
 
         // Start is called before the first frame update
         public void Start()
@@ -51,6 +45,23 @@ namespace Assets.Import.PrefabScripts
             LeftButtonPanel.DOAnchorPosX(LeftButtonPanel.rect.width*-1, 0f);
             IsSlide = true;
             AttachListener();
+        }
+
+        private void Update()
+        {
+            LoadLMBtn.interactable = GeometryManager.Instance.EnableLoad;
+            ImportTransformBtn.interactable = GeometryManager.Instance.EnableLoad;
+        }
+
+        /// <summary>
+        /// Add "Load New STL" button to layout group.
+        /// </summary>
+        public void AddButton()
+        {
+            var parent = GameObject.FindGameObjectWithTag("ListContainer");
+            if (null == parent) return;
+            LoadSTLBtn.transform.SetParent(parent.transform, false);
+            LoadSTLBtn.transform.SetAsLastSibling();
         }
 
         #endregion
@@ -63,6 +74,9 @@ namespace Assets.Import.PrefabScripts
         private void AttachListener()
         {
             MenuBtn.onClick.AddListener(OnMenuBtnClick);
+            LoadLMBtn.onClick.AddListener(OnLoadLMClick);
+            LoadSTLBtn.onClick.AddListener(OnLoadStlClick);
+            ImportTransformBtn.onClick.AddListener(OnImportTransformClick);
         }
 
         /// <summary>
@@ -80,6 +94,44 @@ namespace Assets.Import.PrefabScripts
                 HideLeftSlidingPanel();
                 IsSlide = true;
             }
+        }
+
+        /// <summary>
+        /// Load STL button click listener.
+        /// </summary>
+        private void OnLoadStlClick()
+        {
+            string path = EditorUtility.OpenFilePanel("Select the " +
+                   "STL file.", "", "stl, STL");
+
+            if (string.IsNullOrEmpty(path)) return;
+            LoadStlClicked?.Invoke(path);
+        }
+
+        /// <summary>
+        /// Load landmark button click listener.
+        /// </summary>
+        private void OnLoadLMClick()
+        {
+            string path = EditorUtility.OpenFilePanel("Select the " +
+                "landmark file.", "", "csv, CSV");
+            if (string.IsNullOrEmpty(path)) return;
+
+            GeometryManager.Instance.LoadLandmarks(path);
+            LoadCompleted?.Invoke();
+        }
+
+        /// <summary>
+        /// Load transform button click listener.
+        /// </summary>
+        private void OnImportTransformClick()
+        {
+            string path = EditorUtility.OpenFilePanel("Select the " +
+                "transform file.", "", "csv, CSV");
+            if (string.IsNullOrEmpty(path)) return;
+
+            GeometryManager.Instance.LoadTransform(path);
+            LoadCompleted?.Invoke();
         }
 
         /// <summary>
