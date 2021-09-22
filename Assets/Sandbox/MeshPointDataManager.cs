@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -15,12 +16,41 @@ namespace Assets.Sandbox
 
         #endregion
 
+        #region Private Members
+
+        private static readonly Lazy<MeshPointDataManager> _instance = new Lazy<MeshPointDataManager>(() => new MeshPointDataManager());
+
+        #endregion
+
         #region Public Fields
 
         public GameObject PointList;
         public GameObject PointListTemplate;
         public GameObject viewPrefab;
         public GameObject row;
+
+        #endregion
+
+        /// <summary>
+        /// Gets the instance.
+        /// </summary>
+        /// <value>
+        /// The instance.
+        /// </value>
+        public static MeshPointDataManager Instance
+        {
+            get { return _instance.Value; }
+        }
+
+        #region Constructor
+
+        /// <summary>
+        /// Creates new instance of MeshPointDataManager.
+        /// </summary>
+        private MeshPointDataManager()
+        {
+
+        }
 
         #endregion
 
@@ -104,9 +134,8 @@ namespace Assets.Sandbox
         /// </summary>
         /// <param name="mesh">Loaded mesh</param>
         /// <param name="meshPoints">sorted mesh vertices</param>
-        private void GetFirstNMeshVerticesList(Mesh mesh, Dictionary<int, Vector3> meshPoints)
+        private void GetFirstNMeshVerticesList(Mesh mesh, int verticesCount, Dictionary<int, Vector3> meshPoints)
         {
-            int n = 250;
             List<Vector3> points = new List<Vector3>();
             points = mesh.vertices.ToList();
             Index = 0;
@@ -114,7 +143,7 @@ namespace Assets.Sandbox
             {
                 meshPoints.Add(Index, point);
                 Index++;
-                if (Index == n) break;
+                if (Index == verticesCount) break;
             }
         }
 
@@ -160,10 +189,8 @@ namespace Assets.Sandbox
         /// </summary>
         /// <param name="mesh">Loaded mesh</param>
         /// <param name="meshPoints">sorted mesh vertices</param>
-        private void GetFilteredMeshVerticesList(Mesh mesh, Dictionary<int, Vector3> meshPoints)
+        private void GetFilteredMeshVerticesList(Mesh mesh, int startIndx, int endIndx, Dictionary<int, Vector3> meshPoints)
         {
-            int startIndx = 100;
-            int endIndx = 200;
             List<Vector3> points = new List<Vector3>();
             points = mesh.vertices.ToList();
             Index = 0;
@@ -185,15 +212,55 @@ namespace Assets.Sandbox
         /// </summary>
         /// <param name="mesh">Loaded mesh</param>
         /// <param name="meshPoints">sorted mesh vertices</param>
-        public void ShowMeshVerticesList(GameObject uiParent, GameObject mesh)
+        public void ShowMeshVerticesList(GameObject uiParent, GameObject mesh, string operation, Mesh optionalBone)
         {
+            var filter = mesh.GetComponent<MeshFilter>();
+            Mesh bone = filter.mesh;
+
+            Dictionary<int, Vector3> meshPoints = new Dictionary<int, Vector3>();
+
+            if (operation == "Sort by X")
+            {
+                GetMeshVerticesSortByX(bone, meshPoints);
+            }
+
+            else if (operation == "Sort by Y")
+            {
+                GetMeshVerticesSortByY(bone, meshPoints);
+            }
+
+            else if (operation == "Sort by Z")
+            {
+                GetMeshVerticesSortByZ(bone, meshPoints);
+            }
+
+            else if (operation == "First 100 vertices")
+            {
+                GetFirst100MeshVerticesList(bone, meshPoints);
+            }
+
+            else if (operation == "First N Vertices List")
+            {
+                GetFirstNMeshVerticesList(bone, 10, meshPoints);
+            }
+
+            else if (operation == "Loaded bone vertices list")
+            {
+                GetLoadedBoneMeshVerticesList(bone, meshPoints);
+            }
+
+            else if (operation == "Optional bone vertices list")
+            {
+                if(optionalBone != null)
+                GetOptionalBoneMeshVerticesList(optionalBone, meshPoints);
+            }
+            else if (operation == "Filtered vertices List")
+            {
+                GetFilteredMeshVerticesList(bone, 1, 10, meshPoints);
+            }
+
             var prefab = Resources.Load<GameObject>("Prefabs/MeshVertexList");
             viewPrefab = UnityEngine.Object.Instantiate(prefab, uiParent.transform);
-
-            //// [ left - bottom ]
-            //viewPrefab.gameObject.GetComponent<RectTransform>().offsetMin = new Vector2(uiParent.GetComponent<RectTransform>().rect.height, 0);
-            //// [ right - top ]
-            //viewPrefab.gameObject.GetComponent<RectTransform>().offsetMax = new Vector2(0,0);
 
             var viewport = viewPrefab.transform.Find("Viewport").gameObject;
             var content = viewport.transform.Find("Content").gameObject;
@@ -201,12 +268,8 @@ namespace Assets.Sandbox
             GameObject point = UnityEngine.Object.Instantiate(PointList, content.transform);
             PointListTemplate = PointList.transform.Find("PointListTemplate").gameObject;
 
-            var filter = mesh.GetComponent<MeshFilter>();
-            Mesh sampleMesh = filter.mesh;
-
-            for (int i = 0; i< 100/*sampleMesh.vertices.Count()*/; i++)
+            for (int i = 0; i< meshPoints.Count; i++)
             {
-                Vector3 MeshPoint = new Vector3(1, 2, 3);
                 row = UnityEngine.Object.Instantiate(PointListTemplate, point.transform);
                 row.transform.localPosition = new Vector3(0, i * -50, 0);
 
@@ -218,25 +281,28 @@ namespace Assets.Sandbox
 
                 cell = row.transform.Find("X");
                 var text1 = cell.GetComponent<TextMeshProUGUI>();
-                text1.text = sampleMesh.vertices[i].x.ToString();
+                text1.text = meshPoints[i].x.ToString();
                 text1.color = Color.black;
                 text1.fontSize = 15;
 
                 cell = row.transform.Find("Y");
                 var text2 = cell.GetComponent<TextMeshProUGUI>();
-                text2.text = sampleMesh.vertices[i].y.ToString();
+                text2.text = meshPoints[i].y.ToString();
                 text2.color = Color.black;
                 text2.fontSize = 15;
 
                 cell = row.transform.Find("Z");
                 var text3 = cell.GetComponent<TextMeshProUGUI>();
-                text3.text = sampleMesh.vertices[i].z.ToString();
+                text3.text = meshPoints[i].z.ToString();
                 text3.color = Color.black;
                 text3.fontSize = 15;
 
                 row.SetActive(true);
+
+                if (i > 500) break;
             }
 
+            Destroy(viewPrefab);
         }
 
     }
