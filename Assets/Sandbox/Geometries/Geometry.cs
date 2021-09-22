@@ -4,148 +4,136 @@ using UnityEngine;
 using System.Linq;
 using Assets.Sandbox.Import;
 
-namespace Assets.Geometries
-{
-    public class Geometry
-    {
-        #region Constants
+namespace Assets.Geometries {
 
-        private const string lmPrefabPath = "Prefabs/Landmark";
-        private GameObject lmPrefab;
-        private GameObject meshObject;
-        private List<GameObject> objects;
+	public class Geometry {
 
-        #endregion
+		#region Constants
 
-        #region Materials
+		private const string lmPrefabPath = "Prefabs/Landmark";
+		private GameObject lmPrefab;
+		private GameObject meshObject;
+		private List<GameObject> objects;
 
-        private Material opaqueMaterial;
-        private Material transMaterial;
+		#endregion Constants
 
-        #endregion
+		#region Materials
 
-        #region Properties
+		private Material opaqueMaterial;
+		private Material transMaterial;
 
-        public string Tag { get; set; }
-        public Mesh Mesh { get; set; }
-        public List<Landmark> Landmarks { get; private set; }
-        public PositionalData EulerTransform { get; private set; }
-        public ObjectType ObjectType { get; set; }
+		#endregion Materials
 
-        public GameObject Object => meshObject != null ?
-                            meshObject : objects.FirstOrDefault();
+		#region Properties
 
-        #endregion
+		public string Tag { get; set; }
+		public Mesh Mesh { get; set; }
+		public List<Landmark> Landmarks { get; private set; }
+		public PositionalData EulerTransform { get; private set; }
+		public ObjectType ObjectType { get; set; }
 
-        #region Constructor
+		public GameObject Object => meshObject != null ?
+							meshObject : objects.FirstOrDefault();
 
-        public Geometry()
-        {
-            objects = new List<GameObject>();
-            EulerTransform = new PositionalData(null);
-        }
+		#endregion Properties
 
-        #endregion
+		#region Constructor
 
-        #region Public Methods
+		public Geometry() {
+			objects = new List<GameObject>();
+			EulerTransform = new PositionalData(null);
+		}
 
-        public void DisplayObjects(Transform parent, int layer,
-                                   bool isTransparent, bool isSelected)
-        {
-            DestroyObjects();
+		#endregion Constructor
 
-            if (EulerTransform == null) return;
+		#region Public Methods
 
-            if (Mesh != null)
-            {
-                var material = GetMaterial(isTransparent, isSelected);
-                meshObject = new GameObject(Tag, typeof(MeshFilter), typeof(MeshRenderer));
-                meshObject.transform.parent = parent;
-                meshObject.GetComponent<MeshFilter>().mesh = Mesh;
-                meshObject.GetComponent<MeshRenderer>().material = material;
+		public void DisplayObjects(Transform parent, int layer,
+								   bool isTransparent, bool isSelected) {
+			DestroyObjects();
 
-                EulerTransform.TransformObject(meshObject);
-                meshObject.layer = layer;
+			if (EulerTransform == null) return;
 
-                meshObject.SetActive(true);
-            }
+			if (Mesh != null) {
+				var material = GetMaterial(isTransparent, isSelected);
+				meshObject = new GameObject(Tag, typeof(MeshFilter), typeof(MeshRenderer));
+				meshObject.transform.parent = parent;
+				meshObject.GetComponent<MeshFilter>().mesh = Mesh;
+				meshObject.GetComponent<MeshRenderer>().material = material;
 
-            if (Landmarks == null) return;
+				EulerTransform.TransformObject(meshObject);
+				meshObject.layer = layer;
 
-            lmPrefab = Resources.Load<GameObject>(lmPrefabPath);
-            foreach(var lm in Landmarks)
-            {
-                GameObject go = GameObject.Instantiate(lmPrefab);
-                go.name = $"{Tag}_{lm.Type}";
-                go.transform.parent = parent;
-                go.GetComponent<MeshRenderer>().material.color = Color.red;
+				meshObject.SetActive(true);
+			}
 
-                var position = EulerTransform.TransformPoint(lm.Position);
-                go.transform.localPosition = position;
-                go.layer = layer;
+			if (Landmarks == null) return;
 
-                go.SetActive(true);
-                objects.Add(go);
-            }
-        }
+			lmPrefab = Resources.Load<GameObject>(lmPrefabPath);
+			foreach (var lm in Landmarks) {
+				GameObject go = GameObject.Instantiate(lmPrefab);
+				go.name = $"{Tag}_{lm.Type}";
+				go.transform.parent = meshObject.transform;
+				go.GetComponent<MeshRenderer>().material.color = Color.red;
 
-        public void DestroyObjects()
-        {
-            if(meshObject != null)
-            {
-                meshObject.SetActive(false);
-                UnityEngine.Object.DestroyImmediate(meshObject);
-                meshObject = null;
-            }
+				var position = EulerTransform.TransformPoint(lm.Position);
+				go.transform.localPosition = position;
+				go.layer = layer;
 
-            foreach (var go in objects)
-            {
-                go.SetActive(false);
-                UnityEngine.Object.DestroyImmediate(go);
-            }
-            objects.Clear();
-        }
+				go.SetActive(true);
+				objects.Add(go);
+			}
+		}
 
-        public void UpdateLandmarks(List<Landmark> landmarks)
-        {
-            Landmarks = new List<Landmark>(landmarks);
-        }
+		public void DestroyObjects() {
+			if (meshObject != null) {
+				meshObject.SetActive(false);
+				UnityEngine.Object.DestroyImmediate(meshObject);
+				meshObject = null;
+			}
 
-        public void UpdateTransform(string transform)
-        {
-            EulerTransform = new PositionalData(transform);
-        }
+			foreach (var go in objects) {
+				go.SetActive(false);
+				UnityEngine.Object.DestroyImmediate(go);
+			}
+			objects.Clear();
+		}
 
-        public void UpdateHighlight(bool isTransparent, bool isSelected)
-        {
-            if (meshObject == null) return;
+		public void UpdateLandmarks(List<Landmark> landmarks) {
+			Landmarks = new List<Landmark>(landmarks);
+		}
 
-            var material = GetMaterial(isTransparent, isSelected);
-            meshObject.GetComponent<MeshRenderer>().material = material;
-        }
+		public void UpdateTransform(string transform) {
+			EulerTransform = new PositionalData(transform);
+		}
 
-        public void UpdateMaterials(Material opaqueMaterial, Material transMaterial)
-        {
-            this.opaqueMaterial = Material.Instantiate(opaqueMaterial);
-            this.transMaterial = Material.Instantiate(transMaterial);
-        }
+		public void UpdateHighlight(bool isTransparent, bool isSelected) {
+			if (meshObject == null) return;
 
-        #endregion
+			var material = GetMaterial(isTransparent, isSelected);
+			meshObject.GetComponent<MeshRenderer>().material = material;
+		}
 
-        #region Private Methods
+		public void UpdateMaterials(Material opaqueMaterial, Material transMaterial) {
+			this.opaqueMaterial = Material.Instantiate(opaqueMaterial);
+			this.transMaterial = Material.Instantiate(transMaterial);
+		}
 
-        private Material GetMaterial(bool isTransparent, bool isSelected)
-        {
-            var material = isTransparent ? transMaterial : opaqueMaterial;
+		#endregion Public Methods
 
-            var color = isSelected ? new Color(0.943f, 0.805f, 0.805f) :
-                                     new Color(1.000f, 1.000f, 1.000f);
-            color.a = material.color.a;
+		#region Private Methods
 
-            material.color = color;
-            return material;
-        }
+		private Material GetMaterial(bool isTransparent, bool isSelected) {
+			var material = isTransparent ? transMaterial : opaqueMaterial;
 
-        #endregion
-    }
+			var color = isSelected ? new Color(0.943f, 0.805f, 0.805f) :
+									 new Color(1.000f, 1.000f, 1.000f);
+			color.a = material.color.a;
+
+			material.color = color;
+			return material;
+		}
+
+		#endregion Private Methods
+	}
 }
