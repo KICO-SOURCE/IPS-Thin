@@ -76,7 +76,7 @@ namespace Ips.Screens
                 m_ViewBtn.enabled = false;
                 byte[] file = File.ReadAllBytes(path);
                 m_CaseFileLoader.LoadCaseFile(file);
-                m_CaseFileLoader.LoadComponentData(LoadCompleted, 2);
+                m_CaseFileLoader.LoadComponentData(LoadCompleted);
             }
 
             Debug.Log($"Patient Details: \n");
