@@ -264,6 +264,7 @@ namespace Assets.CaseFile
             }
             catch (Exception ex)
             {
+                Debug.Write(ex.Message);
                 return false;
             }
 

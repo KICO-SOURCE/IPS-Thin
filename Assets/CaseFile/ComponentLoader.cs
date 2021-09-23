@@ -14,6 +14,23 @@ namespace Assets.CaseFile
 {
     public class ComponentLoader
     {
+        private static readonly Lazy<ComponentLoader> _instance = new Lazy<ComponentLoader>(() => new ComponentLoader());
+
+        /// <summary>
+        /// Gets the instance.
+        /// </summary>
+        /// <value>
+        /// The instance.
+        /// </value>
+        public static ComponentLoader Instance
+        {
+            get { return _instance.Value; }
+        }
+
+        private ComponentLoader()
+        {
+        }
+
         private const string WebServerBaseUrl = @"http://360ksws.com/360KicoUnityQANavService/";
         private bool LibraryLoaded;
         internal Dictionary<Implant, int> Components { get; private set; }

@@ -10,12 +10,25 @@ namespace Assets.CaseFile
     {
         #region Fields
 
+        private static readonly Lazy<CaseFileLoader> _instance = new Lazy<CaseFileLoader>(() => new CaseFileLoader());
+
         private readonly ComponentLoader m_ComponentLoader;
         private readonly Project m_Project;
         private readonly Patient m_Patient;
         private Action m_LoadCompleted;
 
         #endregion
+
+        /// <summary>
+        /// Gets the instance.
+        /// </summary>
+        /// <value>
+        /// The instance.
+        /// </value>
+        public static CaseFileLoader Instance
+        {
+            get { return _instance.Value; }
+        }
 
         #region Private Methods
 
@@ -88,12 +101,11 @@ namespace Assets.CaseFile
 
         #region Constructors
 
-        public CaseFileLoader(ComponentLoader componentLoader,
-                              Project project, Patient patient)
+        private CaseFileLoader()
         {
-            m_ComponentLoader = componentLoader;
-            m_Project = project;
-            m_Patient = patient;
+            m_ComponentLoader = ComponentLoader.Instance;
+            m_Project = Project.Instance;
+            m_Patient = Patient.Instance;
         }
 
         #endregion
