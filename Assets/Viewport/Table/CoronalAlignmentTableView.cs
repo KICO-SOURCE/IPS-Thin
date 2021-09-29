@@ -86,16 +86,59 @@ namespace Assets.Viewport
         {
             CellData cellData;
             List<CellData> cellDataList = new List<CellData>();
-            for (int i = 0; i < columnCount * rowCount; i++)
-            {
-                cellData = new CellData();
-                cellData.CellBackground = Color.white;
-                cellData.FontSize = 22;
-                cellData.TextColor = Color.black;
-                cellData.CellText = "SampleText" + i.ToString();
 
-                cellDataList.Add(cellData);
-            }
+            cellData = new CellData();
+            cellData.TextColor = Color.red;
+            cellData.CellText = "Varus";
+            cellDataList.Add(cellData);
+
+            cellData = new CellData();
+            cellData.TextColor = Color.red;
+            cellData.CellText = "10";
+            cellDataList.Add(cellData);
+
+            cellData = new CellData();
+            cellData.TextColor = Color.red;
+            cellData.CellText = "valgus";
+            cellDataList.Add(cellData);
+
+            cellData = new CellData();
+            cellData.TextColor = Color.red;
+            cellData.CellText = "15";
+            cellDataList.Add(cellData);
+
+            cellData = new CellData();
+            cellData.TextColor = Color.red;
+            cellData.CellText = "flexion";
+            cellDataList.Add(cellData);
+
+            cellData = new CellData();
+            cellData.TextColor = Color.red;
+            cellData.CellText = "20";
+            cellDataList.Add(cellData);
+
+            cellData = new CellData();
+            cellData.TextColor = Color.red;
+            cellData.CellText = "rotation";
+            cellDataList.Add(cellData);
+
+            cellData = new CellData();
+            cellData.TextColor = Color.red;
+            cellData.CellText = "25";
+            cellDataList.Add(cellData);
+
+
+            cellData = new CellData();
+            cellData.TextColor = Color.red;
+            cellData.CellText = "measurement";
+            cellDataList.Add(cellData);
+
+            cellData = new CellData();
+            cellData.TextColor = Color.red;
+            cellData.CellText = "30";
+            cellDataList.Add(cellData);
+
+
 
             return cellDataList;
         }
@@ -186,21 +229,23 @@ namespace Assets.Viewport
                 var cellOutline = cellObj.AddComponent<Outline>();
                 cellOutline.effectDistance = new Vector2(-2.5f, -2.5f);
                 var cellBackGround = cellObj.AddComponent<Image>();
-                cellBackGround.color = cellDatas[cellNo].CellBackground;
+                cellBackGround.color = Color.white;
 
                 // Adding text to cell
                 GameObject tabletextobj = new GameObject("CellText" + cellNo.ToString());
                 tabletextobj.AddComponent<RectTransform>();
                 tabletextobj.AddComponent<CanvasRenderer>();
                 var cellText = tabletextobj.AddComponent<TextMeshProUGUI>();
-                cellText.text = cellDatas[cellNo].CellText;
+
                 cellText.color = cellDatas[cellNo].TextColor;
                 cellText.alignment = TextAlignmentOptions.Center;
-                cellText.fontSize = cellDatas[cellNo].FontSize;
+                cellText.fontSize = 20;
+                cellText.text = cellDatas[cellNo].CellText;
                 // Adding cell text under cell
                 cellText.transform.SetParent(cellObj.transform, false);
                 // Adding cell object under the table parent
                 cellObj.transform.SetParent(LayoutParent.transform, false);
+
             }
 
 

@@ -1,14 +1,11 @@
-﻿using Assets.Viewport;
+﻿using Assets.CaseFile;
 using Assets.Viewport.Table;
+using Ips.Utils;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using Zenject;
 
 namespace Assets.Viewport
 {
@@ -75,7 +72,80 @@ namespace Assets.Viewport
         {
             // Creating anamtomical measurement table data and table view
             var tableData = CreateanatomicTableData();
-            CreateAnatomicMeasurementsTable( tableData);
+            var cellData = CreateAnatomicalCellData(tableData.ColumnCount, tableData.RowCount);
+            CreateAnatomicMeasurementsTable(cellData, tableData);
+        }
+
+        private List<CellData> CreateAnatomicalCellData(int columnCount, int rowCount)
+        {
+            GameObject obj = new GameObject();
+
+            double flexion = MeasurementUtils.MeasureFlexion(obj.transform);
+            var feValue= Math.Abs(Math.Round(flexion)).ToString();
+
+            double varus = MeasurementUtils.MeasureVarusValgus(obj.transform);
+            var varusValue= Math.Abs(Math.Round(varus)).ToString();
+
+            double axis = MeasurementUtils.MeasureAnatomicalToMechanicalAngle(obj.transform);
+            var anatomicalAxis= Math.Abs(Math.Round(axis)).ToString();
+
+            var feLabel = flexion < 0 ? " Extension" : " Flexion";
+            string vvLabel;
+            if (Patient.Instance.Leftright.ToLower() == "left")
+            {
+                if (varus > 0)
+                {
+                    vvLabel = "Varus";
+                }
+                else
+                {
+                    vvLabel = "Valgus";
+                }
+            }
+            else
+            {
+                if (varus < 0)
+                {
+                    vvLabel = "Varus";
+                }
+                else
+                {
+                    vvLabel = "Valgus";
+                }
+            }
+
+            CellData cellData;
+            List<CellData> cellDataList = new List<CellData>();
+            cellData = new CellData();
+            cellData.TextColor = Color.red;
+            cellData.CellText = "Coronal";
+            cellDataList.Add(cellData);
+
+            cellData = new CellData();
+            cellData.TextColor = Color.red;
+            cellData.CellText = varusValue + "° "+vvLabel;
+            cellDataList.Add(cellData);
+
+            cellData = new CellData();
+            cellData.TextColor = Color.red;
+            cellData.CellText = "Sagittal";
+            cellDataList.Add(cellData);
+
+            cellData = new CellData();
+            cellData.TextColor = Color.red;
+            cellData.CellText = feValue + "° " + feLabel;
+            cellDataList.Add(cellData);
+
+            cellData = new CellData();
+            cellData.TextColor = Color.red;
+            cellData.CellText = "Anatomic Axis";
+            cellDataList.Add(cellData);
+
+            cellData = new CellData();
+            cellData.TextColor = Color.red;
+            cellData.CellText = anatomicalAxis + "° to the Mechanical Axis";
+            cellDataList.Add(cellData);
+            return cellDataList;
         }
 
 
@@ -96,18 +166,6 @@ namespace Assets.Viewport
             tableData.HeaderTextAreaWidth = 400;
             tableData.HeaderText = "Anatomic Measurements";
 
-            CellData cellData;
-            for (int i = 0; i < tableData.ColumnCount * tableData.RowCount; i++)
-            {
-                cellData = new CellData();
-                cellData.CellBackground = Color.white;
-                cellData.FontSize = 22;
-                cellData.TextColor = Color.black;
-                cellData.CellText = "SampleText" + i.ToString();
-
-                tableData.cellData.Add(cellData);
-            }
-
             return tableData;
         }
 
@@ -115,7 +173,7 @@ namespace Assets.Viewport
         /// <summary>
         /// Create new TableView instance.
         /// </summary>
-        private void CreateAnatomicMeasurementsTable(TableData tableData)
+        private void CreateAnatomicMeasurementsTable(List<CellData> cellDatas, TableData tableData)
         {
             // Table object creration
             parent = ViewportContainer.Instance.Parent.transform.Find(parentTag).gameObject;
@@ -178,17 +236,17 @@ namespace Assets.Viewport
                 var cellOutline = cellObj.AddComponent<Outline>();
                 cellOutline.effectDistance = new Vector2(-2.5f, -2.5f);
                 var cellBackGround = cellObj.AddComponent<Image>();
-                cellBackGround.color = tableData.cellData[cellNo].CellBackground;
+                cellBackGround.color = Color.white;
 
                 // Adding text to cell
                 GameObject tabletextobj = new GameObject("CellText" + cellNo.ToString());
                 tabletextobj.AddComponent<RectTransform>();
                 tabletextobj.AddComponent<CanvasRenderer>();
                 var cellText = tabletextobj.AddComponent<TextMeshProUGUI>();
-                cellText.text = tableData.cellData[cellNo].CellText;
-                cellText.color = tableData.cellData[cellNo].TextColor;
+                cellText.text = cellDatas[cellNo].CellText;
+                cellText.color = Color.red;
                 cellText.alignment = TextAlignmentOptions.Center;
-                cellText.fontSize = tableData.cellData[cellNo].FontSize;
+                cellText.fontSize = 20;
                 // Adding cell text under cell
                 cellText.transform.SetParent(cellObj.transform, false);
                 // Adding cell object under the table parent
