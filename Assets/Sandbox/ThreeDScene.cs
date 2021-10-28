@@ -17,13 +17,14 @@ namespace Assets.Sandbox
         #region Private Fields
 
         private const string layer = "ThreeDLayer";
+        //Dan has made these private, and they are now being set in the Awake function below
+        private GameObject parent;
+        private Camera displayCam;
 
         #endregion
 
         #region Public Fields
 
-        public GameObject Parent;
-        public Camera Camera;
 
         #endregion
 
@@ -35,7 +36,7 @@ namespace Assets.Sandbox
         public void DisplayMesh()
         {
             this.gameObject.SetActive(true);
-            GeometryManager.Instance.DisplayAllObjects(Parent.transform,
+            GeometryManager.Instance.DisplayAllObjects(parent.transform,
                                                 LayerMask.NameToLayer(layer));
             SetCameraAndLightPosition(GeometryManager.Instance.GetMainObject());
         }
@@ -60,16 +61,23 @@ namespace Assets.Sandbox
                 width -= 0.2f;
             }
 
-            Camera.DORect(new Rect(x, y, width, height), 0.5f);
+            displayCam.DORect(new Rect(x, y, width, height), 0.5f);
         }
 
-        #endregion
+		#endregion
 
-        #region Private Methods
+		#region Private Methods
 
-        private void Start()
+		private void Awake() {
+            parent = this.transform.Find("ThreeDObjects").gameObject;
+            displayCam = this.transform.Find("ThreeDCamera").GetComponent<Camera>();
+    }
+
+		private void Start()
         {
             DisplayMesh();
+
+
         }
 
         /// <summary>
@@ -83,7 +91,7 @@ namespace Assets.Sandbox
             var meshRenderer = mesh.GetComponent<MeshRenderer>();
             var bound = meshRenderer.bounds;
 
-            var renderers = Parent.GetComponentsInChildren<MeshRenderer>();
+            var renderers = parent.GetComponentsInChildren<MeshRenderer>();
             foreach (var renderer in renderers)
             {
                 bound.Encapsulate(renderer.bounds);
@@ -98,30 +106,30 @@ namespace Assets.Sandbox
             var direction = mesh.transform.TransformVector(Vector3.down);
             var camPosition = center + direction * distance;
 
-            Camera.gameObject.SetActive(false);
+            displayCam.gameObject.SetActive(false);
 
-            Camera.transform.position = camPosition;
-            Camera.transform.LookAt(center, direction);
-            Camera.orthographicSize = distance;
+            displayCam.transform.position = camPosition;
+            displayCam.transform.LookAt(center, direction);
+            displayCam.orthographicSize = distance;
 
-            var camAxis = Camera.transform.TransformVector(Vector3.up);
+            var camAxis = displayCam.transform.TransformVector(Vector3.up);
             camAxis.Normalize();
 
             var meshAxis = mesh.transform.TransformVector(Vector3.forward);
             meshAxis.Normalize();
 
-            var axis = Camera.transform.TransformVector(Vector3.forward);
+            var axis = displayCam.transform.TransformVector(Vector3.forward);
             axis.Normalize();
 
             var angle = Vector3.SignedAngle(camAxis, meshAxis, axis);
             Debug.Log($"Angle : {angle}");
 
-            Camera.transform.RotateAround(center, axis, angle);
+            displayCam.transform.RotateAround(center, axis, angle);
 
-            Camera.gameObject.GetComponent<OrbitalMouseController>().target = center;
-            Camera.gameObject.GetComponent<OrbitalMousePanHelper>().pivotTarget = center;
+            displayCam.gameObject.GetComponent<OrbitalMouseController>().target = center;
+            displayCam.gameObject.GetComponent<OrbitalMousePanHelper>().pivotTarget = center;
 
-            Camera.gameObject.SetActive(true);
+            displayCam.gameObject.SetActive(true);
         }
 
         #endregion

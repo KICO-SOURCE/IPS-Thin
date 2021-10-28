@@ -90,7 +90,7 @@ namespace Assets.Import.PrefabScripts
             if (string.IsNullOrWhiteSpace(tag)) return;
 
             var type = GetActiveToggle()?.name;
-            GeometryManager.Instance.LoadMesh(tag, type, meshFilePath);
+            GeometryManager.Instance.LoadMesh_UI(tag, type, meshFilePath);
             meshFilePath = string.Empty;
 
             Debug.Log("Active Toggle Name: " + type);

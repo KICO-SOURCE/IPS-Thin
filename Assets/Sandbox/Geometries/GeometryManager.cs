@@ -234,13 +234,44 @@ namespace Assets.Geometries
             }
         }
 
+
+
         /// <summary>
-        /// Load mesh and add to geometry list
+        /// Load mesh (at a code level) and add to geometry list, and populate the list
         /// </summary>
         /// <param name="tag"></param>
         /// <param name="type"></param>
         /// <param name="filePath"></param>
-        public void LoadMesh(string tag, string type, string filePath)
+        public void LoadMesh(Transform parent, string name, string filePath) {
+            var mesh = MeshGeometryFunctions.ReadStl(filePath);
+
+            Geometry geometry = new Geometry() {
+                Tag = name,
+                Mesh = mesh?.ToMesh()
+            };
+
+            Debug.Log("Tag :" + geometry.Tag);
+            Debug.Log("Object Type : " + geometry.ObjectType);
+
+            geometry.UpdateMaterials(opaqueMaterial, transMaterial);
+
+            var index = geometries.Count;
+            geometries.Add(geometry);
+            AddToDisplayList(index, name);
+
+            DisplayAllObjects(parent, LayerMask.NameToLayer("ThreeDLayer"));
+        }
+
+
+
+
+        /// <summary>
+        /// Load mesh (with the UI in mind) and add to geometry list
+        /// </summary>
+        /// <param name="tag"></param>
+        /// <param name="type"></param>
+        /// <param name="filePath"></param>
+        public void LoadMesh_UI(string tag, string type, string filePath)
         {
             var mesh = MeshGeometryFunctions.ReadStl(filePath);
 
