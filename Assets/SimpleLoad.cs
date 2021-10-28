@@ -17,8 +17,7 @@ public class SimpleLoad : MonoBehaviour
     {
         Debug.Log("You pressed the button!");
         //Assets.Geometries.GeometryManager.LoadMesh(string "Femur", string "femur", string "");
-
-            // Obviously incomplete
+        GeometryManager.Instance.LoadMesh("Femur", "Femur2", "DAV_JR_13413K_DistalTibia.stl");
     }
 
     // 3. But runs on start - assosciating our function and button behaviour by means of the handler/delivery tool (Populating the Button Variable) 
