@@ -1,8 +1,10 @@
-﻿using System.Collections;
+﻿using Assets.CaseFile;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 // 0. if starting from new script - must include UnityEngine.UI, think of it as akin to 'tidyverse' on package load (but for UI controls)
 using UnityEngine.UI;
+using Assets.Geometries;
 
 public class SimpleLoad : MonoBehaviour
 {
@@ -14,16 +16,17 @@ public class SimpleLoad : MonoBehaviour
     void SimpleLoadSTL_Function()
     {
         Debug.Log("You pressed the button!");
+        //Assets.Geometries.GeometryManager.LoadMesh(string "Femur", string "femur", string "");
 
             // Obviously incomplete
     }
 
-    // 3. But runs on start - assosciating our function and button behaviour by means of handler 
+    // 3. But runs on start - assosciating our function and button behaviour by means of the handler/delivery tool (Populating the Button Variable) 
     void Start()
     {
         // Quoted here is the name of the Unity object to attach the C# scripted listener too, doesn't HAVE to be related to the internal C# names at all - we will need to lock a convention
         SimpleLoadSTL_ButtonVariable = GameObject.Find("SimpleLoadSTL").GetComponent<Button>();
-        // 3.5 we have just attached Unity GameObject Button <--> Handler, now we are Handler <--> Function
+        // 3.5 we have just attached Unity GameObject Button <--> Button Variable (the handler/delivery tool), now we are Button Variable <--> Function
         SimpleLoadSTL_ButtonVariable.onClick.AddListener(SimpleLoadSTL_Function);
     }
 
